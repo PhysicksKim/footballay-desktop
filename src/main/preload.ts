@@ -7,7 +7,12 @@ export type Channels =
   | 'open-test-window'
   | 'message'
   | 'isUpdating'
-  | 'react-ready';
+  | 'react-ready'
+  | 'init-stomp-client'
+  | 'stomp-publish'
+  | 'stomp-subscribe'
+  | 'ws-status'
+  | 'stomp-message';
 
 const electronHandler = {
   ipcRenderer: {
@@ -29,9 +34,23 @@ const electronHandler = {
     removeAllListeners(channel: Channels) {
       ipcRenderer.removeAllListeners(channel);
     },
+    invoke(channel: Channels, ...args: any[]) {
+      return ipcRenderer.invoke(channel, ...args);
+    },
   },
 };
 
-contextBridge.exposeInMainWorld('electron', electronHandler);
+contextBridge.exposeInMainWorld('electron', {
+  ...electronHandler,
+  initStompClient: () => ipcRenderer.invoke('init-stomp-client'),
+  stompPublish: (destination: string, body: string) =>
+    ipcRenderer.invoke('stomp-publish', destination, body),
+  stompSubscribe: (destination: string) =>
+    ipcRenderer.invoke('stomp-subscribe', destination),
+  onWsStatus: (callback: (status: string) => void) =>
+    ipcRenderer.on('ws-status', (event, status) => callback(status)),
+  onStompMessage: (callback: (message: string) => void) =>
+    ipcRenderer.on('stomp-message', (event, message) => callback(message)),
+});
 
 export type ElectronHandler = typeof electronHandler;

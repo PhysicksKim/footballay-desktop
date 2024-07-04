@@ -2,10 +2,37 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import icon from '../../../../assets/icon.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
+import { StompConfig } from '@stomp/stompjs';
 
 function Hello() {
   const [message, setMessage] = useState<string>('메세지내용');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
+  const [count, setCount] = useState(0);
+  const [wsStatus, setWsStatus] = useState('idle');
+
+  useEffect(() => {
+    window.electron.onWsStatus((status) => {
+      setWsStatus(status);
+    });
+
+    window.electron.onStompMessage((message) => {
+      console.log(`Received STOMP message: ${message}`);
+    });
+  }, []);
+
+  const initStompClient = () => {
+    window.electron.initStompClient();
+  };
+
+  const publishHello = () => {
+    const message = JSON.stringify({ hello: 'send hello message' });
+    window.electron.stompPublish('/app/hello', message);
+  };
+
+  const subscribeHello = () => {
+    window.electron.stompSubscribe('/topic/hello');
+  };
 
   useEffect(() => {
     const { ipcRenderer } = window.electron;
@@ -47,6 +74,12 @@ function Hello() {
           메세지 : <div>{message}</div>
         </div>
         <div>isUpdating : {isUpdating.toString()}</div>
+      </div>
+      <div className="ws-test-box">
+        <button onClick={initStompClient}>웹소켓연결</button>
+        <div>WebSocket 상태 : {wsStatus}</div>
+        <button onClick={publishHello}>헬로우!</button>
+        <button onClick={subscribeHello}>헬로우 구독</button>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const Application = () => {
 
   const stompConfig: StompConfig = {
     brokerURL: process.env.WEBSOCKET_URL,
-    // brokerURL: 'ws://gyechunsik.site/ws',
+    // brokerURL: 'wss://gyechunsik.site/ws',
     onConnect: () => {
       // Subscribe : /user/topic/remote
       subscribeHello();
@@ -48,7 +48,7 @@ const Application = () => {
 
   const publishHello = () => {
     if (!clientRef.current) {
-      console.error('Websocket Client is null or undefined');
+      console.log('Websocket Client is null or undefined');
       return;
     }
 
