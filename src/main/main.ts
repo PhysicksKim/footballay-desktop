@@ -4,6 +4,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { Client, StompConfig } from '@stomp/stompjs';
+import { WebSocket } from 'ws';
 
 let mainWindow: BrowserWindow | null = null;
 let testWindow: BrowserWindow | null = null;
@@ -94,8 +96,13 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 const createTestWindow = async () => {
   if (testWindow !== null) {
-    testWindow.focus();
-    return;
+    if (testWindow.isDestroyed()) {
+      // 창이 닫혔을 때 객체를 다시 null 로 제거하고 재생성
+      testWindow = null;
+    } else {
+      testWindow.focus();
+      return;
+    }
   }
 
   testWindow = new BrowserWindow({
@@ -104,13 +111,14 @@ const createTestWindow = async () => {
     transparent: true,
     frame: false, // 프레임(타이틀바) 제거
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      // preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
   testWindow.loadURL(resolveHtmlPath('testwindow.html'));
+  // testWindow.loadURL('https://gyechunsik.site/scoreboard');
 };
 
 ipcMain.on('open-test-window', () => {

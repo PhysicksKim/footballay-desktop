@@ -20,12 +20,6 @@ const configuration: webpack.Configuration = {
   target: ['web', 'electron-renderer'],
   entry: {
     main: path.join(webpackPaths.srcRendererPath, 'pages', 'app', 'index.tsx'),
-    updater: path.join(
-      webpackPaths.srcRendererPath,
-      'pages',
-      'updater',
-      'updater.tsx',
-    ),
     testwindow: path.join(
       webpackPaths.srcRendererPath,
       'pages',
@@ -93,8 +87,11 @@ const configuration: webpack.Configuration = {
     ],
   },
   plugins: [
+    // new MiniCssExtractPlugin({
+    //   filename: 'style.css',
+    // }),
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: '[name].css', // 각 엔트리 포인트에 대해 별도의 CSS 파일 생성
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -137,6 +134,10 @@ const configuration: webpack.Configuration = {
       DEBUG_PROD: false,
       START_MINIMIZED: false,
       E2E_BUILD: false,
+    }),
+    new webpack.DefinePlugin({
+      'process.env.API_URL': JSON.stringify('https://gyechunsik.site'),
+      'process.env.WEBSOCKET_URL': JSON.stringify('wss://gyechunsik.site/ws'),
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,

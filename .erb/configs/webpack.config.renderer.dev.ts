@@ -130,6 +130,10 @@ const configuration: webpack.Configuration = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),
+    new webpack.DefinePlugin({
+      'process.env.API_URL': JSON.stringify('https://localhost:8083'),
+      'process.env.WEBSOCKET_URL': JSON.stringify('wss://localhost:8083/ws'),
+    }),
     new webpack.LoaderOptionsPlugin({
       debug: true,
     }),
@@ -182,6 +186,7 @@ const configuration: webpack.Configuration = {
     compress: true,
     hot: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
+    https: false,
     static: {
       publicPath: '/',
     },
