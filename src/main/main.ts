@@ -4,102 +4,16 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { Client, IMessage, StompConfig } from '@stomp/stompjs';
-import WebSocket from 'ws';
+import { setupIpcMainHandlers } from './ipc';
+import { setupStompHandlers } from './stomp';
+import { AppUpdater } from './AppUpdater';
 
 let mainWindow: BrowserWindow | null = null;
 let testWindow: BrowserWindow | null = null;
 
-let stompClient: Client | null = null;
-
-class AppUpdater {
-  constructor() {
-    console.log('AppUpdater constructor');
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-
-    autoUpdater.on('checking-for-update', () => {
-      log.info('Checking for update...');
-      console.log('Checking for update...');
-      if (mainWindow) {
-        mainWindow.webContents.send('message', '업데이트 확인 중...');
-        mainWindow.webContents.send('isUpdating', true);
-      }
-    });
-
-    autoUpdater.on('update-available', (info) => {
-      log.info('Update available.');
-      if (mainWindow) {
-        mainWindow.webContents.send('message', '업데이트 가능. 다운로드 중...');
-      }
-    });
-
-    autoUpdater.on('update-not-available', (info) => {
-      log.info('Update not available.');
-      if (mainWindow) {
-        mainWindow.webContents.send(
-          'message',
-          '업데이트가 없습니다. 앱을 시작합니다...',
-        );
-        mainWindow.webContents.send('isUpdating', false);
-      }
-    });
-
-    autoUpdater.on('error', (err) => {
-      log.error('Error in auto-updater. ' + err);
-      if (mainWindow) {
-        mainWindow.webContents.send('message', '오류: ' + err);
-        mainWindow.webContents.send('isUpdating', false);
-      }
-    });
-
-    autoUpdater.on('download-progress', (progressObj) => {
-      let logMessage = '다운로드 속도: ' + progressObj.bytesPerSecond;
-      logMessage = logMessage + ' - 다운로드 ' + progressObj.percent + '% 완료';
-      logMessage =
-        logMessage +
-        ' (' +
-        progressObj.transferred +
-        '/' +
-        progressObj.total +
-        ')';
-      log.info(logMessage);
-      if (mainWindow) {
-        mainWindow.webContents.send('message', `로그:${logMessage}`);
-      }
-    });
-
-    autoUpdater.on('update-downloaded', (info) => {
-      log.info('Update downloaded');
-      if (mainWindow) {
-        mainWindow.webContents.send(
-          'message',
-          '업데이트 다운로드 완료. 앱을 재시작합니다...',
-        );
-      }
-      autoUpdater.quitAndInstall(true, true); // isSilent = true, isForceRunAfter = true
-    });
-
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
-
-ipcMain.on('react-ready', (event, arg) => {
-  console.log(arg); // "react is ready" message
-  new AppUpdater();
-  mainWindow?.webContents.send('message', '앱 업데이터 동작');
-});
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
 const createTestWindow = async () => {
   if (testWindow !== null) {
     if (testWindow.isDestroyed()) {
-      // 창이 닫혔을 때 객체를 다시 null 로 제거하고 재생성
       testWindow = null;
     } else {
       testWindow.focus();
@@ -111,26 +25,15 @@ const createTestWindow = async () => {
     width: 400,
     height: 300,
     transparent: true,
-    frame: false, // 프레임(타이틀바) 제거
+    frame: false,
     webPreferences: {
-      // preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
   testWindow.loadURL(resolveHtmlPath('testwindow.html'));
-  // testWindow.loadURL('https://gyechunsik.site/scoreboard');
 };
-
-ipcMain.on('open-test-window', () => {
-  createTestWindow();
-});
-
-if (process.env.NODE_ENV === 'production') {
-  const sourceMapSupport = require('source-map-support');
-  sourceMapSupport.install();
-}
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -202,7 +105,6 @@ const createMainWindow = async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
@@ -217,57 +119,10 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
-    createMainWindow();
+  .then(async () => {
+    await createMainWindow();
+    const appUpdater = new AppUpdater(mainWindow);
+    setupIpcMainHandlers(mainWindow, createTestWindow, appUpdater);
+    setupStompHandlers(mainWindow);
   })
   .catch(console.log);
-
-// IPC 핸들러 등록
-const brokerURL = 'wss://gyechunsik.site/ws';
-const stompConfig: StompConfig = {
-  // brokerURL: process.env.WEBSOCKET_URL || 'wss://gyechunsik.site/ws',
-  brokerURL: brokerURL,
-  onConnect: () => {
-    console.log('Connected to WebSocket');
-  },
-  onDisconnect: () => {
-    console.log('Disconnected from WebSocket');
-  },
-};
-
-ipcMain.handle('init-stomp-client', async (_) => {
-  stompClient = new Client({
-    ...stompConfig,
-    webSocketFactory: () => new WebSocket(brokerURL),
-  });
-
-  stompClient.onConnect = () => {
-    mainWindow?.webContents.send('ws-status', 'connected');
-  };
-
-  stompClient.onDisconnect = () => {
-    mainWindow?.webContents.send('ws-status', 'disconnected');
-  };
-
-  stompClient.activate();
-});
-
-ipcMain.handle(
-  'stomp-publish',
-  async (_, destination: string, body: string) => {
-    if (stompClient) {
-      stompClient.publish({
-        destination: destination,
-        body: body,
-      });
-    }
-  },
-);
-
-ipcMain.handle('stomp-subscribe', async (_, destination: string) => {
-  if (stompClient) {
-    stompClient.subscribe(destination, (message: IMessage) => {
-      mainWindow?.webContents.send('stomp-message', message.body);
-    });
-  }
-});

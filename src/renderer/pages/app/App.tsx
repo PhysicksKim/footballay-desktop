@@ -2,7 +2,6 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import icon from '../../../../assets/icon.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { StompConfig } from '@stomp/stompjs';
 
 function Hello() {
   const [message, setMessage] = useState<string>('메세지내용');
