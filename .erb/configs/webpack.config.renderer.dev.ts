@@ -43,14 +43,14 @@ const configuration: webpack.Configuration = {
       'webpack/hot/only-dev-server',
       path.join(webpackPaths.srcRendererPath, 'pages', 'app', 'index.tsx'),
     ],
-    testwindow: [
+    matchlive: [
       `webpack-dev-server/client?http://localhost:${port}/dist`,
       'webpack/hot/only-dev-server',
       path.join(
         webpackPaths.srcRendererPath,
         'pages',
-        'testwindow',
-        'testwindow.tsx',
+        'matchlive',
+        'matchlive.tsx',
       ),
     ],
   },
@@ -158,14 +158,14 @@ const configuration: webpack.Configuration = {
       nodeModules: webpackPaths.appNodeModulesPath,
     }),
     new HtmlWebpackPlugin({
-      filename: 'testwindow.html',
+      filename: 'matchlive.html',
       template: path.join(
         webpackPaths.srcRendererPath,
         'pages',
-        'testwindow',
-        'testwindow.html',
+        'matchlive',
+        'matchlive.html',
       ),
-      chunks: ['testwindow'],
+      chunks: ['matchlive'],
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,

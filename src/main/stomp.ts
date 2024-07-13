@@ -16,25 +16,17 @@ const stompConfig: StompConfig = {
 };
 
 export function setupStompHandlers(mainWindow: BrowserWindow | null) {
-  console.log('setup stomp.js');
   ipcMain.handle('init-stomp-client', async (_) => {
-    console.log('init stomp client');
     stompClient = new Client({
       ...stompConfig,
       webSocketFactory: () => new WebSocket(brokerURL),
     });
-
     stompClient.onConnect = () => {
-      console.log(`main window is null? = ${mainWindow}`);
       mainWindow?.webContents.send('ws-status', 'connected');
-      console.log('onconnect');
     };
-
     stompClient.onDisconnect = () => {
-      console.log(`main window is null? = ${mainWindow}`);
       mainWindow?.webContents.send('ws-status', 'disconnected');
     };
-
     stompClient.activate();
   });
 

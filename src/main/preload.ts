@@ -4,7 +4,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
   | 'ipc-example'
-  | 'open-test-window'
+  | 'open-matchlive-window'
   | 'message'
   | 'isUpdating'
   | 'react-ready'
@@ -38,19 +38,19 @@ const electronHandler = {
       return ipcRenderer.invoke(channel, ...args);
     },
   },
+  stomp: {
+    initClient: () => ipcRenderer.invoke('init-stomp-client'),
+    publish: (destination: string, body: string) =>
+      ipcRenderer.invoke('stomp-publish', destination, body),
+    subscribe: (destination: string) =>
+      ipcRenderer.invoke('stomp-subscribe', destination),
+    onWsStatus: (callback: (status: string) => void) =>
+      ipcRenderer.on('ws-status', (event, status) => callback(status)),
+    onMessage: (callback: (message: string) => void) =>
+      ipcRenderer.on('stomp-message', (event, message) => callback(message)),
+  },
 };
 
-contextBridge.exposeInMainWorld('electron', {
-  ...electronHandler,
-  initStompClient: () => ipcRenderer.invoke('init-stomp-client'),
-  stompPublish: (destination: string, body: string) =>
-    ipcRenderer.invoke('stomp-publish', destination, body),
-  stompSubscribe: (destination: string) =>
-    ipcRenderer.invoke('stomp-subscribe', destination),
-  onWsStatus: (callback: (status: string) => void) =>
-    ipcRenderer.on('ws-status', (event, status) => callback(status)),
-  onStompMessage: (callback: (message: string) => void) =>
-    ipcRenderer.on('stomp-message', (event, message) => callback(message)),
-});
+contextBridge.exposeInMainWorld('electron', electronHandler);
 
 export type ElectronHandler = typeof electronHandler;

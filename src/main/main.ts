@@ -9,19 +9,19 @@ import { setupStompHandlers } from './stomp';
 import { AppUpdater } from './AppUpdater';
 
 let mainWindow: BrowserWindow | null = null;
-let testWindow: BrowserWindow | null = null;
+let matchliveWindow: BrowserWindow | null = null;
 
-const createTestWindow = async () => {
-  if (testWindow !== null) {
-    if (testWindow.isDestroyed()) {
-      testWindow = null;
+const createMatchliveWindow = async () => {
+  if (matchliveWindow !== null) {
+    if (matchliveWindow.isDestroyed()) {
+      matchliveWindow = null;
     } else {
-      testWindow.focus();
+      matchliveWindow.focus();
       return;
     }
   }
 
-  testWindow = new BrowserWindow({
+  matchliveWindow = new BrowserWindow({
     width: 400,
     height: 300,
     transparent: true,
@@ -32,7 +32,7 @@ const createTestWindow = async () => {
     },
   });
 
-  testWindow.loadURL(resolveHtmlPath('testwindow.html'));
+  matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
 };
 
 const isDebug =
@@ -122,7 +122,7 @@ app
   .then(async () => {
     await createMainWindow();
     const appUpdater = new AppUpdater(mainWindow);
-    setupIpcMainHandlers(mainWindow, createTestWindow, appUpdater);
+    setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);
     setupStompHandlers(mainWindow);
   })
   .catch(console.log);

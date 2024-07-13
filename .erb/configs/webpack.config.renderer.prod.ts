@@ -20,11 +20,11 @@ const configuration: webpack.Configuration = {
   target: ['web', 'electron-renderer'],
   entry: {
     main: path.join(webpackPaths.srcRendererPath, 'pages', 'app', 'index.tsx'),
-    testwindow: path.join(
+    matchlive: path.join(
       webpackPaths.srcRendererPath,
       'pages',
-      'testwindow',
-      'testwindow.tsx',
+      'matchlive',
+      'matchlive.tsx',
     ),
   },
   output: {
@@ -112,14 +112,14 @@ const configuration: webpack.Configuration = {
       nodeModules: false,
     }),
     new HtmlWebpackPlugin({
-      filename: 'testwindow.html',
+      filename: 'matchlive.html',
       template: path.join(
         webpackPaths.srcRendererPath,
         'pages',
-        'testwindow',
-        'testwindow.html',
+        'matchlive',
+        'matchlive.html',
       ),
-      chunks: ['testwindow'],
+      chunks: ['matchlive'],
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,

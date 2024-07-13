@@ -3,7 +3,7 @@ import { AppUpdater } from './AppUpdater';
 
 export function setupIpcMainHandlers(
   mainWindow: BrowserWindow | null,
-  createTestWindow: () => void,
+  createMatchliveWindow: () => void,
   appUpdater: AppUpdater,
 ) {
   console.log('setup ipc.ts');
@@ -19,7 +19,7 @@ export function setupIpcMainHandlers(
     event.reply('ipc-example', msgTemplate('pong'));
   });
 
-  ipcMain.on('open-test-window', () => {
-    createTestWindow();
+  ipcMain.on('open-matchlive-window', () => {
+    createMatchliveWindow();
   });
 }
