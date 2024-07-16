@@ -9,15 +9,18 @@ export const Urls = {
   websocketUrl: process.env.WEBSOCKET_URL,
 };
 
+const defaultFixtureId = 1232551;
+const prevFixtureId = 1225853;
+
 function Hello() {
   const [message, setMessage] = useState<string>('메세지내용');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const [count, setCount] = useState(0);
   const [wsStatus, setWsStatus] = useState('idle');
 
-  const [fixtureId, setFixtureId] = useState(1225853);
-  const [fixtureInfo, setFixtureInfo] = useState([]);
+  const [fixtureId, setFixtureId] = useState(defaultFixtureId);
+  const [fixtureInfo, setFixtureInfo] = useState<any>(null);
+  const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
 
   useEffect(() => {
     window.electron.stomp.onWsStatus((status) => {
@@ -27,7 +30,29 @@ function Hello() {
     window.electron.stomp.onMessage((message) => {
       console.log(`Received STOMP message: ${message}`);
     });
-  }, []);
+
+    const fetchData = () => {
+      setLastFetchTime(new Date());
+      axios
+        .get(Urls.apiUrl + '/api/football/fixtures', {
+          params: { fixtureId: fixtureId },
+        })
+        .then((response) => {
+          setFixtureInfo(response.data.response[0]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    // Fetch data initially
+    fetchData();
+
+    // Set interval to fetch data every minute
+    const intervalId = setInterval(fetchData, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [fixtureId]);
 
   const initStompClient = () => {
     window.electron.stomp.initClient();
@@ -66,19 +91,6 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('open-matchlive-window');
   };
 
-  const getFixtureInfo = () => {
-    axios
-      .get(Urls.apiUrl + '/api/football/fixtures', {
-        params: { fixtureId: fixtureId },
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   return (
     <div>
       <div className="Hello">
@@ -103,7 +115,71 @@ function Hello() {
         <button onClick={subscribeHello}>헬로우 구독</button>
       </div>
       <div className="fixture-info-box">
-        <button onClick={getFixtureInfo}>경기정보</button>
+        <h3>경기정보</h3>
+        <p>마지막 데이터 요청 시간 : {lastFetchTime.toString()}</p>
+        {fixtureInfo ? (
+          <div>
+            <p>리그: {fixtureInfo.league.name}</p>
+            <p>날짜: {new Date(fixtureInfo.date).toLocaleString()}</p>
+            <p>상태: {fixtureInfo.liveStatus.longStatus}</p>
+            <p>
+              경기시간:{' '}
+              {fixtureInfo.liveStatus
+                ? fixtureInfo.liveStatus.elapsed
+                : 'Not Started'}
+            </p>
+            <p>홈팀: {fixtureInfo.home.name}</p>
+            <p>원정팀: {fixtureInfo.away.name}</p>
+            {fixtureInfo.lineup ? (
+              <div>
+                <h4>선발 라인업</h4>
+                <div>
+                  <h5>홈팀 ({fixtureInfo.home.name})</h5>
+                  <ul>
+                    {fixtureInfo.lineup.home.players.map(
+                      (player: any, index: number) => (
+                        <li key={index}>
+                          <p>
+                            {player.position} - {player.name} (번호:{' '}
+                            {player.number})
+                          </p>
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                  <h5>원정팀 ({fixtureInfo.away.name})</h5>
+                  <ul>
+                    {fixtureInfo.lineup.away.players.map(
+                      (player: any, index: number) => (
+                        <li key={index}>
+                          <p>
+                            {player.position} - {player.name} (번호:{' '}
+                            {player.number})
+                          </p>
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <p>라인업 정보가 없습니다.</p>
+            )}
+            <h4>이벤트</h4>
+            <ul>
+              {fixtureInfo.events.map((event: any, index: number) => (
+                <li key={index}>
+                  <p>
+                    {event.elapsed}분 - {event.player.name} - {event.type} -{' '}
+                    {event.detail}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p>경기 정보를 불러오는 중...</p>
+        )}
       </div>
     </div>
   );

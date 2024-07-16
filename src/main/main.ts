@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, session } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -29,6 +29,7 @@ const createMatchliveWindow = async () => {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: false,
     },
   });
 
@@ -40,6 +41,7 @@ const isDebug =
 
 if (isDebug) {
   require('electron-debug')();
+  app.commandLine.appendSwitch('ignore-certificate-errors');
 }
 
 const installExtensions = async () => {
@@ -79,6 +81,8 @@ const createMainWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      allowRunningInsecureContent: true,
+      webSecurity: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -111,6 +115,15 @@ const createMainWindow = async () => {
   });
 };
 
+const devRemoveHSTS = () => {
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const headers = details.responseHeaders;
+    if (!headers) return;
+    delete headers['strict-transport-security'];
+    callback({ responseHeaders: headers });
+  });
+};
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -120,6 +133,12 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
+    if (isDebug) {
+      console.log('add removing HSTS header callback');
+
+      app.commandLine.appendSwitch('ignore-certificate-errors');
+      devRemoveHSTS();
+    }
     await createMainWindow();
     const appUpdater = new AppUpdater(mainWindow);
     setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);
