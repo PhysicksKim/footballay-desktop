@@ -8,15 +8,11 @@ export function setupIpcMainHandlers(
 ) {
   console.log('setup ipc.ts');
   ipcMain.on('react-ready', (event, arg) => {
-    console.log(arg);
     appUpdater.checkForUpdates();
-    mainWindow?.webContents.send('message', '앱 업데이터 동작');
-  });
-
-  ipcMain.on('ipc-example', async (event, arg) => {
-    const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-    console.log(msgTemplate(arg));
-    event.reply('ipc-example', msgTemplate('pong'));
+    mainWindow?.webContents.send('update-status', {
+      message: '앱 업데이터 동작',
+      status: 'updater start',
+    });
   });
 
   ipcMain.on('open-matchlive-window', () => {

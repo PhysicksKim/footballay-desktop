@@ -4,45 +4,46 @@ import { BrowserWindow } from 'electron';
 
 export class AppUpdater {
   constructor(private mainWindow: BrowserWindow | null) {
-    console.log('AppUpdater constructor');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
     autoUpdater.on('checking-for-update', () => {
       log.info('Checking for update...');
-      console.log('Checking for update...');
       if (this.mainWindow) {
-        this.mainWindow.webContents.send('message', '업데이트 확인 중...');
-        this.mainWindow.webContents.send('isUpdating', true);
+        this.mainWindow.webContents.send('update-status', {
+          message: '업데이트 확인 중...',
+          status: 'check',
+        });
       }
     });
 
     autoUpdater.on('update-available', (info) => {
       log.info('Update available.');
       if (this.mainWindow) {
-        this.mainWindow.webContents.send(
-          'message',
-          '업데이트 가능. 다운로드 중...',
-        );
+        this.mainWindow.webContents.send('update-status', {
+          message: '업데이트가 있습니다. 다운로드 중...',
+          status: 'downloading',
+        });
       }
     });
 
     autoUpdater.on('update-not-available', (info) => {
       log.info('Update not available.');
       if (this.mainWindow) {
-        this.mainWindow.webContents.send(
-          'message',
-          '업데이트가 없습니다. 앱을 시작합니다...',
-        );
-        this.mainWindow.webContents.send('isUpdating', false);
+        this.mainWindow.webContents.send('update-status', {
+          message: '최신 버전입니다.',
+          status: 'latest',
+        });
       }
     });
 
     autoUpdater.on('error', (err) => {
       log.error('Error in auto-updater. ' + err);
       if (this.mainWindow) {
-        this.mainWindow.webContents.send('message', '오류: ' + err);
-        this.mainWindow.webContents.send('isUpdating', false);
+        this.mainWindow.webContents.send('update-status', {
+          message: '업데이트 중 오류가 발생했습니다.',
+          status: 'error',
+        });
       }
     });
 
@@ -57,18 +58,15 @@ export class AppUpdater {
         progressObj.total +
         ')';
       log.info(logMessage);
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('message', `로그:${logMessage}`);
-      }
     });
 
     autoUpdater.on('update-downloaded', (info) => {
       log.info('Update downloaded');
       if (this.mainWindow) {
-        this.mainWindow.webContents.send(
-          'message',
-          '업데이트 다운로드 완료. 앱을 재시작합니다...',
-        );
+        this.mainWindow.webContents.send('update-status', {
+          message: '업데이트 다운로드 완료. 앱을 재시작합니다...',
+          status: 'downloaded',
+        });
       }
       autoUpdater.quitAndInstall(true, true);
     });

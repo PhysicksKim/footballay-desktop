@@ -81,8 +81,6 @@ const createMainWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      allowRunningInsecureContent: true,
-      webSecurity: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -144,4 +142,7 @@ app
     setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);
     setupStompHandlers(mainWindow);
   })
-  .catch(console.log);
+  .catch(async (e) => {
+    console.log(e);
+    log.error(e);
+  });

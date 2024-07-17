@@ -3,16 +3,17 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
-  | 'ipc-example'
-  | 'open-matchlive-window'
-  | 'message'
-  | 'isUpdating'
+  // Update Status Channels
+  | 'update-status'
+  // App Channels
   | 'react-ready'
+  | 'open-matchlive-window'
+  // Stomp Channels
   | 'init-stomp-client'
   | 'stomp-publish'
   | 'stomp-subscribe'
-  | 'ws-status'
-  | 'stomp-message';
+  | 'stomp-message'
+  | 'ws-status';
 
 const electronHandler = {
   ipcRenderer: {
@@ -35,7 +36,9 @@ const electronHandler = {
       ipcRenderer.removeAllListeners(channel);
     },
     invoke(channel: Channels, ...args: any[]) {
-      return ipcRenderer.invoke(channel, ...args);
+      return ipcRenderer.invoke(channel, ...args).catch((error) => {
+        console.error(`Error invoking IPC channel ${channel}`, error);
+      });
     },
   },
   stomp: {
