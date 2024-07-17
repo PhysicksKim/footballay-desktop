@@ -29,11 +29,38 @@ const createMatchliveWindow = async () => {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false,
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
 
   matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
+
+  matchliveWindow.on('ready-to-show', () => {
+    console.log('matchlive window ready-to-show');
+    // IPC 핸들러 설정
+    matchliveWindow!.webContents.on('did-finish-load', () => {
+      console.log('matclive window did-finish-load');
+      ipcMain.on('main-to-sub', (event, data) => {
+        console.log('main-to-sub data', data);
+        matchliveWindow!.webContents.send('main-to-sub', data);
+      });
+
+      ipcMain.on('sub-to-main', (event, data) => {
+        console.log('sub-to-main data', data);
+        mainWindow!.webContents.send('sub-to-main', data);
+      });
+    });
+  });
+
+  matchliveWindow.on('closed', () => {
+    matchliveWindow = null;
+    ipcMain.removeAllListeners('main-to-sub');
+    ipcMain.removeAllListeners('sub-to-main');
+  });
+
+  return matchliveWindow;
 };
 
 const isDebug =
@@ -90,6 +117,7 @@ const createMainWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
+    console.log('main ready to show!');
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -113,15 +141,6 @@ const createMainWindow = async () => {
   });
 };
 
-const devRemoveHSTS = () => {
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    const headers = details.responseHeaders;
-    if (!headers) return;
-    delete headers['strict-transport-security'];
-    callback({ responseHeaders: headers });
-  });
-};
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -131,12 +150,6 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    if (isDebug) {
-      console.log('add removing HSTS header callback');
-
-      app.commandLine.appendSwitch('ignore-certificate-errors');
-      devRemoveHSTS();
-    }
     await createMainWindow();
     const appUpdater = new AppUpdater(mainWindow);
     setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);

@@ -3,6 +3,7 @@ import { RootState } from '../store/store';
 import FixtureDataManager from './FixtureDataManager';
 import '../App.css';
 import icon from '../../../../../assets/icon.svg';
+import MatchliveDataSender from './MatchliveDataSender';
 
 const Main = () => {
   const fixtureInfo = useSelector((state: RootState) => state.fixture);
@@ -25,6 +26,7 @@ const Main = () => {
         </button>
       </div>
       <FixtureDataManager />
+      <MatchliveDataSender />
       <div>
         <h3>업데이트 체크</h3>
         <div>

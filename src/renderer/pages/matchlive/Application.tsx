@@ -4,6 +4,18 @@ import './Body.scss';
 const Application = () => {
   const [count, setCount] = useState(0);
 
+  const receiveFromMain = () => {
+    console.log('Receive from Main fuction executed');
+    const { ipcRenderer } = window.electron;
+    ipcRenderer.on('main-to-sub', (msg: any) => {
+      console.log('Received from Main:', msg);
+    });
+  };
+
+  useEffect(() => {
+    receiveFromMain();
+  }, []);
+
   return (
     <div>
       <h1>Test Window</h1>

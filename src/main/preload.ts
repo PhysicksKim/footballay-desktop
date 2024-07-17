@@ -13,7 +13,10 @@ export type Channels =
   | 'stomp-publish'
   | 'stomp-subscribe'
   | 'stomp-message'
-  | 'ws-status';
+  | 'ws-status'
+  // Main - Sub Channels
+  | 'main-to-sub'
+  | 'sub-to-main';
 
 const electronHandler = {
   ipcRenderer: {
