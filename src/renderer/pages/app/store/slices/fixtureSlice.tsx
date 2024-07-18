@@ -5,13 +5,13 @@ import {
   Lineup,
   LiveStatus,
   Team,
-} from '../../types/football';
+} from '../../../../../types/FixtureIpc';
 import fetchFixtureInfo from './fixtureSliceThunk';
 
 export interface FixtureState {
   fixtureId: number;
   referee: null | string;
-  date: null | Date;
+  date: null | string;
   league: null | League;
   liveStatus: null | LiveStatus;
   home: null | Team;
@@ -21,7 +21,7 @@ export interface FixtureState {
     home: null | Lineup;
     away: null | Lineup;
   } | null;
-  lastFetchTime: Date;
+  lastFetchTime: string;
 }
 
 export const initialState: FixtureState = {
@@ -34,7 +34,7 @@ export const initialState: FixtureState = {
   away: null,
   events: null,
   lineup: null,
-  lastFetchTime: new Date(),
+  lastFetchTime: new Date().toISOString(),
 };
 
 const fixtureSlice = createSlice({
@@ -50,14 +50,14 @@ const fixtureSlice = createSlice({
       .addCase(fetchFixtureInfo.fulfilled, (state, action) => {
         const fixture = action.payload;
         state.referee = fixture.referee;
-        state.date = new Date(fixture.date);
+        state.date = new Date(fixture.date).toISOString();
         state.liveStatus = fixture.liveStatus;
         state.league = fixture.league;
         state.home = fixture.home;
         state.away = fixture.away;
         state.events = fixture.events;
         state.lineup = fixture.lineup;
-        state.lastFetchTime = new Date(fixture.date);
+        state.lastFetchTime = new Date(fixture.date).toISOString();
       })
       .addCase(fetchFixtureInfo.rejected, (state, action) => {
         console.error('Error fetching fixture info:', action.payload);

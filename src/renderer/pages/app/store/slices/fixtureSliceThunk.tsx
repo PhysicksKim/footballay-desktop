@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Fixture } from '../../types/football';
+import { Fixture } from '../../../../../types/FixtureIpc';
 import axios from 'axios';
 import { ApiResponse } from '../../types/api';
 import Urls from '../../common/Urls';
