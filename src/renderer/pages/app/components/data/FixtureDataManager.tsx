@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
-import fetchFixtureInfo from '../store/slices/fixtureSliceThunk';
-import { AppDispatch } from '../store/store';
+import fetchFixtureInfo from '../../store/slices/fixtureSliceThunk';
+import { AppDispatch } from '../../store/store';
 
 const FixtureDataManager = () => {
   const dispatch = useDispatch<AppDispatch>();

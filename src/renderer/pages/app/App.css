@@ -5,7 +5,7 @@
 body {
   position: relative;
   color: white;
-  /* height: 100vh; */
+  height: 100vh;
   background: linear-gradient(
     200.96deg,
     #fedc2a -29.09%,
@@ -13,10 +13,12 @@ body {
     #7a2c9e 129.35%
   );
   font-family: sans-serif;
-  overflow-y: scroll;
+  overflow-y: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
 button {
@@ -53,11 +55,4 @@ a {
 a:hover {
   opacity: 1;
   text-decoration: none;
-}
-
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
 }

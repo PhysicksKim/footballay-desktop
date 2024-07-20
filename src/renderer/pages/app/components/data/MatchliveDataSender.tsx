@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { RootState } from '../../store/store';
 
 const MatchliveDataSender = () => {
   const fixtureId = useSelector((state: RootState) => state.fixture.fixtureId);
@@ -102,7 +102,6 @@ const MatchliveDataSender = () => {
 
   return (
     <div>
-      <div>MatchliveDataSender</div>
       <button onClick={sendToSubWindow}>SEND test MSG</button>
     </div>
   );

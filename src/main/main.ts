@@ -1,6 +1,5 @@
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain, session } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -24,6 +23,8 @@ const createMatchliveWindow = async () => {
   matchliveWindow = new BrowserWindow({
     width: 500,
     height: 800,
+    minWidth: 500,
+    minHeight: 800,
     transparent: true,
     frame: false,
     webPreferences: {
@@ -106,6 +107,8 @@ const createMainWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    minWidth: 1024,
+    minHeight: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
