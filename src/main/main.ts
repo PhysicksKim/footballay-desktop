@@ -110,12 +110,16 @@ const createMainWindow = async () => {
     minWidth: 1024,
     minHeight: 728,
     icon: getAssetPath('icon.png'),
+    // frame: false,
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  // hide menu and only show title bar
+  mainWindow.menuBarVisible = false;
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
@@ -135,8 +139,9 @@ const createMainWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  // ---- Menu Bar ---
+  // const menuBuilder = new MenuBuilder(mainWindow);
+  // menuBuilder.buildMenu();
 
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
