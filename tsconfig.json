@@ -12,7 +12,12 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "outDir": ".erb/dll"
+    // "outDir": ".erb/dll",
+    // "baseUrl": ".",
+    "paths": {
+      "@app/*": ["./src/renderer/pages/app/*"],
+      "@matchlive/*": ["./src/renderer/pages/matchlive/*"]
+    }
   },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }

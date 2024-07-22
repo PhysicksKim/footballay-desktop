@@ -1,17 +1,13 @@
-import TabList from './TabList';
 import ContentsArea from './tabs/ContentsArea';
-import '../styles/Main.scss';
+import '@app/styles/Main.scss';
+import MenuList from './MenuList';
 
 const Main = () => {
   return (
     <div className="main-container">
-      {/* <FixtureDataManager />
-      <MatchliveDataSender />
-      <div className="Hello">
-        <img width="100" alt="icon" src={icon} />
-      </div> */}
-      <div className="tablist-area">
-        <TabList />
+      <div className="top-bar"></div>
+      <div className="menu-list-area">
+        <MenuList />
       </div>
       <div className="contents-area">
         <ContentsArea />

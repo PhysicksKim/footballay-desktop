@@ -33,6 +33,10 @@ if (
   execSync('npm run postinstall');
 }
 
+console.log(
+  'path debug : ' + path.join(webpackPaths.srcRendererPath, 'pages', 'app'),
+); // alias 경로 확인
+
 const configuration: webpack.Configuration = {
   devtool: 'inline-source-map',
   mode: 'development',
@@ -52,6 +56,22 @@ const configuration: webpack.Configuration = {
         'matchlive',
         'matchlive.tsx',
       ),
+    ],
+  },
+  resolve: {
+    alias: {
+      '@app': path.join(webpackPaths.srcRendererPath, 'app'),
+      '@matchlive': path.join(webpackPaths.srcRendererPath, 'matchlive'),
+    },
+    extensions: [
+      '.js',
+      '.ts',
+      '.jsx',
+      '.tsx',
+      '.json',
+      '.css',
+      '.scss',
+      '.sass',
     ],
   },
   output: {
