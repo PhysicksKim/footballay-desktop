@@ -1,0 +1,130 @@
+@import '@app/styles/Color.scss';
+
+.select-fixture-tab-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  box-sizing: border-box;
+
+  .league-box {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+
+    box-sizing: border-box;
+    padding: 10px;
+    margin-left: 10px;
+    padding-right: 20px;
+    // padding-right: 50px;
+
+    .league-box-title {
+      font-size: 24px;
+      font-weight: bold;
+
+      margin-top: 5px;
+      margin-left: 10px;
+    }
+
+    .league-card-box {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: start;
+      flex: 1;
+      margin-top: 15px;
+
+      .league-card-item {
+        background-color: $card-background;
+        box-sizing: border-box;
+        padding: 5px;
+        height: 100px;
+        width: 145px;
+        border-radius: 10px;
+        user-select: none;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .league-card-item-logo {
+          width: 100px;
+          height: 45px;
+          object-fit: contain;
+          margin-bottom: 10px;
+          margin-top: 5px;
+        }
+
+        .league-card-item-name {
+          text-wrap: nowrap;
+          font-size: 14px;
+        }
+      }
+
+      .league-card-item:hover {
+        background-color: rgba(255, 255, 255, 0.151);
+        transition-duration: 0.2s;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// embla carousel
+.league-box {
+  /* 기존 스타일 유지 */
+  position: relative; /* 버튼 위치를 위한 상대 위치 지정 */
+}
+
+.embla {
+  overflow: hidden;
+  width: 100%;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  min-width: 100%;
+  /* 필요한 경우 추가적인 스타일 적용 */
+}
+
+.league-card-box {
+  display: flex;
+}
+
+.league-card-item {
+  min-width: 145px; /* 카드의 너비를 조절하세요 */
+  margin-right: 10px; /* 슬라이드 간 간격을 조절하세요 */
+}
+
+.embla__button {
+  position: absolute;
+  top: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.embla__button--prev {
+  left: -10px;
+}
+
+.embla__button--next {
+  right: 30px;
+  margin: 0;
+}
+
+.embla__button:disabled {
+  opacity: 0.5;
+  visibility: hidden;
+  cursor: not-allowed;
+}

@@ -1,16 +1,21 @@
-import ContentsArea from './tabs/ContentsArea';
+import ContentsArea from './ContentsArea';
 import '@app/styles/Main.scss';
-import MenuList from './MenuList';
+import TopBar from './TopBar';
+import SideNavigation from './SideNavigation';
 
 const Main = () => {
   return (
     <div className="main-container">
-      <div className="top-bar"></div>
-      <div className="menu-list-area">
-        <MenuList />
+      <div className="top-bar-area">
+        <TopBar />
       </div>
-      <div className="contents-area">
-        <ContentsArea />
+      <div className="main-layout">
+        <div className="side-navigation-area">
+          <SideNavigation />
+        </div>
+        <div className="contents-area">
+          <ContentsArea />
+        </div>
       </div>
     </div>
   );

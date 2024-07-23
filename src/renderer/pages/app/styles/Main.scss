@@ -1,19 +1,55 @@
+@import '@app/styles/Color.scss';
+@import '@app/styles/Variables.scss';
+
 .main-container {
   height: 100vh;
   width: 100vw;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  // justify-content: flex-end;
-  align-items: center;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
 
-  .menu-list-area {
-    width: 140px;
-    background-color: #464545;
-    height: 100%;
+  .top-bar-area {
+    background-color: $theme-dark-blue;
+
+    width: 100%;
+    height: $top-bar-height;
+    min-height: $top-bar-height;
+
+    box-sizing: border-box;
+
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .main-layout {
+    background-color: $theme-dark-blue;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: start;
+
+    .side-navigation-area {
+      background-color: $theme-dark-blue;
+
+      width: 140px;
+      height: 100%;
+    }
+
+    .contents-area {
+      flex-grow: 1;
+      height: 100%;
+      background-color: $background-black;
+      border-top-left-radius: 14px;
+      padding: 10px;
+    }
   }
 }

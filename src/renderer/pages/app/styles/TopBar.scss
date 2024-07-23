@@ -1,0 +1,103 @@
+@import '@app/styles/Variables.scss';
+
+$window-control-btn-width: 40px;
+
+.topbar-dragable-area {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: $top-bar-height;
+
+  box-sizing: border-box;
+
+  .app-name-group {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: 12px;
+
+    .app-name {
+      font-size: 14px;
+      color: white;
+      margin: 0;
+    }
+  }
+
+  .window-control-group {
+    display: flex;
+    flex-direction: row;
+    padding-right: 0;
+    height: $top-bar-height;
+
+    .minimize-window {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: $window-control-btn-width;
+      height: 100%;
+
+      .minimize-icon {
+        margin-top: 4px;
+        width: 10px;
+        height: 1px;
+        background-color: white;
+        border-radius: 50%;
+      }
+    }
+
+    .maximize-window {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: $window-control-btn-width;
+      height: 100%;
+
+      .maximize-icon {
+        margin-top: 1px;
+        width: 10px;
+        height: 10px;
+        border: 1px solid white;
+        border-radius: 20%;
+      }
+    }
+
+    .close-window {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: $window-control-btn-width;
+      height: 100%;
+      font-size: 18px;
+      padding-right: 2px;
+    }
+  }
+}
+
+.minimize-window,
+.maximize-window,
+.close-window,
+.minimize-icon,
+.maximize-icon {
+  cursor: pointer;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+// hover effects
+.minimize-window:hover,
+.maximize-window:hover,
+.close-window:hover {
+  transition-duration: 0.2s;
+}
+
+.minimize-window:hover,
+.maximize-window:hover {
+  background-color: #91919149;
+}
+.close-window:hover {
+  background-color: #e43232;
+}

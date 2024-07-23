@@ -2,16 +2,18 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@import '@app/styles/Color.scss';
+
 body {
   position: relative;
   color: white;
   height: 100vh;
-  background: linear-gradient(
+  /* background: linear-gradient(
     200.96deg,
     #fedc2a -29.09%,
     #dd5789 51.77%,
     #7a2c9e 129.35%
-  );
+  ); */
   font-family: sans-serif;
   overflow-y: hidden;
   display: flex;
@@ -19,6 +21,8 @@ body {
   align-items: center;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  user-select: none;
 }
 
 button {
@@ -55,4 +59,12 @@ a {
 a:hover {
   opacity: 1;
   text-decoration: none;
+}
+
+.dragable {
+  -webkit-app-region: drag; /* 드래그 가능한 영역 설정 */
+}
+
+.non-dragable {
+  -webkit-app-region: no-drag; /* 드래그 불가능한 영역 설정 */
 }
