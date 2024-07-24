@@ -1,3 +1,7 @@
+@import '@app/styles/Color.scss';
+
+$menu-btn-hover: #ffffff4b;
+
 .side-navigation-container {
   width: 100%;
   min-width: 140px;
@@ -6,12 +10,15 @@
   padding: 0;
   margin: 0;
 
+  position: relative;
+
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: center;
 
   margin-top: 15px;
+  box-sizing: border-box;
 
   .fixture-selection {
     width: 100%;
@@ -26,6 +33,8 @@
     box-sizing: border-box;
     font-size: 20px;
 
+    color: white;
+
     cursor: pointer;
 
     .fixture-selection-text {
@@ -34,7 +43,7 @@
   }
   .fixture-selection:hover {
     transition-duration: 0.2s;
-    background-color: #ffffff4b;
+    background-color: $menu-btn-hover;
   }
 
   .division-bar {
@@ -63,7 +72,21 @@
 
     .selected-fixture-item:hover {
       transition-duration: 0.2s;
-      background-color: #ffffff4b;
+      background-color: $menu-btn-hover;
     }
+  }
+
+  .debug-tool-menu {
+    width: 100%;
+    position: absolute;
+    bottom: 15px;
+    text-align: center;
+    cursor: pointer;
+    padding: 10px;
+    color: white;
+  }
+  .debug-tool-menu:hover {
+    transition-duration: 0.2s;
+    background-color: $menu-btn-hover;
   }
 }

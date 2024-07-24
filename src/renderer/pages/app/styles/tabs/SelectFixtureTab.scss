@@ -15,9 +15,10 @@
 
     box-sizing: border-box;
     padding: 10px;
-    margin-left: 10px;
-    padding-right: 20px;
-    // padding-right: 50px;
+    margin-left: 20px;
+
+    // 여기서 좌우 padding 을 잡으면,
+    // embla carousel 로 인하여 width 100% 가 일그러짐
 
     .league-box-title {
       font-size: 24px;
@@ -74,7 +75,6 @@
 
 // embla carousel
 .league-box {
-  /* 기존 스타일 유지 */
   position: relative; /* 버튼 위치를 위한 상대 위치 지정 */
 }
 
@@ -90,8 +90,7 @@
 }
 
 .embla__slide {
-  min-width: 100%;
-  /* 필요한 경우 추가적인 스타일 적용 */
+  width: 100%;
 }
 
 .league-card-box {
@@ -99,8 +98,8 @@
 }
 
 .league-card-item {
-  min-width: 145px; /* 카드의 너비를 조절하세요 */
-  margin-right: 10px; /* 슬라이드 간 간격을 조절하세요 */
+  min-width: 145px; /* 카드의 너비 */
+  margin-right: 10px; /* 슬라이드 간 간격 */
 }
 
 .embla__button {

@@ -10,6 +10,7 @@
   flex-direction: column;
   justify-content: start;
   align-items: start;
+  box-sizing: border-box;
 
   .top-bar-area {
     background-color: $theme-dark-blue;
@@ -36,20 +37,27 @@
     flex-direction: row;
     justify-content: start;
     align-items: start;
+    box-sizing: border-box;
 
     .side-navigation-area {
       background-color: $theme-dark-blue;
 
       width: 140px;
       height: 100%;
+      box-sizing: border-box;
     }
 
     .contents-area {
+      display: flex;
+      flex-direction: column;
       flex-grow: 1;
       height: 100%;
       background-color: $background-black;
       border-top-left-radius: 14px;
-      padding: 10px;
+      // padding: 10px;
+
+      box-sizing: border-box;
+      overflow-x: visible;
     }
   }
 }

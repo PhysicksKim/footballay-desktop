@@ -1,0 +1,32 @@
+@import '@app/styles/Color.scss';
+
+.fixture-list-box-container {
+  width: 100%;
+  // border: 1px solid #ffffff;
+  box-sizing: border-box;
+  padding-left: 25px;
+  padding-right: 25px;
+
+  .fixture-list-box {
+    background-color: $card-background;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    box-sizing: border-box;
+    border-radius: 20px;
+
+    .fixture-list-item {
+      width: 100%;
+      height: 57px;
+      background-color: $fixture-bar;
+      border-radius: 10px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+}
