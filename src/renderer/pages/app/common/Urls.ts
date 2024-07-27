@@ -3,6 +3,10 @@ const Urls = {
   websocketUrl: process.env.WEBSOCKET_URL,
   football: {
     leagues: '/api/football/leagues/available',
+    fixtures: '/api/football/fixtures',
+    fixturesOnDate: '/api/football/fixtures/date',
+    fixtureInfo: '/api/football/fixtures/info',
+    availableFixtures: '/api/football/stream/fixtures/available',
   },
 };
 

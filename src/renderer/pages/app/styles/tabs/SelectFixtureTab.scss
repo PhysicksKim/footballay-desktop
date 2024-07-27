@@ -76,11 +76,13 @@
 // embla carousel
 .league-box {
   position: relative; /* 버튼 위치를 위한 상대 위치 지정 */
+  max-width: 670px;
 }
 
 .embla {
   overflow: hidden;
   width: 100%;
+  max-width: 640px;
   margin-right: 0;
   padding-right: 0;
 }
@@ -124,6 +126,6 @@
 
 .embla__button:disabled {
   opacity: 0.5;
-  visibility: hidden;
+  // visibility: hidden;
   cursor: not-allowed;
 }

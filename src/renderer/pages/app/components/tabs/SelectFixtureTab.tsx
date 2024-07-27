@@ -1,38 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
 import '@app/styles/tabs/SelectFixtureTab.scss';
 import FixtureSlideBox from './FixtureSlideBox';
+import LeagueCardSlide from './LeagueCardSlide';
 
 const SelectFixtureTab = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    watchDrag: false,
-  });
-
-  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
-  const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
-
-  const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
-  const scrollNext = () => emblaApi && emblaApi.scrollNext();
-
-  const onSelect = () => {
-    if (!emblaApi) return;
-    setPrevBtnEnabled(emblaApi.canScrollPrev());
-    setNextBtnEnabled(emblaApi.canScrollNext());
-  };
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-  }, [emblaApi]);
-
   return (
     <div className="select-fixture-tab-container">
-      <div className="league-box">
-        <div className="league-box-title">리그</div>
-        <div className="embla" ref={emblaRef}>
+      <LeagueCardSlide />
+      <FixtureSlideBox />
+    </div>
+  );
+};
+
+export default SelectFixtureTab;
+
+/*
+
           <div className="embla__container league-card-box">
             <div className="embla__slide league-card-item card_01">
               <img
@@ -54,7 +37,7 @@ const SelectFixtureTab = () => {
                 UEFA 챔피언스리그
               </div>
             </div>
-            {true && (
+            {false && (
               <>
                 <div className="embla__slide league-card-item card_01">
                   <img
@@ -78,27 +61,4 @@ const SelectFixtureTab = () => {
                 </div>
               </>
             )}
-            {/* 추가 슬라이드 */}
-          </div>
-        </div>
-        <button
-          className="embla__button embla__button--prev"
-          onClick={scrollPrev}
-          disabled={!prevBtnEnabled}
-        >
-          {'<'}
-        </button>
-        <button
-          className="embla__button embla__button--next"
-          onClick={scrollNext}
-          disabled={!nextBtnEnabled}
-        >
-          {'>'}
-        </button>
-      </div>
-      <FixtureSlideBox />
-    </div>
-  );
-};
-
-export default SelectFixtureTab;
+*/

@@ -1,30 +1,21 @@
 import Urls from '@app/common/Urls';
 import axios from 'axios';
 import React from 'react';
-
 import '@app/styles/tabs/DebugTab.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@app/store/store';
+import fetchLeagueList from '@app/store/slices/leagueSliceThunk';
 
 type RequestStatus = 'idle' | 'loading' | 'success' | 'error';
 
 const DebugTab = () => {
-  const [leagueData, setLeagueData] = React.useState<any>(null);
-  const [leagueDataLoading, setLeagueDataLoading] =
-    React.useState<RequestStatus>('idle');
+  const dispatch = useDispatch<AppDispatch>();
+  const leagueData = useSelector((state: RootState) => state.league.leagues);
 
   const apiUrl = Urls.apiUrl;
 
   const getLeagues = () => {
-    setLeagueDataLoading('loading');
-    axios
-      .get(apiUrl + Urls.football.leagues)
-      .then((response) => {
-        setLeagueData(response.data);
-        setLeagueDataLoading('success');
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        setLeagueDataLoading('error');
-      });
+    dispatch(fetchLeagueList());
   };
 
   return (
@@ -36,7 +27,6 @@ const DebugTab = () => {
       </div>
       <div className="league-get-btn">
         <button onClick={getLeagues}>리그 정보 가져오기</button>
-        <div className="league-get-status">{'' + leagueDataLoading}</div>
         <div className="league-data">{JSON.stringify(leagueData, null, 2)}</div>
       </div>
     </div>

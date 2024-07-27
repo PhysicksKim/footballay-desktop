@@ -9,7 +9,7 @@ const fetchFixtureInfo = createAsyncThunk(
   async (fixtureId: number, { rejectWithValue }) => {
     try {
       const response = await axios.get<ApiResponse<Fixture>>(
-        Urls.apiUrl + '/api/football/fixtures',
+        Urls.apiUrl + Urls.football.fixtureInfo,
         {
           params: { fixtureId },
         },
