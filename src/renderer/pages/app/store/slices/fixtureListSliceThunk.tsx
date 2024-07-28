@@ -7,6 +7,9 @@ import Urls from '../../common/Urls';
 export interface FetchFixtureListParams {
   leagueId: number;
   date: string;
+  options?: {
+    closest?: boolean;
+  };
 }
 
 export interface FixtureListItemResponse {
@@ -36,25 +39,31 @@ export interface FixtureListItemResponse {
 }
 
 const fetchFixtureList = createAsyncThunk<
-  ApiResponse<FixtureListItemResponse>, // 성공 시 반환 타입
-  FetchFixtureListParams // 입력 파라미터 타입
+  ApiResponse<FixtureListItemResponse>,
+  FetchFixtureListParams
 >(
   'fixtureList/fetchFixtureList',
-  async ({ leagueId, date }, { rejectWithValue }) => {
+  async ({ leagueId, date, options }, { rejectWithValue }) => {
     try {
       let response: AxiosResponse<ApiResponse<FixtureListItemResponse>>;
-      if (date === '' || date === null || date === undefined) {
-        response = await axios.get<ApiResponse<FixtureListItemResponse>>(
-          Urls.apiUrl + Urls.football.fixturesOnDate,
-          {
-            params: { leagueId, date },
-          },
-        );
-      } else {
+      if (
+        date === '' ||
+        date === '_' ||
+        date === null ||
+        date === undefined ||
+        !options?.closest
+      ) {
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
           Urls.apiUrl + Urls.football.fixtures,
           {
             params: { leagueId },
+          },
+        );
+      } else {
+        response = await axios.get<ApiResponse<FixtureListItemResponse>>(
+          Urls.apiUrl + Urls.football.fixturesOnDate,
+          {
+            params: { leagueId, date },
           },
         );
       }

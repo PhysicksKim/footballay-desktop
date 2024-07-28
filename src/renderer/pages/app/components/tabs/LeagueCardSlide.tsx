@@ -4,6 +4,10 @@ import '@app/styles/tabs/SelectFixtureTab.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@app/store/store';
 import fetchLeagueList from '@app/store/slices/leagueSliceThunk';
+import fetchFixtureList, {
+  FetchFixtureListParams,
+} from '@app/store/slices/fixtureListSliceThunk';
+import { setLeagueId } from '@app/store/slices/footballSelectionSlice';
 
 const LeagueCardSlide = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -13,12 +17,18 @@ const LeagueCardSlide = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const leagues = useSelector((state: RootState) => state.league.leagues);
+  const selectedLeagueId = useSelector(
+    (state: RootState) => state.selected.leagueId,
+  );
+  const fixtureList = useSelector(
+    (state: RootState) => state.fixtureList.fixtures,
+  );
 
   useEffect(() => {
     if (leagues.length === 0) {
       dispatch(fetchLeagueList());
     }
-  }, [dispatch, leagues.length]);
+  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -39,6 +49,13 @@ const LeagueCardSlide = () => {
     setNextBtnEnabled(emblaApi.canScrollNext());
   };
 
+  const handleLeagueClick = ({ leagueId, date }: FetchFixtureListParams) => {
+    console.log('leagueId:', leagueId);
+    console.log('date:', date);
+    dispatch(fetchFixtureList({ leagueId, date }));
+    dispatch(setLeagueId(leagueId));
+  };
+
   return (
     <div className="league-box">
       <div className="league-box-title">리그</div>
@@ -48,6 +65,10 @@ const LeagueCardSlide = () => {
             <div
               key={league.leagueId}
               className="embla__slide league-card-item"
+              league-id={league.leagueId}
+              onClick={() =>
+                handleLeagueClick({ leagueId: league.leagueId, date: '' })
+              }
             >
               <img
                 draggable="false"

@@ -1,92 +1,94 @@
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '@app/styles/tabs/FixtureListItem.scss';
 import React from 'react';
 
 export interface FixtureListItemProps {
+  leagueId: number | null;
   matchSchedule: {
-    kickoffTime: string;
-    matchRound: string;
+    kickoff: string;
+    round: string;
   };
   teamALogo: {
-    homeTeamMark: string;
-    teamLogoUrl: string;
-    teamName: string;
+    name: string;
+    logo: string;
+    koreanName: string | null;
   };
   teamBLogo: {
-    homeTeamMark: string;
-    teamLogoUrl: string;
-    teamName: string;
+    name: string;
+    logo: string;
+    koreanName: string | null;
   };
-  matchStatus: {
-    matchStatusTitle: string;
-    matchStatusNow: string;
+  status: {
+    longStatus: string;
+    shortStatus: string;
+    elapsed: number | null;
+    score: {
+      home: number;
+      away: number;
+    };
   };
   index: number;
 }
 
-const FixtureListItem = () => {
-  const fixtureInfos = {
-    matchSchedule: {
-      kickoffTime: '01:00',
-      matchRound: '12 라운드',
-    },
-    teamALogo: {
-      homeTeamMark: 'H',
-      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
-      teamName: '맨시티',
-    },
-    teamBLogo: {
-      homeTeamMark: 'A',
-      teamLogoUrl: 'https://media.api-sports.io/football/teams/50.png',
-      teamName: '맨유',
-    },
-    matchStatus: {
-      matchStatusTitle: '경기상태',
-      matchStatusNow: '종료',
-    },
-    index: 1,
+const FixtureListItem = ({
+  leagueId,
+  matchSchedule,
+  teamALogo,
+  teamBLogo,
+  status,
+  index,
+}: FixtureListItemProps) => {
+  const convertKickoffTimeToHHMM = (kickoff: string) => {
+    return kickoff.split(' ')[1];
+  };
+  const convertRoundText = (round: string) => {
+    if (leagueId === 39) {
+      const roundNumber = round.split(' ')[3];
+      return `${roundNumber} 라운드`;
+    }
+
+    return round;
   };
 
   return (
-    <div
-      className={`fixture-list-item fixture-list-item_${fixtureInfos.index}`}
-    >
+    <div className={`fixture-list-item fixture-list-item_${index}`}>
       <div className="match-schedule-box">
         <div className="kickoff-time">
-          {fixtureInfos.matchSchedule.kickoffTime}
+          {convertKickoffTimeToHHMM(matchSchedule.kickoff)}
         </div>
         <div className="match-round">
-          {fixtureInfos.matchSchedule.matchRound}
+          {convertRoundText(matchSchedule.round)}
         </div>
       </div>
-      <div className="team-a-logo-box">
-        <div className="home-team-mark">
-          {fixtureInfos.teamALogo.homeTeamMark}
-        </div>
-        <div className="team-a-logo">
-          <img src={fixtureInfos.teamALogo.teamLogoUrl} />
+      <div className="team-logo-box team-a-logo-box">
+        <div className="team-mark home-team-mark">H</div>
+        <div className="team-logo team-a-logo">
+          <img src={teamALogo.logo} alt={teamALogo.name} />
         </div>
       </div>
       <div className="team-versus-box">
-        <div className="team-a-name">{fixtureInfos.teamALogo.teamName}</div>
-        <div className="match-score">0:0</div>
-        <div className="team-b-name">{fixtureInfos.teamBLogo.teamName}</div>
+        <div className="team-a-name">
+          {teamALogo.koreanName || teamALogo.name}
+        </div>
+        <div className="match-score">
+          <div className="home-score">{status.score.home}</div>
+          <div className="score-division">:</div>
+          <div className="away-score">{status.score.away}</div>
+        </div>
+        <div className="team-b-name">
+          {teamBLogo.koreanName || teamBLogo.name}
+        </div>
       </div>
-      <div className="team-b-logo-box">
-        <div className="team-a-logo">
-          <img src={fixtureInfos.teamBLogo.teamLogoUrl} />
+      <div className="team-logo-box team-b-logo-box">
+        <div className="team-logo team-b-logo">
+          <img src={teamBLogo.logo} alt={teamBLogo.name} />
         </div>
-        <div className="home-team-mark">
-          {fixtureInfos.teamBLogo.homeTeamMark}
-        </div>
+        <div className="team-mark away-team-mark">A</div>
       </div>
       <div className="match-status-box">
-        <div className="match-status-title">
-          {fixtureInfos.matchStatus.matchStatusTitle}
-        </div>
-        <div className="match-status-now">
-          {fixtureInfos.matchStatus.matchStatusNow}
-        </div>
+        <div className="match-status-title">경기상태</div>
+        <div className="match-status-now">{status.shortStatus}</div>
       </div>
       <div className="live-match-btn-box">
         <div className="popup-icon-box">
