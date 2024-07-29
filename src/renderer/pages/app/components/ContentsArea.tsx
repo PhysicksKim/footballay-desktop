@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter, Route, Router, Routes } from 'react-router-dom';
 import SelectFixtureTab from './tabs/SelectFixtureTab';
 import DebugTab from './tabs/DebugTab';
+import '@app/styles/ContentsArea.scss';
 
 const ContentsArea = () => {
   return (

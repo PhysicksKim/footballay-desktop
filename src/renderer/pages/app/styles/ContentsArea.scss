@@ -1,0 +1,5 @@
+@import '@app/styles/Variables.scss';
+
+.content-area-container {
+  height: calc(100vh - #{$top-bar-height});
+}

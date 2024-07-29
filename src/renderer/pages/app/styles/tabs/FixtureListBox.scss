@@ -1,8 +1,11 @@
 @import '@app/styles/Color.scss';
+@import '@app/styles/Variables.scss';
 
 .fixture-list-box-container {
   width: 100%;
-  // border: 1px solid #ffffff;
+  height: calc(
+    100% - $fixture-year-month-height - $fixture-date-slide-bar-height - 50px
+  );
   box-sizing: border-box;
   padding-left: 25px;
   padding-right: 25px;
@@ -16,7 +19,8 @@
     padding-bottom: 17px;
     box-sizing: border-box;
     border-radius: 20px;
-    overflow-y: hidden;
+    overflow-y: scroll;
     overflow-x: hidden;
+    height: 100%;
   }
 }

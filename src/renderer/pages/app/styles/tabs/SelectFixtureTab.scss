@@ -5,13 +5,13 @@
   flex-direction: column;
   align-items: start;
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
 
   .league-box {
     display: flex;
     flex-direction: column;
     align-items: start;
-    width: 100%;
 
     box-sizing: border-box;
     padding: 10px;
@@ -120,7 +120,8 @@
 }
 
 .embla__button--next {
-  right: 30px;
+  // right: 40px;
+  right: 0px;
   margin: 0;
 }
 

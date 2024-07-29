@@ -2,14 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 import { ApiResponse } from '../../types/api';
 import Urls from '../../common/Urls';
+import dateToYearMonthDay, {
+  isoStringToYearMonthDay,
+} from '@app/common/DateUtils';
 
 // 요청에 필요한 파라미터 타입 정의
 export interface FetchFixtureListParams {
   leagueId: number;
   date: string;
-  options?: {
-    closest?: boolean;
-  };
 }
 
 export interface FixtureListItemResponse {
@@ -43,16 +43,12 @@ const fetchFixtureList = createAsyncThunk<
   FetchFixtureListParams
 >(
   'fixtureList/fetchFixtureList',
-  async ({ leagueId, date, options }, { rejectWithValue }) => {
+  async ({ leagueId, date }, { rejectWithValue }) => {
     try {
       let response: AxiosResponse<ApiResponse<FixtureListItemResponse>>;
-      if (
-        date === '' ||
-        date === '_' ||
-        date === null ||
-        date === undefined ||
-        !options?.closest
-      ) {
+      if (date === '' || date === '_' || date === null || date === undefined) {
+        console.log('fetchFixtureList without date');
+        console.log('date : ', date);
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
           Urls.apiUrl + Urls.football.fixtures,
           {
@@ -60,10 +56,13 @@ const fetchFixtureList = createAsyncThunk<
           },
         );
       } else {
+        console.log('fetchFixtureList with date');
+        const dateYMDstring = isoStringToYearMonthDay(date);
+        console.log('dateYMDstring : ', dateYMDstring);
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
           Urls.apiUrl + Urls.football.fixturesOnDate,
           {
-            params: { leagueId, date },
+            params: { leagueId, date: dateYMDstring },
           },
         );
       }

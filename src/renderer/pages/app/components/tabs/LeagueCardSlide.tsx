@@ -49,10 +49,8 @@ const LeagueCardSlide = () => {
     setNextBtnEnabled(emblaApi.canScrollNext());
   };
 
-  const handleLeagueClick = ({ leagueId, date }: FetchFixtureListParams) => {
-    console.log('leagueId:', leagueId);
-    console.log('date:', date);
-    dispatch(fetchFixtureList({ leagueId, date }));
+  const handleLeagueClick = (leagueId: number) => {
+    dispatch(fetchFixtureList({ leagueId, date: '' }));
     dispatch(setLeagueId(leagueId));
   };
 
@@ -66,9 +64,7 @@ const LeagueCardSlide = () => {
               key={league.leagueId}
               className="embla__slide league-card-item"
               league-id={league.leagueId}
-              onClick={() =>
-                handleLeagueClick({ leagueId: league.leagueId, date: '' })
-              }
+              onClick={() => handleLeagueClick(league.leagueId)}
             >
               <img
                 draggable="false"
