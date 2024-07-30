@@ -36,6 +36,7 @@ export interface FixtureListItemResponse {
       away: number;
     };
   };
+  available: boolean;
 }
 
 const fetchFixtureList = createAsyncThunk<

@@ -7,20 +7,35 @@
     100% - $fixture-year-month-height - $fixture-date-slide-bar-height - 50px
   );
   box-sizing: border-box;
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 30px;
+  padding-right: 20px;
   max-width: 670px;
 
   .fixture-list-box {
     background-color: $card-background;
     padding-left: 20px;
-    padding-right: 20px;
+    padding-right: 15px;
     padding-top: 17px;
     padding-bottom: 17px;
     box-sizing: border-box;
-    border-radius: 20px;
+    border-radius: 10px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
+
+    // Scroll bar style
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $scroll-bar-thumb;
+      border-radius: 5px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: $scroll-bar-track;
+      border-radius: 5px;
+    }
   }
 }

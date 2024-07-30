@@ -19,6 +19,7 @@ const FixtureListBox = () => {
         {...fixture}
         leagueId={selectedLeagueId}
         index={index}
+        available={fixture.available}
       />
     ));
   }, [fixtures]);

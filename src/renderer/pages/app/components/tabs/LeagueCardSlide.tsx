@@ -7,7 +7,7 @@ import fetchLeagueList from '@app/store/slices/leagueSliceThunk';
 import fetchFixtureList, {
   FetchFixtureListParams,
 } from '@app/store/slices/fixtureListSliceThunk';
-import { setLeagueId } from '@app/store/slices/footballSelectionSlice';
+import { setDate, setLeagueId } from '@app/store/slices/footballSelectionSlice';
 
 const LeagueCardSlide = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -50,6 +50,7 @@ const LeagueCardSlide = () => {
   };
 
   const handleLeagueClick = (leagueId: number) => {
+    dispatch(setDate(new Date().toISOString()));
     dispatch(fetchFixtureList({ leagueId, date: '' }));
     dispatch(setLeagueId(leagueId));
   };
@@ -62,7 +63,9 @@ const LeagueCardSlide = () => {
           {leagues.map((league) => (
             <div
               key={league.leagueId}
-              className="embla__slide league-card-item"
+              className={`embla__slide league-card-item ${
+                selectedLeagueId === league.leagueId ? 'selected' : ''
+              }`}
               league-id={league.leagueId}
               onClick={() => handleLeagueClick(league.leagueId)}
             >

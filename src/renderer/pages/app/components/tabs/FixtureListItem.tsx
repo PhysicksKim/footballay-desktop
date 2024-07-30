@@ -1,4 +1,7 @@
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpRightFromSquare,
+  faBan,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@app/styles/tabs/FixtureListItem.scss';
 import React from 'react';
@@ -29,6 +32,7 @@ export interface FixtureListItemProps {
     };
   };
   index: number;
+  available: boolean;
 }
 
 const FixtureListItem = ({
@@ -38,6 +42,7 @@ const FixtureListItem = ({
   teamBLogo,
   status,
   index,
+  available,
 }: FixtureListItemProps) => {
   const convertKickoffTimeToHHMM = (kickoff: string) => {
     return kickoff.split(' ')[1];
@@ -61,38 +66,51 @@ const FixtureListItem = ({
           {convertRoundText(matchSchedule.round)}
         </div>
       </div>
-      <div className="team-logo-box team-a-logo-box">
-        <div className="team-mark home-team-mark">H</div>
-        <div className="team-logo team-a-logo">
-          <img src={teamALogo.logo} alt={teamALogo.name} />
+      <div className="match-versus-box">
+        <div className="team-logo-box team-a-logo-box">
+          <div className="team-mark home-team-mark">
+            <div className="team-mark-text home-team-mark-text">H</div>
+          </div>
+          <div className="team-logo team-a-logo">
+            <img src={teamALogo.logo} alt={teamALogo.name} />
+          </div>
         </div>
-      </div>
-      <div className="team-versus-box">
-        <div className="team-a-name">
-          {teamALogo.koreanName || teamALogo.name}
+        <div className="team-versus-box">
+          <div className="team-a-name">
+            {teamALogo.koreanName || teamALogo.name}
+          </div>
+          <div className="match-score">
+            <div className="home-score">{status.score.home}</div>
+            <div className="score-division">:</div>
+            <div className="away-score">{status.score.away}</div>
+          </div>
+          <div className="team-b-name">
+            {teamBLogo.koreanName || teamBLogo.name}
+          </div>
         </div>
-        <div className="match-score">
-          <div className="home-score">{status.score.home}</div>
-          <div className="score-division">:</div>
-          <div className="away-score">{status.score.away}</div>
+        <div className="team-logo-box team-b-logo-box">
+          <div className="team-logo team-b-logo">
+            <img src={teamBLogo.logo} alt={teamBLogo.name} />
+          </div>
+          <div className="team-mark away-team-mark">
+            <div className="team-mark-text away-team-mark-text">A</div>
+          </div>
         </div>
-        <div className="team-b-name">
-          {teamBLogo.koreanName || teamBLogo.name}
-        </div>
-      </div>
-      <div className="team-logo-box team-b-logo-box">
-        <div className="team-logo team-b-logo">
-          <img src={teamBLogo.logo} alt={teamBLogo.name} />
-        </div>
-        <div className="team-mark away-team-mark">A</div>
       </div>
       <div className="match-status-box">
         <div className="match-status-title">경기상태</div>
         <div className="match-status-now">{status.shortStatus}</div>
       </div>
-      <div className="live-match-btn-box">
-        <div className="popup-icon-box">
-          <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+      <div
+        className={`live-match-btn-box ${available ? 'enabled' : 'disabled'}`}
+      >
+        <div className={`popup-icon-box ${available ? 'enabled' : 'disabled'}`}>
+          {/* {isAvailbel} */}
+          {available ? (
+            <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+          ) : (
+            <FontAwesomeIcon icon={faBan} />
+          )}
         </div>
       </div>
     </div>
