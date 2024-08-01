@@ -8,6 +8,7 @@ import React from 'react';
 
 export interface FixtureListItemProps {
   leagueId: number | null;
+  fixtureId: number;
   matchSchedule: {
     kickoff: string;
     round: string;
@@ -37,6 +38,7 @@ export interface FixtureListItemProps {
 
 const FixtureListItem = ({
   leagueId,
+  fixtureId,
   matchSchedule,
   teamALogo,
   teamBLogo,
@@ -52,8 +54,14 @@ const FixtureListItem = ({
       const roundNumber = round.split(' ')[3];
       return `${roundNumber} 라운드`;
     }
-
     return round;
+  };
+
+  const openmatchlive = () => {
+    window.electron.ipcRenderer.sendMessage('open-matchlive-window');
+  };
+  const openFixtureWindow = () => {
+    openmatchlive();
   };
 
   return (
@@ -103,6 +111,7 @@ const FixtureListItem = ({
       </div>
       <div
         className={`live-match-btn-box ${available ? 'enabled' : 'disabled'}`}
+        onClick={openFixtureWindow}
       >
         <div className={`popup-icon-box ${available ? 'enabled' : 'disabled'}`}>
           {/* {isAvailbel} */}

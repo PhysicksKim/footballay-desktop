@@ -13,6 +13,7 @@ export interface FetchFixtureListParams {
 }
 
 export interface FixtureListItemResponse {
+  fixtureId: number;
   matchSchedule: {
     kickoff: string;
     round: string;

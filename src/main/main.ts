@@ -11,6 +11,7 @@ let mainWindow: BrowserWindow | null = null;
 let matchliveWindow: BrowserWindow | null = null;
 
 const createMatchliveWindow = async () => {
+  // to ensure only one window is created
   if (matchliveWindow !== null) {
     if (matchliveWindow.isDestroyed()) {
       matchliveWindow = null;

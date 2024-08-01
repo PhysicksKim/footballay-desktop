@@ -49,6 +49,15 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
+        transition-duration: 0.13s;
+
+        &.selected {
+          background-color: $card-background-selected;
+        }
+        &:hover {
+          background-color: $card-background-hover;
+        }
 
         .league-card-item-logo {
           width: 100px;
@@ -62,12 +71,6 @@
           text-wrap: nowrap;
           font-size: 14px;
         }
-      }
-
-      .league-card-item:hover {
-        background-color: rgba(255, 255, 255, 0.151);
-        transition-duration: 0.2s;
-        cursor: pointer;
       }
     }
   }
@@ -104,6 +107,10 @@
   margin-right: 10px; /* 슬라이드 간 간격 */
 }
 
+.league-card-item.selected {
+  background-color: rgba(156, 25, 25, 0.151);
+}
+
 .embla__button {
   position: absolute;
   top: 50%;
@@ -126,7 +133,7 @@
 }
 
 .embla__button:disabled {
-  opacity: 0.5;
+  opacity: 0.12;
   // visibility: hidden;
   cursor: not-allowed;
 }
