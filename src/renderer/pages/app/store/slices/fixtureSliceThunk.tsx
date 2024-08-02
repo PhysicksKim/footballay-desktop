@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Fixture } from '../../../../../types/FixtureIpc';
+import { FixtureInfo } from '../../../../../types/FixtureIpc';
 import axios from 'axios';
 import { ApiResponse } from '../../types/api';
 import Urls from '../../common/Urls';
@@ -8,7 +8,7 @@ const fetchFixtureInfo = createAsyncThunk(
   'fixture/fetchFixtureInfo',
   async (fixtureId: number, { rejectWithValue }) => {
     try {
-      const response = await axios.get<ApiResponse<Fixture>>(
+      const response = await axios.get<ApiResponse<FixtureInfo>>(
         Urls.apiUrl + Urls.football.fixtureInfo,
         {
           params: { fixtureId },

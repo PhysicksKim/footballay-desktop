@@ -8,19 +8,6 @@ import DragBar from './drag/DragBar';
 
 const Main = () => {
   const [count, setCount] = useState(0);
-  const fixtureId = useSelector((state: RootState) => state.fixture.fixtureId);
-
-  const receiveFromMain = () => {
-    console.log('Receive from Main fuction executed');
-    const { ipcRenderer } = window.electron;
-    ipcRenderer.on('main-to-sub', (msg: any) => {
-      console.log('Received from Main:', msg);
-    });
-  };
-
-  useEffect(() => {
-    receiveFromMain();
-  }, []);
 
   return (
     <div className="root-container">

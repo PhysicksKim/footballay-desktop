@@ -15,8 +15,8 @@ export type Channels =
   | 'stomp-message'
   | 'ws-status'
   // Main - Sub Channels
-  | 'main-to-sub'
-  | 'sub-to-main';
+  | 'to-matchlive'
+  | 'to-app';
 
 const electronHandler = {
   ipcRenderer: {

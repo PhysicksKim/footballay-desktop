@@ -34,6 +34,12 @@ $away-team-color: #d89066;
       margin-top: 2px;
       font-size: 12px;
       font-weight: 400;
+      max-width: 60px;
+      max-height: 30px;
+      text-align: center;
+      overflow: hidden;
+      text-wrap: wrap;
+      margin-bottom: 2px;
     }
   }
 
@@ -106,11 +112,14 @@ $away-team-color: #d89066;
       justify-content: center;
       font-size: 14px;
       margin-top: 3px;
+      overflow-x: visible;
+      max-width: 210px;
 
       .team-a-name {
         width: 85px;
         text-align: center;
-        overflow: hidden;
+        overflow-y: hidden;
+        overflow-x: visible;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -132,7 +141,8 @@ $away-team-color: #d89066;
       .team-b-name {
         width: 85px;
         text-align: center;
-        overflow: hidden;
+        overflow-y: hidden;
+        overflow-x: visible;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -150,6 +160,8 @@ $away-team-color: #d89066;
     justify-content: center;
     align-items: center;
     margin-top: 5px;
+    text-wrap: nowrap;
+    overflow: visible;
 
     .match-status-title {
       margin-top: 2px;

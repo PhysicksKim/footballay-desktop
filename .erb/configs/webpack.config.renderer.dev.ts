@@ -10,6 +10,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
+import resolveAlias from './webpack.config.alias';
 
 if (process.env.NODE_ENV === 'production') {
   checkNodeEnv('development');
@@ -58,22 +59,7 @@ const configuration: webpack.Configuration = {
       ),
     ],
   },
-  resolve: {
-    alias: {
-      '@app': path.join(webpackPaths.srcRendererPath, 'app'),
-      '@matchlive': path.join(webpackPaths.srcRendererPath, 'matchlive'),
-    },
-    extensions: [
-      '.js',
-      '.ts',
-      '.jsx',
-      '.tsx',
-      '.json',
-      '.css',
-      '.scss',
-      '.sass',
-    ],
-  },
+  resolve: resolveAlias,
   output: {
     path: webpackPaths.distRendererPath,
     publicPath: '/',

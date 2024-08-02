@@ -1,40 +1,63 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  FixtureEvent,
-  League,
-  Lineup,
-  LiveStatus,
-  Team,
-} from '../../../../../types/FixtureIpc';
+import { League, Team } from '../../../../../types/FixtureIpc';
 import fetchFixtureInfo from './fixtureSliceThunk';
 
-export interface FixtureState {
+export type EventType = 'GOAL' | 'CARD' | 'SUBST' | 'VAR' | string;
+
+export interface EventTeam {
+  teamId: number;
+  name: string;
+  koreanName: string;
+}
+
+export interface EventPlayer {
+  playerId: number;
+  name: string;
+  koreanName: string;
+  number: number;
+}
+
+export interface FixtureEvent {
+  sequence: number;
+  elapsed: number;
+  extraTime: number;
+  team: EventTeam;
+  player: EventPlayer;
+  assist: EventPlayer | null;
+  type: EventType;
+  detail: string;
+  comments: string | null;
+}
+
+export interface FixtureLiveStatus {
+  elapsed: number;
+  shortStatus: string;
+  longStatus: string;
+}
+
+export interface FixtureInfo {
   fixtureId: number;
-  referee: null | string;
-  date: null | string;
-  league: null | League;
-  liveStatus: null | LiveStatus;
-  home: null | Team;
-  away: null | Team;
-  events: null | FixtureEvent[];
-  lineup: {
-    home: null | Lineup;
-    away: null | Lineup;
-  } | null;
-  lastFetchTime: string;
+  referee: string;
+  date: string;
+  league: League;
+  home: Team;
+  away: Team;
+}
+
+export interface FixtureState {
+  info: FixtureInfo | null;
+  liveStatus: FixtureLiveStatus | null;
+  lineup: FixtureLineup | null;
+  events: FixtureEvent[] | null;
+  intervalFetch: boolean;
 }
 
 export const initialState: FixtureState = {
-  fixtureId: 1232551,
-  referee: null,
-  date: null,
-  league: null,
+  info: null,
   liveStatus: null,
-  home: null,
-  away: null,
-  events: null,
   lineup: null,
-  lastFetchTime: new Date().toISOString(),
+  events: null,
+  intervalFetch: false,
 };
 
 const fixtureSlice = createSlice({

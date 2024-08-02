@@ -9,6 +9,14 @@ import { AppUpdater } from './AppUpdater';
 
 let mainWindow: BrowserWindow | null = null;
 let matchliveWindow: BrowserWindow | null = null;
+let isMatchliveIpcListenersRegistered = false;
+let isMatchliveReadyToShowListenersRegistered = false;
+
+const alertRequestFixtureInfo = async () => {
+  matchliveWindow!.webContents.send('to-matchlive', {
+    type: 'REQUEST_FIXTURE_INFO',
+  });
+};
 
 const createMatchliveWindow = async () => {
   // to ensure only one window is created
@@ -16,6 +24,11 @@ const createMatchliveWindow = async () => {
     if (matchliveWindow.isDestroyed()) {
       matchliveWindow = null;
     } else {
+      /*
+        app 측에서 open matchlive 버튼을 눌렀으니까
+        matchlive 에다가 새롭게 fixtureInfo 가져오라고 명령 보내기
+      */
+      alertRequestFixtureInfo();
       matchliveWindow.focus();
       return;
     }
@@ -40,25 +53,37 @@ const createMatchliveWindow = async () => {
 
   matchliveWindow.on('ready-to-show', () => {
     console.log('matchlive window ready-to-show');
-    // IPC 핸들러 설정
-    matchliveWindow!.webContents.on('did-finish-load', () => {
-      console.log('matclive window did-finish-load');
-      ipcMain.on('main-to-sub', (event, data) => {
-        console.log('main-to-sub data', data);
-        matchliveWindow!.webContents.send('main-to-sub', data);
+
+    if (!isMatchliveReadyToShowListenersRegistered) {
+      matchliveWindow!.webContents.on('did-finish-load', () => {
+        console.log(
+          'isMatchliveIpcListenersRegistered: ',
+          isMatchliveIpcListenersRegistered,
+        );
+        if (!isMatchliveIpcListenersRegistered) {
+          console.log('matclive window did-finish-load');
+          ipcMain.on('to-matchlive', (event, data) => {
+            matchliveWindow!.webContents.send('to-matchlive', data);
+          });
+          ipcMain.on('to-app', (event, data) => {
+            mainWindow!.webContents.send('to-app', data);
+          });
+
+          isMatchliveIpcListenersRegistered = true;
+        }
+        alertRequestFixtureInfo();
       });
 
-      ipcMain.on('sub-to-main', (event, data) => {
-        console.log('sub-to-main data', data);
-        mainWindow!.webContents.send('sub-to-main', data);
-      });
-    });
+      isMatchliveReadyToShowListenersRegistered = true;
+    }
   });
 
   matchliveWindow.on('closed', () => {
     matchliveWindow = null;
-    ipcMain.removeAllListeners('main-to-sub');
-    ipcMain.removeAllListeners('sub-to-main');
+    ipcMain.removeAllListeners('to-matchlive');
+    ipcMain.removeAllListeners('to-app');
+    isMatchliveIpcListenersRegistered = false;
+    isMatchliveReadyToShowListenersRegistered = false;
   });
 
   return matchliveWindow;
