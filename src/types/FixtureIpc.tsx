@@ -54,9 +54,12 @@ export interface FixtureEventResponse {
 }
 
 export interface FixtureLiveStatus {
-  elapsed: number;
-  shortStatus: string;
-  longStatus: string;
+  fixtureId: number;
+  liveStatus: {
+    elapsed: number;
+    shortStatus: string;
+    longStatus: string;
+  };
 }
 
 export interface FixtureInfo {

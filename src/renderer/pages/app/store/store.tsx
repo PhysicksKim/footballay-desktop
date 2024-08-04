@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import fixtureReducer from './slices/fixtureLiveSlice';
 import fixtureListReducer from './slices/fixtureListSlice';
 import leagueReducer from './slices/leagueSlice';
 import footballSelectionReducer from './slices/footballSelectionSlice';
@@ -8,7 +7,6 @@ import fixtureLiveReducer from './slices/fixtureLiveSlice';
 
 const store = configureStore({
   reducer: {
-    fixture: fixtureReducer,
     fixtureList: fixtureListReducer,
     fixtureLive: fixtureLiveReducer,
     league: leagueReducer,

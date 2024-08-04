@@ -20,7 +20,7 @@ export interface FixtureState {
   liveStatus: FixtureLiveStatus | null;
   lineup: FixtureLineup | null;
   events: FixtureEventResponse | null;
-  intervalFetch: boolean;
+  intervalIds: NodeJS.Timeout[]; // interval IDs 배열 추가
 }
 
 export const initialState: FixtureState = {
@@ -29,15 +29,33 @@ export const initialState: FixtureState = {
   liveStatus: null,
   lineup: null,
   events: null,
-  intervalFetch: false,
+  intervalIds: [], // 초기값 설정
 };
 
 const fixtureLiveSlice = createSlice({
   name: 'fixtureLive',
   initialState,
   reducers: {
-    setFixtureId(state, action: PayloadAction<number>) {
+    setFixtureIdAndClearInterval(state, action: PayloadAction<number>) {
+      console.log('setFixtureIdAndClearInterval');
       state.fixtureId = action.payload;
+      state.intervalIds.forEach((id) => {
+        clearInterval(id);
+        console.log('clearInterval', id);
+      });
+      state.intervalIds = [];
+    },
+    addIntervalId(state, action: PayloadAction<NodeJS.Timeout>) {
+      state.intervalIds.push(action.payload);
+    },
+    removeIntervalId(state, action: PayloadAction<NodeJS.Timeout>) {
+      state.intervalIds = state.intervalIds.filter(
+        (id) => id !== action.payload,
+      );
+    },
+    clearAllIntervals(state) {
+      state.intervalIds.forEach((id) => clearInterval(id));
+      state.intervalIds = [];
     },
   },
   extraReducers: (builder) => {
@@ -69,5 +87,10 @@ const fixtureLiveSlice = createSlice({
   },
 });
 
-export const { setFixtureId } = fixtureLiveSlice.actions;
+export const {
+  setFixtureIdAndClearInterval,
+  addIntervalId,
+  removeIntervalId,
+  clearAllIntervals,
+} = fixtureLiveSlice.actions;
 export default fixtureLiveSlice.reducer;

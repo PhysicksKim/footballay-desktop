@@ -5,8 +5,9 @@ import {
   fetchFixtureEvents,
   fetchFixtureLiveStatus,
 } from './fixtureLiveSliceThunk';
+import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
 
-const intervalTime = 1000; // 30초마다 fetch
+const intervalTime = 10000;
 
 const END_STATUS = ['FT', 'AET', 'PEN', 'CANC', 'ABD', 'AWD', 'WO'];
 const shouldStopFetch = (status: string) => {
@@ -15,51 +16,74 @@ const shouldStopFetch = (status: string) => {
 
 export const startFetchLineup = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const intervalId = setInterval(async () => {
+    const fetchLineup = async () => {
       try {
         console.log('lineup fetch interval id : ', intervalId);
         const response = await dispatch(fetchFixtureLineup(fixtureId)).unwrap();
         if (response && response.lineup !== null) {
+          console.log('lineup fetch success. clear interval!');
           clearInterval(intervalId);
+          dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
         console.error('Failed to fetch lineup:', error);
       }
-    }, intervalTime);
+    };
+    const intervalId: NodeJS.Timeout = setInterval(fetchLineup, intervalTime);
+    dispatch(addIntervalId(intervalId));
+    fetchLineup();
   };
 };
 
 export const startFetchLiveStatus = (fixtureId: number) => {
   return (dispatch: AppDispatch) => {
-    const intervalId = setInterval(async () => {
+    const fetchLiveStatus = async () => {
       try {
         console.log('liveStatus fetch interval id : ', intervalId);
         const response = await dispatch(
           fetchFixtureLiveStatus(fixtureId),
         ).unwrap();
-        if (shouldStopFetch(response.shortStatus)) {
+        console.log(
+          `liveStatus fetch shortStatus=${response.liveStatus.shortStatus}
+          shoudlStop=${shouldStopFetch(response.liveStatus.shortStatus)}
+          / response:`,
+          response,
+        );
+        if (shouldStopFetch(response.liveStatus.shortStatus)) {
+          console.log('liveStatus fetch success. clear interval!');
           clearInterval(intervalId);
+          dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
         console.error('Failed to fetch live status:', error);
       }
-    }, intervalTime);
+    };
+    const intervalId = setInterval(fetchLiveStatus, intervalTime);
+    dispatch(addIntervalId(intervalId));
+    fetchLiveStatus();
   };
 };
 
 export const startFetchEvents = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const intervalId = setInterval(async () => {
+    const fetchEvents = async () => {
       try {
         console.log('Events fetch interval id : ', intervalId);
         await dispatch(fetchFixtureEvents(fixtureId)).unwrap();
-        const nowStatus = getState().fixture.liveStatus?.shortStatus;
+        const nowStatus =
+          getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
+        console.log('Events fetch done. live status : ', nowStatus);
         if (nowStatus && shouldStopFetch(nowStatus)) {
+          console.log('Events fetch success. clear interval!');
           clearInterval(intervalId);
+          dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
         console.error('Failed to fetch events:', error);
       }
-    }, intervalTime);
+    };
+    const intervalId = setInterval(fetchEvents, intervalTime);
+    dispatch(addIntervalId(intervalId));
+    fetchEvents();
   };
 };

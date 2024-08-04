@@ -7,7 +7,7 @@ import '@app/styles/tabs/FixtureListItem.scss';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store/store';
-import { setFixtureId } from '../../store/slices/fixtureLiveSlice';
+import { setFixtureIdAndClearInterval } from '../../store/slices/fixtureLiveSlice';
 import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
 import {
   startFetchEvents,
@@ -74,10 +74,9 @@ const FixtureListItem = ({
   const handleSelectMatchLiveClick = () => {
     if (available) {
       console.log(`starting fetch process of fixture=${fixtureId}`);
-      dispatch(setFixtureId(fixtureId));
+      dispatch(setFixtureIdAndClearInterval(fixtureId));
       dispatch(fetchFixtureInfo(fixtureId));
       openMatchlivePopup();
-      // 반복 fetch thunk 들 시작
       dispatch(startFetchLineup(fixtureId));
       dispatch(startFetchLiveStatus(fixtureId));
       dispatch(startFetchEvents(fixtureId));
