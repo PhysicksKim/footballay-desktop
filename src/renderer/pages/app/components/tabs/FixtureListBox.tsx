@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import '@app/styles/tabs/FixtureListBox.scss';
 import FixtureListItem from './FixtureListItem';
 import { useDispatch, useSelector } from 'react-redux';

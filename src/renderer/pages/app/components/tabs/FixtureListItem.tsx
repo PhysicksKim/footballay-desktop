@@ -5,6 +5,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@app/styles/tabs/FixtureListItem.scss';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/store';
+import { setFixtureId } from '../../store/slices/fixtureLiveSlice';
+import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
+import {
+  startFetchEvents,
+  startFetchLineup,
+  startFetchLiveStatus,
+} from '../../store/slices/fixtureLiveDataUpdater';
 
 export interface FixtureListItemProps {
   leagueId: number | null;
@@ -46,6 +55,7 @@ const FixtureListItem = ({
   index,
   available,
 }: FixtureListItemProps) => {
+  const dispatch = useDispatch<AppDispatch>();
   const convertKickoffTimeToHHMM = (kickoff: string) => {
     return kickoff.split(' ')[1];
   };
@@ -57,11 +67,21 @@ const FixtureListItem = ({
     return round;
   };
 
-  const openmatchlive = () => {
-    window.electron.ipcRenderer.sendMessage('open-matchlive-window');
+  const openMatchlivePopup = () => {
+    window.electron.ipcRenderer.sendMessage('open-matchlive-window', fixtureId);
   };
-  const openFixtureWindow = () => {
-    openmatchlive();
+
+  const handleSelectMatchLiveClick = () => {
+    if (available) {
+      console.log(`starting fetch process of fixture=${fixtureId}`);
+      dispatch(setFixtureId(fixtureId));
+      dispatch(fetchFixtureInfo(fixtureId));
+      openMatchlivePopup();
+      // 반복 fetch thunk 들 시작
+      dispatch(startFetchLineup(fixtureId));
+      dispatch(startFetchLiveStatus(fixtureId));
+      dispatch(startFetchEvents(fixtureId));
+    }
   };
 
   return (
@@ -111,10 +131,9 @@ const FixtureListItem = ({
       </div>
       <div
         className={`live-match-btn-box ${available ? 'enabled' : 'disabled'}`}
-        onClick={openFixtureWindow}
+        onClick={handleSelectMatchLiveClick}
       >
         <div className={`popup-icon-box ${available ? 'enabled' : 'disabled'}`}>
-          {/* {isAvailbel} */}
           {available ? (
             <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
           ) : (

@@ -13,6 +13,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
+      "@src/*": ["./src/*"],
       "@main/*": ["./src/main/*"],
       "@app/*": ["./src/renderer/pages/app/*"],
       "@matchlive/*": ["./src/renderer/pages/matchlive/*"]

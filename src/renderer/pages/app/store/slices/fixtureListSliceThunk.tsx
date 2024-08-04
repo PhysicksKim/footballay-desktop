@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 import { ApiResponse } from '../../types/api';
-import Urls from '../../common/Urls';
+import Urls from '../../constants/Urls';
 import dateToYearMonthDay, {
   isoStringToYearMonthDay,
 } from '@app/common/DateUtils';

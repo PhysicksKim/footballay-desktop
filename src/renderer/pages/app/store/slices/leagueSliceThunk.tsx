@@ -1,4 +1,4 @@
-import Urls from '@app/common/Urls';
+import Urls from '@app/constants/Urls';
 import { ApiResponse } from '@app/types/api';
 import { League } from '@app/types/football';
 import { createAsyncThunk } from '@reduxjs/toolkit';

@@ -43,6 +43,7 @@ const createMatchliveWindow = async () => {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      backgroundThrottling: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -138,6 +139,7 @@ const createMainWindow = async () => {
     icon: getAssetPath('icon.png'),
     frame: false,
     webPreferences: {
+      backgroundThrottling: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),

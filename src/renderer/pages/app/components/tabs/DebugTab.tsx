@@ -1,4 +1,4 @@
-import Urls from '@app/common/Urls';
+import Urls from '@app/constants/Urls';
 import axios from 'axios';
 import React from 'react';
 import '@app/styles/tabs/DebugTab.scss';

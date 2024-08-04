@@ -3,6 +3,7 @@ import { ar } from 'date-fns/locale';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setWaitFixtureInfo } from '@app/store/slices/ipc/ipcStatusSlice';
+import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
 
 const MatchliveIpc = () => {
   console.log('MatchliveIpc');
@@ -11,6 +12,9 @@ const MatchliveIpc = () => {
 
   const waitFixtureInfo = useSelector(
     (state: RootState) => state.ipcStatus.waitFixtureInfo,
+  );
+  const selectedFixtureId = useSelector(
+    (state: RootState) => state.selected.fixtureId,
   );
 
   const handleMessage = (...args: any[]) => {
@@ -21,6 +25,7 @@ const MatchliveIpc = () => {
       case 'REQUEST_FIXTURE_INFO':
         console.log('REQUEST_FIXTURE_INFO received');
         dispatch(setWaitFixtureInfo(true));
+
         break;
       default:
         console.log('default');
