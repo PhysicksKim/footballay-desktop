@@ -5,7 +5,7 @@ const FixtureIpc = () => {
   const dispatch = useDispatch();
 
   const requestFixtureInfo = () => {
-    window.electron.ipcRenderer.sendMessage('to-app', {
+    window.electron.ipcRenderer.send('to-app', {
       type: 'REQUEST_FIXTURE_INFO',
     });
   };
@@ -13,6 +13,8 @@ const FixtureIpc = () => {
   const handleMessage = (...args: any[]) => {
     const message = args[0];
     const type = message.type;
+
+    console.log('message', message);
 
     switch (type) {
       case 'REQUEST_FIXTURE_INFO': {
@@ -26,7 +28,7 @@ const FixtureIpc = () => {
     }
   };
 
-  useEffect(() => {
+  const receiveMessage = useEffect(() => {
     window.electron.ipcRenderer.on('to-matchlive', handleMessage);
 
     return () => {

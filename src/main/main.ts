@@ -55,6 +55,7 @@ const createMatchliveWindow = async () => {
   matchliveWindow.on('ready-to-show', () => {
     console.log('matchlive window ready-to-show');
 
+    // dev 환경에서 창 새로고침 시에도 ready-to-show 가 발생하는데, 이 경우 ipc 채널이 여러 번 등록되는 문제가 있음
     if (!isMatchliveReadyToShowListenersRegistered) {
       matchliveWindow!.webContents.on('did-finish-load', () => {
         console.log(

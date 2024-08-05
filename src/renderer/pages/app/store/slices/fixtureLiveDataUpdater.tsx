@@ -50,7 +50,9 @@ export const startFetchLiveStatus = (fixtureId: number) => {
           response,
         );
         if (shouldStopFetch(response.liveStatus.shortStatus)) {
-          console.log('liveStatus fetch success. clear interval!');
+          console.log(
+            'liveStatus fetched. interval will be cleared by match finish!',
+          );
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }
@@ -72,7 +74,7 @@ export const startFetchEvents = (fixtureId: number) => {
         await dispatch(fetchFixtureEvents(fixtureId)).unwrap();
         const nowStatus =
           getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
-        console.log('Events fetch done. live status : ', nowStatus);
+        console.log('Events fetched. live status : ', nowStatus);
         if (nowStatus && shouldStopFetch(nowStatus)) {
           console.log('Events fetch success. clear interval!');
           clearInterval(intervalId);

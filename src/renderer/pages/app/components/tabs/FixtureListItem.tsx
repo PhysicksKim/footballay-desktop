@@ -68,7 +68,7 @@ const FixtureListItem = ({
   };
 
   const openMatchlivePopup = () => {
-    window.electron.ipcRenderer.sendMessage('open-matchlive-window', fixtureId);
+    window.electron.ipcRenderer.send('open-matchlive-window', fixtureId);
   };
 
   const handleSelectMatchLiveClick = () => {

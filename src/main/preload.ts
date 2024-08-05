@@ -20,7 +20,7 @@ export type Channels =
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage(channel: Channels, ...args: any[]) {
+    send(channel: Channels, ...args: any[]) {
       ipcRenderer.send(channel, ...args);
     },
     on(channel: Channels, func: (...args: any[]) => void) {
