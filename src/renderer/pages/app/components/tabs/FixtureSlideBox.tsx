@@ -26,7 +26,6 @@ const FixtureSlideBox = () => {
   const [dates, setDates] = useState<Date[]>([]);
 
   useEffect(() => {
-    console.log('fixtures', fixtures);
     const firstFixture = fixtures[0];
     const fixtureDate = firstFixture?.matchSchedule?.kickoff;
     if (fixtureDate) {
@@ -49,7 +48,6 @@ const FixtureSlideBox = () => {
   }, [fixtures]);
 
   useEffect(() => {
-    console.log('selectedDateStr', selectedDateStr);
     if (selectedDateStr) {
       const _today = startOfDay(selectedDateStr);
       setToday(_today);

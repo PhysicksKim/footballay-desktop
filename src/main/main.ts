@@ -12,23 +12,20 @@ let matchliveWindow: BrowserWindow | null = null;
 let isMatchliveIpcListenersRegistered = false;
 let isMatchliveReadyToShowListenersRegistered = false;
 
-const alertRequestFixtureInfo = async () => {
-  matchliveWindow!.webContents.send('to-matchlive', {
-    type: 'REQUEST_FIXTURE_INFO',
+const sendIpcMatchliveWindowReady = async () => {
+  mainWindow!.webContents.send('to-app', {
+    type: 'MATCHLIVE_WINDOW_READY',
   });
 };
 
 const createMatchliveWindow = async () => {
-  // to ensure only one window is created
+  // 이미 생성되어 있다면
   if (matchliveWindow !== null) {
     if (matchliveWindow.isDestroyed()) {
       matchliveWindow = null;
     } else {
-      /*
-        app 측에서 open matchlive 버튼을 눌렀으니까
-        matchlive 에다가 새롭게 fixtureInfo 가져오라고 명령 보내기
-      */
-      alertRequestFixtureInfo();
+      // 곧바로 ready 상태임을 app window 에 알린다.
+      sendIpcMatchliveWindowReady();
       matchliveWindow.focus();
       return;
     }
@@ -50,34 +47,31 @@ const createMatchliveWindow = async () => {
     },
   });
 
+  // if(matchliveWindow === null) {
+  //   return;
+  // }
+
   matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
 
   matchliveWindow.on('ready-to-show', () => {
-    console.log('matchlive window ready-to-show');
+    if (matchliveWindow === null) {
+      return;
+    }
+    matchliveWindow.show();
+  });
 
-    // dev 환경에서 창 새로고침 시에도 ready-to-show 가 발생하는데, 이 경우 ipc 채널이 여러 번 등록되는 문제가 있음
-    if (!isMatchliveReadyToShowListenersRegistered) {
-      matchliveWindow!.webContents.on('did-finish-load', () => {
-        console.log(
-          'isMatchliveIpcListenersRegistered: ',
-          isMatchliveIpcListenersRegistered,
-        );
-        if (!isMatchliveIpcListenersRegistered) {
-          console.log('matclive window did-finish-load');
-          ipcMain.on('to-matchlive', (event, data) => {
-            matchliveWindow!.webContents.send('to-matchlive', data);
-          });
-          ipcMain.on('to-app', (event, data) => {
-            mainWindow!.webContents.send('to-app', data);
-          });
-
-          isMatchliveIpcListenersRegistered = true;
-        }
-        alertRequestFixtureInfo();
+  matchliveWindow!.webContents.on('did-finish-load', () => {
+    if (!isMatchliveIpcListenersRegistered) {
+      ipcMain.on('to-matchlive', (event, data) => {
+        matchliveWindow!.webContents.send('to-matchlive', data);
+      });
+      ipcMain.on('to-app', (event, data) => {
+        mainWindow!.webContents.send('to-app', data);
       });
 
-      isMatchliveReadyToShowListenersRegistered = true;
+      isMatchliveIpcListenersRegistered = true;
     }
+    sendIpcMatchliveWindowReady();
   });
 
   matchliveWindow.on('closed', () => {
@@ -136,10 +130,10 @@ const createMainWindow = async () => {
     height: 600,
     minWidth: 800,
     minHeight: 600,
-    // resizable: false,
     icon: getAssetPath('icon.png'),
     frame: false,
     webPreferences: {
+      contextIsolation: true,
       backgroundThrottling: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')

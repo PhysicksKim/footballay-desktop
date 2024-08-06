@@ -14,6 +14,7 @@ import {
   startFetchLineup,
   startFetchLiveStatus,
 } from '../../store/slices/fixtureLiveDataUpdater';
+import TeamLogo from './TeamLogo';
 
 export interface FixtureListItemProps {
   leagueId: number | null;
@@ -99,7 +100,7 @@ const FixtureListItem = ({
             <div className="team-mark-text home-team-mark-text">H</div>
           </div>
           <div className="team-logo team-a-logo">
-            <img src={teamALogo.logo} alt={teamALogo.name} />
+            <TeamLogo logo={teamALogo.logo} name={teamALogo.name} />
           </div>
         </div>
         <div className="team-versus-box">
@@ -117,7 +118,7 @@ const FixtureListItem = ({
         </div>
         <div className="team-logo-box team-b-logo-box">
           <div className="team-logo team-b-logo">
-            <img src={teamBLogo.logo} alt={teamBLogo.name} />
+            <TeamLogo logo={teamBLogo.logo} name={teamBLogo.name} />
           </div>
           <div className="team-mark away-team-mark">
             <div className="team-mark-text away-team-mark-text">A</div>

@@ -20,7 +20,16 @@ export interface FixtureState {
   liveStatus: FixtureLiveStatus | null;
   lineup: FixtureLineup | null;
   events: FixtureEventResponse | null;
+  taskState: {
+    init: InitTaskState;
+  };
   intervalIds: NodeJS.Timeout[]; // interval IDs 배열 추가
+}
+
+export interface InitTaskState {
+  matchliveWindowReady: boolean;
+  fixtureIdUpdated: boolean;
+  fixtureLiveStateReset: boolean;
 }
 
 export const initialState: FixtureState = {
@@ -29,7 +38,21 @@ export const initialState: FixtureState = {
   liveStatus: null,
   lineup: null,
   events: null,
+  taskState: {
+    init: {
+      matchliveWindowReady: false,
+      fixtureIdUpdated: false,
+      fixtureLiveStateReset: false,
+    },
+  },
   intervalIds: [], // 초기값 설정
+};
+
+const resetFixtureLiveData = (state: FixtureState) => {
+  state.info = null;
+  state.liveStatus = null;
+  state.lineup = null;
+  state.events = null;
 };
 
 const fixtureLiveSlice = createSlice({
@@ -37,13 +60,22 @@ const fixtureLiveSlice = createSlice({
   initialState,
   reducers: {
     setFixtureIdAndClearInterval(state, action: PayloadAction<number>) {
-      console.log('setFixtureIdAndClearInterval');
       state.fixtureId = action.payload;
+      resetFixtureLiveData(state);
       state.intervalIds.forEach((id) => {
         clearInterval(id);
-        console.log('clearInterval', id);
       });
       state.intervalIds = [];
+      state.taskState.init.fixtureIdUpdated = true;
+      state.taskState.init.fixtureLiveStateReset = true;
+    },
+    setMatchliveWindowReady(state, action: PayloadAction<boolean>) {
+      state.taskState.init.matchliveWindowReady = action.payload;
+    },
+    resetInitTaskState(state) {
+      state.taskState.init.matchliveWindowReady = false;
+      state.taskState.init.fixtureIdUpdated = false;
+      state.taskState.init.fixtureLiveStateReset = false;
     },
     addIntervalId(state, action: PayloadAction<NodeJS.Timeout>) {
       state.intervalIds.push(action.payload);
@@ -92,5 +124,7 @@ export const {
   addIntervalId,
   removeIntervalId,
   clearAllIntervals,
+  setMatchliveWindowReady,
+  resetInitTaskState,
 } = fixtureLiveSlice.actions;
 export default fixtureLiveSlice.reducer;

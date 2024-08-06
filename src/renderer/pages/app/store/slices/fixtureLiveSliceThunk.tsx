@@ -8,7 +8,6 @@ import {
   FixtureEventResponse,
 } from '@src/types/FixtureIpc';
 import { AppDispatch, RootState } from '../store';
-import { setFixtureId } from './fixtureLiveSlice';
 
 export const fetchFixtureInfo = createAsyncThunk<
   FixtureInfo,

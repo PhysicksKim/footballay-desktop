@@ -49,8 +49,6 @@ const fetchFixtureList = createAsyncThunk<
     try {
       let response: AxiosResponse<ApiResponse<FixtureListItemResponse>>;
       if (date === '' || date === '_' || date === null || date === undefined) {
-        console.log('fetchFixtureList without date');
-        console.log('date : ', date);
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
           Urls.apiUrl + Urls.football.fixtures,
           {
@@ -58,9 +56,7 @@ const fetchFixtureList = createAsyncThunk<
           },
         );
       } else {
-        console.log('fetchFixtureList with date');
         const dateYMDstring = isoStringToYearMonthDay(date);
-        console.log('dateYMDstring : ', dateYMDstring);
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
           Urls.apiUrl + Urls.football.fixturesOnDate,
           {
