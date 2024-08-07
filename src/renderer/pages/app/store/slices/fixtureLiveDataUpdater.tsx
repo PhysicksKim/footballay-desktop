@@ -7,7 +7,7 @@ import {
 } from './fixtureLiveSliceThunk';
 import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
 
-const intervalTime = 10000;
+const intervalTime = 13000;
 
 const END_STATUS = ['FT', 'AET', 'PEN', 'CANC', 'ABD', 'AWD', 'WO'];
 const shouldStopFetch = (status: string) => {

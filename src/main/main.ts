@@ -1,5 +1,12 @@
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, session } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  session,
+  webContents,
+} from 'electron';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -80,6 +87,9 @@ const createMatchliveWindow = async () => {
     ipcMain.removeAllListeners('to-app');
     isMatchliveIpcListenersRegistered = false;
     isMatchliveReadyToShowListenersRegistered = false;
+    mainWindow?.webContents.send('to-app', {
+      type: 'MATCHLIVE_WINDOW_CLOSED',
+    });
   });
 
   return matchliveWindow;

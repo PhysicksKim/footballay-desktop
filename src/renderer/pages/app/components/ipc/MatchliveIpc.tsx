@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setWaitFixtureInfo } from '@app/store/slices/ipc/ipcStatusSlice';
 import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
 import {
+  clearFixtureLive,
   resetInitTaskState,
   setMatchliveWindowReady,
 } from '../../store/slices/fixtureLiveSlice';
@@ -18,6 +19,7 @@ import {
 
 export type ReceiveIpcType =
   | 'MATCHLIVE_WINDOW_READY'
+  | 'MATCHLIVE_WINDOW_CLOSED'
   | 'GET_FIXTURE_INFO'
   | 'GET_FIXTURE_LIVE_STATUS'
   | 'GET_FIXTURE_LINEUP'
@@ -90,6 +92,10 @@ const MatchliveIpc = () => {
   );
 
   const [getFixtureInfoFlag, setGetFixtureInfoFlag] = useState(false);
+  const [getFixtureLiveStatusFlag, setGetFixtureLiveStatusFlag] =
+    useState(false);
+  const [getFixtureLineupFlag, setGetFixtureLineupFlag] = useState(false);
+  const [getFixtureEventsFlag, setGetFixtureEventsFlag] = useState(false);
 
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
@@ -98,17 +104,20 @@ const MatchliveIpc = () => {
       case 'MATCHLIVE_WINDOW_READY':
         dispatch(setMatchliveWindowReady(true));
         break;
+      case 'MATCHLIVE_WINDOW_CLOSED':
+        dispatch(clearFixtureLive());
+        dispatch(setMatchliveWindowReady(false));
       case 'GET_FIXTURE_INFO':
         setGetFixtureInfoFlag(true);
         break;
       case 'GET_FIXTURE_LIVE_STATUS':
-        sendLiveStatus(fixtureLiveStatus);
+        setGetFixtureLiveStatusFlag(true);
         break;
       case 'GET_FIXTURE_LINEUP':
-        sendLineup(fixtureLineup);
+        setGetFixtureLineupFlag(true);
         break;
       case 'GET_FIXTURE_EVENTS':
-        sendEvents(fixtureEvents);
+        setGetFixtureEventsFlag(true);
         break;
       default:
         console.log('unexpected IPC message type :', type);
@@ -134,6 +143,27 @@ const MatchliveIpc = () => {
       setGetFixtureInfoFlag(false);
     }
   }, [getFixtureInfoFlag]);
+
+  useEffect(() => {
+    if (getFixtureLiveStatusFlag) {
+      sendLiveStatus(fixtureLiveStatus);
+      setGetFixtureLiveStatusFlag(false);
+    }
+  }, [getFixtureLiveStatusFlag]);
+
+  useEffect(() => {
+    if (getFixtureLineupFlag) {
+      sendLineup(fixtureLineup);
+      setGetFixtureLineupFlag(false);
+    }
+  }, [getFixtureLineupFlag]);
+
+  useEffect(() => {
+    if (getFixtureEventsFlag) {
+      sendEvents(fixtureEvents);
+      setGetFixtureEventsFlag(false);
+    }
+  }, [getFixtureEventsFlag]);
 
   useEffect(() => {
     sendLiveStatus(fixtureLiveStatus);

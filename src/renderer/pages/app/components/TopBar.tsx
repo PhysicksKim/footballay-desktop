@@ -7,7 +7,7 @@ const TopBar = () => {
   return (
     <div className="dragable topbar-dragable-area">
       <div className="non-dragable app-name-group">
-        <div className="app-name">이름뭐로하지</div>
+        <div className="app-name">Chun City</div>
       </div>
       <div className="non-dragable window-control-group">
         <div className="minimize-window">

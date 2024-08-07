@@ -48,11 +48,22 @@ export const initialState: FixtureState = {
   intervalIds: [], // 초기값 설정
 };
 
-const resetFixtureLiveData = (state: FixtureState) => {
+const resetFixtureLiveState = (state: FixtureState) => {
   state.info = null;
   state.liveStatus = null;
   state.lineup = null;
   state.events = null;
+};
+
+const resetTaskState = (state: FixtureState) => {
+  state.taskState.init.matchliveWindowReady = false;
+  state.taskState.init.fixtureIdUpdated = false;
+  state.taskState.init.fixtureLiveStateReset = false;
+};
+
+const removeAllIntervals = (state: FixtureState) => {
+  state.intervalIds.forEach((id) => clearInterval(id));
+  state.intervalIds = [];
 };
 
 const fixtureLiveSlice = createSlice({
@@ -61,11 +72,8 @@ const fixtureLiveSlice = createSlice({
   reducers: {
     setFixtureIdAndClearInterval(state, action: PayloadAction<number>) {
       state.fixtureId = action.payload;
-      resetFixtureLiveData(state);
-      state.intervalIds.forEach((id) => {
-        clearInterval(id);
-      });
-      state.intervalIds = [];
+      resetFixtureLiveState(state);
+      removeAllIntervals(state);
       state.taskState.init.fixtureIdUpdated = true;
       state.taskState.init.fixtureLiveStateReset = true;
     },
@@ -86,8 +94,12 @@ const fixtureLiveSlice = createSlice({
       );
     },
     clearAllIntervals(state) {
-      state.intervalIds.forEach((id) => clearInterval(id));
-      state.intervalIds = [];
+      removeAllIntervals(state);
+    },
+    clearFixtureLive(state) {
+      state.fixtureId = null;
+      resetFixtureLiveState(state);
+      removeAllIntervals(state);
     },
   },
   extraReducers: (builder) => {
@@ -126,5 +138,6 @@ export const {
   clearAllIntervals,
   setMatchliveWindowReady,
   resetInitTaskState,
+  clearFixtureLive,
 } = fixtureLiveSlice.actions;
 export default fixtureLiveSlice.reducer;
