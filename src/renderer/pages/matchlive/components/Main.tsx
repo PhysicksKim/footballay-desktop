@@ -19,7 +19,7 @@ const Main = () => {
       </>
       {/* <div className="drag-area">여기를 끌어 드래그</div> */}
       <div className="contents-area">
-        <LineupTab />
+        <LineupTab showPhoto={false} />
       </div>
     </div>
   );

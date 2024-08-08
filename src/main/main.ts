@@ -39,9 +39,9 @@ const createMatchliveWindow = async () => {
   }
 
   matchliveWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    resizable: false,
+    width: 300,
+    height: 400,
+    resizable: true,
     transparent: true,
     frame: false,
     webPreferences: {

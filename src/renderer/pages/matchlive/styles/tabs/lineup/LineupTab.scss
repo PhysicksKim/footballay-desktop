@@ -3,5 +3,53 @@
   box-sizing: border-box;
   height: 100%;
   width: 100%;
-  // background-color: red;
+  background-color: white;
+  -webkit-app-region: drag; /* 드래그 가능한 영역 설정 */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  .home-team-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 50%;
+    box-sizing: border-box;
+    border: red 1px solid;
+  }
+
+  .home-team-name,
+  .away-team-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+}
+
+.grid-line {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+.grid-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px; /* 플레이어 사진과 이름을 감싸는 div의 너비 */
+  text-align: center;
+}
+
+.grid-player img {
+  width: 30px; /* 플레이어 사진의 크기 */
+  height: 30px;
+  border-radius: 50%;
+}
+
+.grid-player span {
+  margin-top: 5px;
 }
