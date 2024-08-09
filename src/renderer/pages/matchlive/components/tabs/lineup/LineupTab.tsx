@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../../store/store';
 import { is } from 'date-fns/locale';
+import UniformIcon from './UniformIcon';
+import FootballFieldCanvas from './FootballFieldCanvas';
 
 // Styled Components
 const LineupTabContainer = styled.div`
@@ -15,9 +17,10 @@ const LineupTabContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   -webkit-app-region: drag;
-  background-color: beige;
+  /* background-color: #000000f9; */
+  /* background-color: red; */
   padding-top: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 5px;
 `;
 
 const TeamContainer = styled.div<{ isAway?: boolean }>`
@@ -59,32 +62,50 @@ const GridPlayer = styled.div<{ top: number; left: number; width: number }>`
   top: ${(props) => props.top}%;
   left: ${(props) => props.left}%;
   width: ${(props) => props.width}%;
+  height: 100%;
   transform: translateX(-50%);
 
-  .player-number {
-    width: 30px;
-    height: 25px;
+  .player-number-photo-box {
+    height: calc(100% - 20px);
+    width: 40px;
+    bottom: 0;
+
+    // uniform 이 이름 바로 위에 위치하도록 하기 위해서 설정
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: lightgray;
-    border-radius: 50%;
-  }
+    flex-direction: column-reverse;
 
-  img {
-    width: 30px;
-    height: 25px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: top;
-    transform: scale(1.5);
-  }
+    .player-number {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 50%;
+      bottom: 0;
 
+      .player-number_val {
+        position: absolute;
+        text-align: center;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+        padding-top: 6px;
+      }
+    }
+
+    img {
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top;
+    }
+  }
   span {
-    margin-top: 5px;
-    font-size: 12px;
+    font-size: 16px;
+    /* color: white; */
+    /* white-space: nowrap; */
   }
 `;
 
@@ -120,7 +141,11 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
   };
 
   // 라인업을 구성하는 함수
-  const renderLineup = (team: any, isAway: boolean = false) => {
+  const renderLineup = (
+    team: any,
+    isAway: boolean = false,
+    color: string = '#1c91b4',
+  ) => {
     const maxLines = getMaxLine(team);
     const containerHeight = 100 / maxLines;
 
@@ -147,11 +172,16 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
                   left={position}
                   width={playerWidth}
                 >
-                  {showPhoto ? (
-                    <img src={player.photo} alt={player.name} />
-                  ) : (
-                    <div className="player-number">{player.number}</div>
-                  )}
+                  <div className="player-number-photo-box">
+                    {showPhoto ? (
+                      <img src={player.photo} alt={player.name} />
+                    ) : (
+                      <div className="player-number">
+                        <UniformIcon color={color} />
+                        <div className="player-number_val">{player.number}</div>
+                      </div>
+                    )}
+                  </div>
                   <span>{player.name}</span>
                 </GridPlayer>
               );
@@ -166,13 +196,14 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
   return (
     <LineupTabContainer>
       <TeamContainer>
-        <TeamName>{lineup?.home.teamName}</TeamName>
+        {/* <TeamName>{lineup?.home.teamName}</TeamName> */}
         {lineup && renderLineup(lineup.home)}
       </TeamContainer>
       <TeamContainer isAway>
-        <TeamName>{lineup?.away.teamName}</TeamName>
+        {/* <TeamName>{lineup?.away.teamName}</TeamName> */}
         {lineup && renderLineup(lineup.away, true)}
       </TeamContainer>
+      <FootballFieldCanvas />
     </LineupTabContainer>
   );
 };
