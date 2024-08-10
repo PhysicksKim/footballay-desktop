@@ -67,12 +67,21 @@ const GridPlayer = styled.div<{ top: number; left: number; width: number }>`
 
   .player-number-photo-box {
     height: calc(100% - 20px);
-    width: 40px;
+    width: calc(100% - 20px);
     bottom: 0;
 
     // uniform 이 이름 바로 위에 위치하도록 하기 위해서 설정
     display: flex;
     flex-direction: column-reverse;
+    align-items: center;
+
+    // 프로필 사진으로 표시인 경우
+    img {
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top;
+    }
 
     .player-number {
       position: relative;
@@ -83,6 +92,7 @@ const GridPlayer = styled.div<{ top: number; left: number; width: number }>`
       font-weight: bold;
       border-radius: 50%;
       bottom: 0;
+      width: 40px;
 
       .player-number_val {
         position: absolute;
@@ -93,13 +103,6 @@ const GridPlayer = styled.div<{ top: number; left: number; width: number }>`
         font-size: 14px;
         padding-top: 6px;
       }
-    }
-
-    img {
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      object-position: top;
     }
   }
   span {
@@ -173,7 +176,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
                   width={playerWidth}
                 >
                   <div className="player-number-photo-box">
-                    {showPhoto ? (
+                    {showPhoto && player.photo ? (
                       <img src={player.photo} alt={player.name} />
                     ) : (
                       <div className="player-number">
@@ -182,7 +185,9 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
                       </div>
                     )}
                   </div>
-                  <span>{player.name}</span>
+                  <span>
+                    {player.koreanName ? player.koreanName : player.name}
+                  </span>
                 </GridPlayer>
               );
             })}
