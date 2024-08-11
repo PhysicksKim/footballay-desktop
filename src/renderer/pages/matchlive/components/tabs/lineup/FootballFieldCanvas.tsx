@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 
 const FootballFieldCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fieldColor = '#107241';
+  const fieldLineColor = '#198b52';
+  const lineWidth = 10;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,12 +16,12 @@ const FootballFieldCanvas: React.FC = () => {
         const height = canvas.height;
 
         // 배경 색상 설정 (초록색 잔디)
-        ctx.fillStyle = '#00a86b';
+        ctx.fillStyle = '#107241';
         ctx.fillRect(0, 0, width, height);
 
         // 골라인과 터치라인
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = fieldLineColor;
+        ctx.lineWidth = lineWidth;
         ctx.strokeRect(0, 0, width, height);
 
         // 하프라인
@@ -29,12 +32,12 @@ const FootballFieldCanvas: React.FC = () => {
 
         // 센터 서클
         ctx.beginPath();
-        ctx.arc(width / 2, height / 2, height / 10, 0, Math.PI * 2, false);
+        ctx.arc(width / 2, height / 2, height / 11, 0, Math.PI * 2, false);
         ctx.stroke();
 
         // 패널티 박스 (위쪽)
-        const penaltyBoxHeight = height / 8;
         const penaltyBoxWidth = width / 2;
+        const penaltyBoxHeight = penaltyBoxWidth / 3;
         ctx.strokeRect(
           (width - penaltyBoxWidth) / 2,
           0,
@@ -94,7 +97,7 @@ const FootballFieldCanvas: React.FC = () => {
     <canvas
       ref={canvasRef}
       width="1000" // 기본 캔버스 너비
-      height="1500" // 기본 캔버스 높이 (세로 길이를 더 길게 설정)
+      height="1700" // 기본 캔버스 높이 (세로 길이를 더 길게 설정)
       style={{
         width: '100%',
         height: '100%',

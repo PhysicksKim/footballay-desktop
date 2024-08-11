@@ -71,12 +71,14 @@ export interface FixtureInfo {
   away: Team;
 }
 
+export interface TeamLineups {
+  home: LineupTeam;
+  away: LineupTeam;
+}
+
 export interface FixtureLineup {
   fixtureId: number;
-  lineup: {
-    home: LineupTeam;
-    away: LineupTeam;
-  };
+  lineup: TeamLineups;
 }
 
 export interface LineupTeam {
