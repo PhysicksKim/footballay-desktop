@@ -16,11 +16,13 @@ export const fetchFixtureInfo = createAsyncThunk<
 >(
   'fixture/fetchFixtureInfo',
   async (fixtureId: number, { rejectWithValue }) => {
+    console.log('fetchFixtureInfo:', fixtureId);
     try {
       const response = await axios.get(
         `${Urls.apiUrl}${Urls.football.fixtureInfo}`,
         { params: { fixtureId } },
       );
+      console.log('fetchFixtureInfo response:', response.data.response[0]);
       return response.data.response[0];
     } catch (error: any) {
       return rejectWithValue(

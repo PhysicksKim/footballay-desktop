@@ -8,164 +8,52 @@ import FootballFieldCanvas from './FootballFieldCanvas';
 import { FixtureLineup, Team, TeamLineups } from '@src/types/FixtureIpc';
 import { debounce } from 'lodash';
 import TeamLogo from '@src/renderer/pages/app/components/tabs/TeamLogo';
+import {
+  LineupTabContainer,
+  TeamContainer,
+  TeamName,
+  GridLine,
+  GridPlayer,
+  TeamLogoName,
+} from './LineupStyled';
 
-// Styled Components
-const LineupTabContainer = styled.div`
-  position: relative;
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  -webkit-app-region: drag;
-  /* background-color: #000000f9; */
-  /* background-color: red; */
-  padding-top: 12px;
-  padding-bottom: 5px;
-`;
+export interface DisplayPlayer {
+  id: number;
+  name: string;
+  number: number;
+  position: string;
+  grid: string | null;
+  substitute: boolean;
+  card?: string; // 예: Yellow Card, Red Card
+  scored?: boolean; // 골 여부
+}
 
-const TeamContainer = styled.div<{ isAway?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 50%;
-  box-sizing: border-box;
-  overflow: hidden;
-  flex-direction: ${({ isAway }) => {
-    return isAway ? 'column-reverse' : 'column';
-  }};
-  margin-top: 10px;
-  margin-bottom: 10px;
-  overflow: visible;
-`;
-
-const TeamName = styled.h2`
-  font-size: 14px;
-  font-weight: bold;
-  margin: 10px 0;
-  position: absolute;
-`;
-
-const GridLine = styled.div<{ height: number; isAway?: boolean }>`
-  position: relative;
-  width: 100%;
-  height: ${(props) => props.height}%;
-  display: flex;
-`;
-
-const GridPlayer = styled.div<{
-  top: number;
-  left: number;
-  width: number;
-  playerSize: number;
-}>`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  top: 0%;
-  left: ${(props) => props.left}%;
-  width: ${(props) => props.width}%;
-  height: ${(props) => props.playerSize}px;
-  transform: translateX(-50%);
-
-  .player-number-photo-box {
-    top: 0;
-    display: inline-block;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    height: ${(props) => props.playerSize - 30}px;
-
-    img {
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      object-position: top;
-    }
-
-    .player-number {
-      position: relative;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 50%;
-      bottom: 0;
-      width: ${(props) => props.playerSize * 1.2}px;
-      height: 100%;
-
-      svg {
-        height: 100%;
-        width: 80%;
-      }
-
-      .player-number_val {
-        position: absolute;
-        box-sizing: border-box;
-        text-align: center;
-        bottom: 50%;
-        left: 50%;
-        transform: translate(-50%, 70%);
-        font-size: ${(props) => props.playerSize * 0.32}px;
-      }
-    }
-  }
-  span {
-    display: inline-block;
-    font-size: 20px;
-    overflow-y: hidden;
-    /* color: white; */
-    white-space: nowrap;
-  }
-`;
-
-const TeamLogoName = styled.div`
-  position: absolute;
-  left: 0;
-  width: 30%;
-  display: flex;
-  flex-direction: row;
-  /* justify-content: center; */
-  align-items: center;
-
-  .team-logo {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: 30px;
-      min-height: 30px;
-      object-fit: contain;
-    }
-  }
-
-  .team-name {
-    font-size: 14px;
-    font-weight: 400;
-    white-space: nowrap;
-    overflow-x: visible;
-  }
-`;
+export interface DisplayLineup {
+  teamId: number;
+  teamName: string;
+  players: DisplayPlayer[];
+  substitutes: DisplayPlayer[];
+}
 
 export interface LineupTabProps {
   showPhoto?: boolean;
+  applyEvents?: boolean;
 }
 
-const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
+/*
+인천 : 2763
+제주 : 2761
+*/
+
+const LineupTab: React.FC<LineupTabProps> = ({
+  showPhoto = true,
+  applyEvents = true,
+}) => {
   const lineup = useSelector(
     (state: RootState) => state.fixture.lineup,
   )?.lineup;
   const info = useSelector((state: RootState) => state.fixture.info);
+  const events = useSelector((state: RootState) => state.fixture.events);
   const homeTeamContainerRef = useRef<HTMLDivElement>(null);
   const awayTeamContainerRef = useRef<HTMLDivElement>(null);
   const [homeGridPlayerHeight, setHomeGridPlayerHeight] = React.useState(0);
@@ -199,17 +87,24 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
   }, 150);
 
   useEffect(() => {
-    console.log('home grid player height: ', homeGridPlayerHeight);
-    console.log('away grid player height: ', awayGridPlayerHeight);
-  }, [homeGridPlayerHeight, awayGridPlayerHeight]);
-
-  useEffect(() => {
     updatePlayerSize();
     window.addEventListener('resize', updatePlayerSize);
     return () => {
       window.removeEventListener('resize', updatePlayerSize);
     };
   }, []);
+
+  useEffect(() => {
+    console.log('events changed : ', JSON.stringify(events));
+  }, [events]);
+
+  useEffect(() => {
+    console.log('lineup changed : ', JSON.stringify(lineup));
+  }, [lineup]);
+
+  useEffect(() => {
+    console.log('info changed : ', JSON.stringify(info));
+  }, [info]);
 
   const getLinePlayers = (players: any[], line: number) => {
     return players
@@ -234,7 +129,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
   const renderLineup = (
     team: any,
     isAway: boolean = false,
-    color: string = '#1c91b4',
+    color: string = '#77b2e2',
   ) => {
     const maxLines = getMaxLine(team);
     const containerHeight = 100 / maxLines;
@@ -253,15 +148,16 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
             isAway={isAway}
           >
             {linePlayers.map((player, index) => {
-              const position = isAway
-                ? (100 / playerCount) * (index + 0.5)
-                : (100 / playerCount) * (playerCount - index - 0.5);
+              const leftPosition = isAway
+                ? (100 / playerCount) * (playerCount - index - 0.5)
+                : (100 / playerCount) * (index + 0.5);
+              // const leftPosition = (100 / playerCount) * (index + 0.5);
               return (
                 <GridPlayer
                   className="grid-player"
                   key={player.id}
                   top={0}
-                  left={position}
+                  left={leftPosition}
                   width={playerWidth}
                   playerSize={
                     isAway ? awayGridPlayerHeight : homeGridPlayerHeight
@@ -306,22 +202,24 @@ const LineupTab: React.FC<LineupTabProps> = ({ showPhoto = true }) => {
           <img src={team.logo} onError={handleImageError} />
         </div>
         <div className="team-name">
-          {team.koreanName ? team.koreanName : team.name};
+          {team.koreanName ? team.koreanName : team.name}
         </div>
       </TeamLogoName>
     );
   };
 
+  useEffect(() => {
+    console.log('info changed : ', info);
+  }, [info]);
+
   return (
     <LineupTabContainer>
       <FootballFieldCanvas />
       <TeamContainer ref={homeTeamContainerRef}>
-        {/* <TeamName>{lineup?.home.teamName}</TeamName> */}
         {lineup && renderLineup(lineup.home)}
         {info && teamLogoName(info.home)}
       </TeamContainer>
       <TeamContainer ref={awayTeamContainerRef} isAway>
-        {/* <TeamName>{lineup?.away.teamName}</TeamName> */}
         {lineup && renderLineup(lineup.away, true)}
         {info && teamLogoName(info.away)}
       </TeamContainer>

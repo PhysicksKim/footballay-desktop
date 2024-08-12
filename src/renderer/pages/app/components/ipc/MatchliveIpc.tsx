@@ -90,6 +90,7 @@ const MatchliveIpc = () => {
   const initTaskState = useSelector(
     (state: RootState) => state.fixtureLive.taskState.init,
   );
+  const fixtureLive = useSelector((state: RootState) => state.fixtureLive);
 
   const [getFixtureInfoFlag, setGetFixtureInfoFlag] = useState(false);
   const [getFixtureLiveStatusFlag, setGetFixtureLiveStatusFlag] =
@@ -99,9 +100,10 @@ const MatchliveIpc = () => {
 
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
-    console.log('ipc message args:', args);
+    // console.log('ipc message args:', args);
     switch (type) {
       case 'MATCHLIVE_WINDOW_READY':
+        console.log('MATCHLIVE_WINDOW_READY ipc received');
         dispatch(setMatchliveWindowReady(true));
         break;
       case 'MATCHLIVE_WINDOW_CLOSED':
@@ -126,14 +128,15 @@ const MatchliveIpc = () => {
 
   useEffect(() => {
     console.log('initTaskState:', initTaskState);
+    console.log('selectedFixtureId:', selectedFixtureId);
     if (
-      initTaskState.fixtureIdUpdated &&
       initTaskState.matchliveWindowReady &&
+      initTaskState.fixtureIdUpdated &&
       initTaskState.fixtureLiveStateReset &&
       selectedFixtureId
     ) {
       sendFixtureId(selectedFixtureId);
-      resetInitTaskState();
+      dispatch(resetInitTaskState());
     }
   }, [initTaskState]);
 

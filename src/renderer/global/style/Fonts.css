@@ -1,0 +1,153 @@
+/*
+Copyright (c) 2021 Kil Hyung-jin, with Reserved Font Name Pretendard.
+https://github.com/orioncactus/pretendard
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+*/
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 900;
+  font-display: swap;
+  src:
+    local('Pretendard Black'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Black.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Black.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  font-display: swap;
+  src:
+    local('Pretendard ExtraBold'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-ExtraBold.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-ExtraBold.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Pretendard Bold'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Bold.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Bold.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-display: swap;
+  src:
+    local('Pretendard SemiBold'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-SemiBold.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-SemiBold.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-display: swap;
+  src:
+    local('Pretendard Medium'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Medium.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Medium.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('Pretendard Regular'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Regular.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Regular.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 300;
+  font-display: swap;
+  src:
+    local('Pretendard Light'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Light.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Light.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 200;
+  font-display: swap;
+  src:
+    local('Pretendard ExtraLight'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-ExtraLight.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-ExtraLight.woff)
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 100;
+  font-display: swap;
+  src:
+    local('Pretendard Thin'),
+    url(../../../../assets/fonts/pretendard/woff2/Pretendard-Thin.woff2)
+      format('woff2'),
+    url(../../../../assets/fonts/pretendard/woff/Pretendard-Thin.woff)
+      format('woff');
+}
+
+/*
+# Gmarket Sans License
+G마켓 브랜드 아이덴티티를 담은 서체 'Gmarket Sans'를 소개합니다.
+Gmarket Sans는 다양한 브랜드, 판매자, 사용자가 함께 성장하며 가치를 나눌 수 있도록 만든 글꼴입니다.
+누구나 아무 제약 없이 쉽게 사용할 수 있습니다.
+Gmarket Sans는 누구나 제약 없이 자유롭게 수정하고 재배포 하실 수 있습니다.
+*/
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 300;
+  font-display: swap;
+  src:
+    local('GmarketSans Light'),
+    url(../../../../assets/fonts/gmarketsans/GmarketSansLight.otf)
+      format('opentype');
+}
+
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 500;
+  font-display: swap;
+  src:
+    local('GmarketSans Medium'),
+    url(../../../../assets/fonts/gmarketsans/GmarketSansMedium.otf)
+      format('opentype');
+}
+
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('GmarketSans Bold'),
+    url(../../../../assets/fonts/gmarketsans/GmarketSansBold.otf)
+      format('opentype');
+}

@@ -73,6 +73,7 @@ const FixtureListItem = ({
   };
 
   const handleSelectMatchLiveClick = () => {
+    console.log('handle clikced', fixtureId);
     if (available) {
       console.log(`starting fetch process of fixture=${fixtureId}`);
       dispatch(setFixtureIdAndClearInterval(fixtureId));

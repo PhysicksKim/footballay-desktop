@@ -1,3 +1,4 @@
+import { off } from 'process';
 import React, { useEffect, useRef } from 'react';
 
 const FootballFieldCanvas: React.FC = () => {
@@ -14,6 +15,7 @@ const FootballFieldCanvas: React.FC = () => {
         // Canvas 크기를 부모 요소에 맞추기
         const width = canvas.width;
         const height = canvas.height;
+        const outLineOffset = 50;
 
         // 배경 색상 설정 (초록색 잔디)
         ctx.fillStyle = '#107241';
@@ -22,12 +24,17 @@ const FootballFieldCanvas: React.FC = () => {
         // 골라인과 터치라인
         ctx.strokeStyle = fieldLineColor;
         ctx.lineWidth = lineWidth;
-        ctx.strokeRect(0, 0, width, height);
+        ctx.strokeRect(
+          outLineOffset,
+          outLineOffset,
+          width - outLineOffset * 2,
+          height - outLineOffset * 2,
+        );
 
         // 하프라인
         ctx.beginPath();
-        ctx.moveTo(0, height / 2);
-        ctx.lineTo(width, height / 2);
+        ctx.moveTo(outLineOffset, height / 2);
+        ctx.lineTo(width - outLineOffset, height / 2);
         ctx.stroke();
 
         // 센터 서클
@@ -36,11 +43,11 @@ const FootballFieldCanvas: React.FC = () => {
         ctx.stroke();
 
         // 패널티 박스 (위쪽)
-        const penaltyBoxWidth = width / 2;
+        const penaltyBoxWidth = width / 2.5;
         const penaltyBoxHeight = penaltyBoxWidth / 3;
         ctx.strokeRect(
           (width - penaltyBoxWidth) / 2,
-          0,
+          outLineOffset,
           penaltyBoxWidth,
           penaltyBoxHeight,
         );
@@ -48,7 +55,7 @@ const FootballFieldCanvas: React.FC = () => {
         // 패널티 박스 (아래쪽)
         ctx.strokeRect(
           (width - penaltyBoxWidth) / 2,
-          height - penaltyBoxHeight,
+          height - penaltyBoxHeight - outLineOffset,
           penaltyBoxWidth,
           penaltyBoxHeight,
         );
@@ -58,19 +65,24 @@ const FootballFieldCanvas: React.FC = () => {
         const goalDepth = 10;
         ctx.strokeRect(
           (width - goalWidth) / 2,
-          -goalDepth,
+          -goalDepth + outLineOffset,
           goalWidth,
           goalDepth,
         );
 
         // 골대 (아래쪽)
-        ctx.strokeRect((width - goalWidth) / 2, height, goalWidth, goalDepth);
+        ctx.strokeRect(
+          (width - goalWidth) / 2,
+          height - outLineOffset,
+          goalWidth,
+          goalDepth,
+        );
 
         // 패널티 아크 (위쪽)
         ctx.beginPath();
         ctx.arc(
           width / 2,
-          penaltyBoxHeight,
+          penaltyBoxHeight + outLineOffset,
           penaltyBoxHeight / 2,
           Math.PI * 0,
           Math.PI * 1,
@@ -82,7 +94,7 @@ const FootballFieldCanvas: React.FC = () => {
         ctx.beginPath();
         ctx.arc(
           width / 2,
-          height - penaltyBoxHeight,
+          height - penaltyBoxHeight - outLineOffset,
           penaltyBoxHeight / 2,
           Math.PI * 1,
           Math.PI * 0,

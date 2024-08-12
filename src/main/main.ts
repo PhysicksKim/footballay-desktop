@@ -20,6 +20,10 @@ let isMatchliveIpcListenersRegistered = false;
 let isMatchliveReadyToShowListenersRegistered = false;
 
 const sendIpcMatchliveWindowReady = async () => {
+  if (!mainWindow) {
+    console.log('mainWindow is null or undefined');
+  }
+  console.log('sendIpcMatchliveWindowReady');
   mainWindow!.webContents.send('to-app', {
     type: 'MATCHLIVE_WINDOW_READY',
   });
