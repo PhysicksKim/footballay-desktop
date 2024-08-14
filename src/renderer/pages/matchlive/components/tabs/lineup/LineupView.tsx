@@ -59,7 +59,9 @@ const LineupView: React.FC<{
                   <div className="player-number_val">{finalPlayer.number}</div>
                 </div>
               )}
-              {finalPlayer.events.subIn && <SubInMark />}
+              {finalPlayer.events.subIn && (
+                <SubInMark showPhoto={!!finalPlayer.photo && showPhoto} />
+              )}
               {finalPlayer.events.yellow && <CardYellow />}
               {finalPlayer.events.red && <CardRed />}
               {finalPlayer.events.scored && <GoalMark />}

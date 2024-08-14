@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import '@app/styles/SideNavigation.scss';
 import { Link } from 'react-router-dom';
+import MatchliveControlTab from './tabs/MatchliveControlTab';
 
 const SideNavigation = () => {
   return (
@@ -14,9 +15,11 @@ const SideNavigation = () => {
       </Link>
       {/* </div> */}
       <div className="division-bar" />
-      <div className="selected-fixture">
-        <div className="selected-fixture-item fixture_01">맨유 vs 맨시티</div>
-      </div>
+      <Link to="/matchlive-control" className="matchlive-control">
+        <div className="selected-fixture">
+          <div className="selected-fixture-item">라인업 컨트롤</div>
+        </div>
+      </Link>
       <Link to="/debug-tool" className="debug-tool-menu">
         <div className="debug-tool">DEBUG</div>
       </Link>

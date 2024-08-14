@@ -12,12 +12,10 @@ import '@matchlive/styles/Main.scss';
 const Main = () => {
   return (
     <div className="root-container">
-      <>{/* <DragBar /> */}</>
       <>
         <FixtureIpc />
         <ControlIpc />
       </>
-      {/* <div className="drag-area">여기를 끌어 드래그</div> */}
       <div className="contents-area">
         <LineupTab showPhoto={true} />
       </div>

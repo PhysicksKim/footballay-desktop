@@ -6,6 +6,7 @@ import {
   ipcMain,
   session,
   webContents,
+  Menu,
 } from 'electron';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -43,8 +44,8 @@ const createMatchliveWindow = async () => {
   }
 
   matchliveWindow = new BrowserWindow({
-    width: 300,
-    height: 400,
+    width: 400,
+    height: 700,
     resizable: true,
     transparent: true,
     frame: false,
@@ -95,6 +96,27 @@ const createMatchliveWindow = async () => {
       type: 'MATCHLIVE_WINDOW_CLOSED',
     });
   });
+
+  matchliveWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.control || input.meta) {
+      switch (input.key.toLowerCase()) {
+        case 'w': // Ctrl+W or Cmd+W (창 닫기)
+        case 'q': // Ctrl+Q or Cmd+Q (앱 종료)
+        case 't': // Ctrl+T or Cmd+T (새 탭 열기)
+        case 'r': // Ctrl+R or Cmd+R (페이지 새로고침)
+        case 'n': // Ctrl+N or Cmd+N (새 창 열기)
+        case 'p': // Ctrl+P or Cmd+P (인쇄)
+        case 'f': // Ctrl+F or Cmd+F (찾기)
+        case 'r': // Ctrl+R or Cmd+R (페이지 새로고침)
+          event.preventDefault();
+          break;
+        default:
+          break;
+      }
+    }
+  });
+
+  Menu.setApplicationMenu(null);
 
   return matchliveWindow;
 };
@@ -176,9 +198,29 @@ const createMainWindow = async () => {
     mainWindow = null;
   });
 
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.control || input.meta) {
+      switch (input.key.toLowerCase()) {
+        case 'w': // Ctrl+W or Cmd+W (창 닫기)
+        case 'q': // Ctrl+Q or Cmd+Q (앱 종료)
+        case 't': // Ctrl+T or Cmd+T (새 탭 열기)
+        case 'r': // Ctrl+R or Cmd+R (페이지 새로고침)
+        case 'n': // Ctrl+N or Cmd+N (새 창 열기)
+        case 'p': // Ctrl+P or Cmd+P (인쇄)
+        case 'f': // Ctrl+F or Cmd+F (찾기)
+        case 'r': // Ctrl+R or Cmd+R (페이지 새로고침)
+          event.preventDefault();
+          break;
+        default:
+          break;
+      }
+    }
+  });
+
   // ---- Menu Bar ---
   // const menuBuilder = new MenuBuilder(mainWindow);
   // menuBuilder.buildMenu();
+  Menu.setApplicationMenu(null);
 
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);

@@ -12,8 +12,6 @@ const LineupTabContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   -webkit-app-region: drag;
-  /* background-color: #000000f9; */
-  /* background-color: red; */
   padding-top: 12px;
   padding-bottom: 5px;
 `;
@@ -156,10 +154,10 @@ const TeamLogoName = styled.div`
   }
 `;
 
-const SubInMarkWrapper = styled.div`
+const SubInMarkWrapper = styled.div<{ showPhoto?: boolean }>`
   position: absolute;
   top: 0;
-  right: 10%;
+  right: ${({ showPhoto }) => (showPhoto ? '-15%' : '5%')};
   width: 20px;
   height: 20px;
   display: flex;
@@ -177,9 +175,9 @@ const SubIndicatorInner = styled.div`
   color: #ffffff; /* 필요에 따라 색상을 조정 */
 `;
 
-const SubInMark = () => {
+const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <SubInMarkWrapper>
+    <SubInMarkWrapper showPhoto={showPhoto}>
       <SubIndicatorInner>
         <FontAwesomeIcon icon={faArrowUp} />
       </SubIndicatorInner>
