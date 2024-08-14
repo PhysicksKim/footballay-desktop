@@ -1,3 +1,5 @@
+import { faArrowUp, faFutbol } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
 const LineupTabContainer = styled.div`
@@ -44,6 +46,7 @@ const GridLine = styled.div<{ height: number; isAway?: boolean }>`
   width: 100%;
   height: ${(props) => props.height}%;
   display: flex;
+  /* flex-direction: row-reverse; */
 `;
 
 const GridPlayer = styled.div<{
@@ -65,7 +68,7 @@ const GridPlayer = styled.div<{
 
   .player-number-photo-box {
     top: 0;
-    display: inline-block;
+    position: relative;
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
@@ -153,6 +156,131 @@ const TeamLogoName = styled.div`
   }
 `;
 
+const SubInMarkWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 10%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0d5df1;
+  border-radius: 50%;
+`;
+
+const SubIndicatorInner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #ffffff; /* 필요에 따라 색상을 조정 */
+`;
+
+const SubInMark = () => {
+  return (
+    <SubInMarkWrapper>
+      <SubIndicatorInner>
+        <FontAwesomeIcon icon={faArrowUp} />
+      </SubIndicatorInner>
+    </SubInMarkWrapper>
+  );
+};
+
+const CardYellowWrapper = styled.div`
+  position: absolute;
+  top: 40%;
+  right: 10%;
+  width: 14px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f10d;
+  border: 1px solid #dfdc44;
+  box-sizing: border-box;
+  border-radius: 20%;
+`;
+
+const CardYellowInner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #dfdc44; /* 필요에 따라 색상을 조정 */
+`;
+
+const CardYellow = () => {
+  return (
+    <CardYellowWrapper>
+      <CardYellowInner />
+    </CardYellowWrapper>
+  );
+};
+
+const CardRedWrapper = styled.div`
+  position: absolute;
+  top: 40%;
+  right: 10%;
+  width: 14px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f10d0d;
+  border: 1px solid #df4444;
+  box-sizing: border-box;
+  border-radius: 20%;
+`;
+
+const CardRedInner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #df4444; /* 필요에 따라 색상을 조정 */
+`;
+
+const CardRed = () => {
+  return (
+    <CardRedWrapper>
+      <CardRedInner />
+    </CardRedWrapper>
+  );
+};
+
+const GoalMarkWrapper = styled.div`
+  position: absolute;
+  bottom: 5%;
+  left: 3%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e8eaff;
+  color: black;
+  box-sizing: border-box;
+  border-radius: 40%;
+`;
+
+const GoalIndicatorInner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+`;
+
+const GoalMark = () => {
+  return (
+    <GoalMarkWrapper>
+      <GoalIndicatorInner>
+        <FontAwesomeIcon icon={faFutbol} />
+      </GoalIndicatorInner>
+    </GoalMarkWrapper>
+  );
+};
+
 export {
   LineupTabContainer,
   TeamContainer,
@@ -160,4 +288,8 @@ export {
   GridLine,
   GridPlayer,
   TeamLogoName,
+  SubInMark,
+  CardYellow,
+  CardRed,
+  GoalMark,
 };
