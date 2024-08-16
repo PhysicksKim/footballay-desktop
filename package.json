@@ -1,6 +1,6 @@
 {
   "name": "chun-city",
-  "description": "FootballStream gives streamers all the tools they need for streaming football matches",
+  "description": "Chuncity helps streamers to stream football matche infos",
   "keywords": [
     "electron",
     "boilerplate",
@@ -190,7 +190,7 @@
   },
   "build": {
     "productName": "춘시티",
-    "appId": "site.gyechunsick.chun-city",
+    "appId": "site.gyechunsick.chuncity",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -230,14 +230,19 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "artifactName": "춘시티_Setup_${version}.exe"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
       "perMachine": true,
-      "differentialPackage": true
+      "differentialPackage": true,
+      "uninstallDisplayName": "춘시티",
+      "installerSidebar": "assets/installerSidebar.bmp",
+      "installerHeader": "assets/installerHeader.bmp",
+      "installerHeaderIcon": "assets/icon.ico"
     },
     "linux": {
       "target": [

@@ -280,6 +280,7 @@ app
   .then(async () => {
     await createMainWindow();
     const appUpdater = new AppUpdater(mainWindow);
+    appUpdater.checkForUpdates();
     setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);
     setupStompHandlers(mainWindow);
   })

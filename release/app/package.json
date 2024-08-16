@@ -1,7 +1,7 @@
 {
-  "name": "football-stream",
+  "name": "chun-city",
   "version": "0.0.1",
-  "description": "FootballStream gives streamers all the tools they need for streaming football matches",
+  "description": "Chuncity helps streamers to stream football matche infos",
   "license": "MIT",
   "author": {
     "name": "PhysicksKim",
