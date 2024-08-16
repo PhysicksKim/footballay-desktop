@@ -1,13 +1,5 @@
 import path from 'path';
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-  session,
-  webContents,
-  Menu,
-} from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Menu } from 'electron';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -18,7 +10,6 @@ import { AppUpdater } from './AppUpdater';
 let mainWindow: BrowserWindow | null = null;
 let matchliveWindow: BrowserWindow | null = null;
 let isMatchliveIpcListenersRegistered = false;
-let isMatchliveReadyToShowListenersRegistered = false;
 
 const sendIpcMatchliveWindowReady = async () => {
   if (!mainWindow) {
@@ -58,10 +49,6 @@ const createMatchliveWindow = async () => {
     },
   });
 
-  // if(matchliveWindow === null) {
-  //   return;
-  // }
-
   matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
 
   matchliveWindow.on('ready-to-show', () => {
@@ -90,7 +77,6 @@ const createMatchliveWindow = async () => {
     ipcMain.removeAllListeners('to-matchlive');
     ipcMain.removeAllListeners('to-app');
     isMatchliveIpcListenersRegistered = false;
-    isMatchliveReadyToShowListenersRegistered = false;
     mainWindow?.webContents.send('to-app', {
       type: 'MATCHLIVE_WINDOW_CLOSED',
     });
