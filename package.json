@@ -231,7 +231,7 @@
       "target": [
         "nsis"
       ],
-      "artifactName": "춘시티_Setup_${version}.exe"
+      "artifactName": "ChunCity_Setup_${version}.exe"
     },
     "nsis": {
       "oneClick": false,
