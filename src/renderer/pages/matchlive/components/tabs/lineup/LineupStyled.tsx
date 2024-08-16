@@ -158,7 +158,7 @@ const TeamLogoName = styled.div`
 const SubInMarkWrapper = styled.div<{ showPhoto?: boolean }>`
   position: absolute;
   top: 0;
-  right: ${({ showPhoto }) => (showPhoto ? '-15%' : '5%')};
+  right: ${({ showPhoto }) => (showPhoto ? '-40%' : '5%')};
   width: 20px;
   height: 20px;
   display: flex;
@@ -186,10 +186,10 @@ const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   );
 };
 
-const CardYellowWrapper = styled.div`
+const CardYellowWrapper = styled.div<{ showPhoto?: boolean }>`
   position: absolute;
-  top: 40%;
-  right: 10%;
+  top: 50%;
+  right: ${({ showPhoto }) => (showPhoto ? '-30%' : '10%')};
   width: 14px;
   height: 20px;
   display: flex;
@@ -209,18 +209,18 @@ const CardYellowInner = styled.div`
   color: #dfdc44; /* 필요에 따라 색상을 조정 */
 `;
 
-const CardYellow = () => {
+const CardYellow: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardYellowWrapper>
+    <CardYellowWrapper showPhoto={showPhoto}>
       <CardYellowInner />
     </CardYellowWrapper>
   );
 };
 
-const CardRedWrapper = styled.div`
+const CardRedWrapper = styled.div<{ showPhoto?: boolean }>`
   position: absolute;
-  top: 40%;
-  right: 10%;
+  top: 50%;
+  right: ${({ showPhoto }) => (showPhoto ? '-30%' : '10%')};
   width: 14px;
   height: 20px;
   display: flex;
@@ -240,18 +240,18 @@ const CardRedInner = styled.div`
   color: #df4444; /* 필요에 따라 색상을 조정 */
 `;
 
-const CardRed = () => {
+const CardRed: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardRedWrapper>
+    <CardRedWrapper showPhoto={showPhoto}>
       <CardRedInner />
     </CardRedWrapper>
   );
 };
 
-const GoalMarkWrapper = styled.div`
+const GoalMarkWrapper = styled.div<{ showPhoto?: boolean }>`
   position: absolute;
   bottom: 5%;
-  left: 3%;
+  left: ${({ showPhoto }) => (showPhoto ? '-45%' : '3%')};
   width: 20px;
   height: 20px;
   display: flex;
@@ -270,9 +270,9 @@ const GoalIndicatorInner = styled.div`
   font-size: 22px;
 `;
 
-const GoalMark = () => {
+const GoalMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <GoalMarkWrapper>
+    <GoalMarkWrapper showPhoto={showPhoto}>
       <GoalIndicatorInner>
         <FontAwesomeIcon icon={faFutbol} />
       </GoalIndicatorInner>

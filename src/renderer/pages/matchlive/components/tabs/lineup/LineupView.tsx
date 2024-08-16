@@ -28,6 +28,7 @@ const LineupView: React.FC<{
   showPhoto: boolean;
 }> = ({ lineup, isAway, playerSize, lineHeight, showPhoto }) => {
   const color = isAway ? '#77b2e2' : '#daa88b';
+  // showPhoto={!!finalPlayer.photo && showPhoto}
 
   return lineup.players.map((linePlayers, lineIndex) => (
     <GridLine
@@ -42,6 +43,7 @@ const LineupView: React.FC<{
 
         // 최종적으로 표시할 선수를 결정 (재귀적으로 subInPlayer를 탐색)
         const finalPlayer = getFinalPlayer(player);
+        const photoExistAndShowPhoto = !!finalPlayer.photo && showPhoto;
 
         return (
           <GridPlayer
@@ -62,11 +64,17 @@ const LineupView: React.FC<{
                 </div>
               )}
               {finalPlayer.events.subIn && (
-                <SubInMark showPhoto={!!finalPlayer.photo && showPhoto} />
+                <SubInMark showPhoto={photoExistAndShowPhoto} />
               )}
-              {finalPlayer.events.yellow && <CardYellow />}
-              {finalPlayer.events.red && <CardRed />}
-              {finalPlayer.events.scored && <GoalMark />}
+              {finalPlayer.events.yellow && (
+                <CardYellow showPhoto={photoExistAndShowPhoto} />
+              )}
+              {finalPlayer.events.red && (
+                <CardRed showPhoto={photoExistAndShowPhoto} />
+              )}
+              {finalPlayer.events.scored && (
+                <GoalMark showPhoto={photoExistAndShowPhoto} />
+              )}
             </div>
             <span style={{ position: 'relative', overflow: 'visible' }}>
               {finalPlayer.koreanName || finalPlayer.name}
