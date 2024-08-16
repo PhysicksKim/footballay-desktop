@@ -281,7 +281,7 @@ app
     await createMainWindow();
     const appUpdater = new AppUpdater(mainWindow);
     appUpdater.checkForUpdates();
-    setupIpcMainHandlers(mainWindow, createMatchliveWindow, appUpdater);
+    setupIpcMainHandlers(mainWindow, createMatchliveWindow);
     setupStompHandlers(mainWindow);
   })
   .catch(async (e) => {
