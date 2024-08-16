@@ -1,15 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import '@app/styles/tabs/MatchliveControlTab.scss';
+import { setShowPhoto } from '../../store/slices/fixtureLiveOptionSlice';
 
 const MatchliveControlTab = () => {
+  const dispatch = useDispatch();
   const info = useSelector((state: RootState) => state.fixtureLive.info);
   const lastFetch = useSelector(
     (state: RootState) => state.fixtureLive.lastFetchedAt,
   );
   const fixtureLive = useSelector((state: RootState) => state.fixtureLive);
-
+  const showPhoto = useSelector(
+    (state: RootState) => state.fixtureLiveOption.showPhoto,
+  );
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
   const parseKickoffTime = (dateString: string) => {
@@ -149,11 +153,14 @@ const MatchliveControlTab = () => {
           type="checkbox"
           id="show-profile"
           className="show-profile-checkbox"
+          checked={showPhoto} // 초기값 설정
           onChange={(e) => {
+            const isChecked = e.target.checked;
             window.electron.ipcRenderer.send('to-matchlive', {
               type: 'SET_SHOW_PHOTO',
-              data: e.target.checked,
+              data: isChecked,
             });
+            dispatch(setShowPhoto(isChecked)); // 리덕스 상태 업데이트
           }}
         />
         <label htmlFor="show-profile" className="show-profile-box-label">

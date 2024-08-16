@@ -80,16 +80,13 @@ const fixtureLiveSlice = createSlice({
       state.fixtureId = action.payload;
       resetFixtureLiveState(state);
       removeAllIntervals(state);
-      console.log('fixture init state reset');
       state.taskState.init.fixtureIdUpdated = true;
       state.taskState.init.fixtureLiveStateReset = true;
     },
     setMatchliveWindowReady(state, action: PayloadAction<boolean>) {
-      console.log('setMatchliveWindowReady:', action.payload);
       state.taskState.init.matchliveWindowReady = action.payload;
     },
     resetInitTaskState(state) {
-      console.log('resetInitTaskState');
       state.taskState.init.matchliveWindowReady = false;
       state.taskState.init.fixtureIdUpdated = false;
       state.taskState.init.fixtureLiveStateReset = false;

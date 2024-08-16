@@ -73,6 +73,7 @@ const FixtureIpc = () => {
         break;
       }
       case 'SET_SHOW_PHOTO': {
+        console.log('SET_SHOW_PHOTO received. data:', data);
         dispatch(setShowPhoto(data));
         break;
       }
@@ -90,12 +91,23 @@ const FixtureIpc = () => {
     sendMatchliveReactReady();
   }, []);
 
+  useEffect(() => {
+    getShowPhoto();
+  }, []);
+
   const sendFixtureInfoRequest = () => {
     window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_INFO' });
   };
 
   const sendMatchliveReactReady = () => {
     window.electron.ipcRenderer.send('matchlive-react-ready');
+  };
+
+  const getShowPhoto = () => {
+    console.log('getShowPhoto called');
+    window.electron.ipcRenderer.send('to-app', {
+      type: 'SEND_SHOW_PHOTO',
+    });
   };
 
   const receiveMessage = useEffect(() => {

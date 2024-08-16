@@ -53,7 +53,7 @@ export const applyEventsToLineup = (
   events.forEach((event) => {
     switch (event.type) {
       case 'SUBST': {
-        const { player: outPlayer, assist: inPlayer } = event;
+        const { player: inPlayer, assist: outPlayer } = event;
 
         if (!inPlayer || !outPlayer) break;
 

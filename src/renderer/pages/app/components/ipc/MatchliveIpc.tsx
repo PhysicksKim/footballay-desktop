@@ -66,10 +66,10 @@ const sendEvents = (fixtureEvents: FixtureEventResponse | null) => {
   });
 };
 
-const sendShowPhoto = (showPhoto: boolean) => {
+const sendShowPhoto = (_showPhoto: boolean) => {
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_SHOW_PHOTO',
-    data: showPhoto,
+    data: _showPhoto,
   });
 };
 
@@ -93,6 +93,7 @@ const MatchliveIpc = () => {
   const showPhoto = useSelector(
     (state: RootState) => state.fixtureLiveOption.showPhoto,
   );
+  const showPhotoRef = useRef(showPhoto);
 
   const initTaskState = useSelector(
     (state: RootState) => state.fixtureLive.taskState.init,
@@ -109,7 +110,12 @@ const MatchliveIpc = () => {
     const { type, data } = args[0];
     switch (type) {
       case 'SEND_SHOW_PHOTO':
-        sendShowPhoto(showPhoto);
+        console.log(
+          'ipc request SEND_SHOW_PHOTO received. nowShowPhoto : ',
+          showPhotoRef.current,
+        );
+
+        sendShowPhoto(showPhotoRef.current);
         break;
       case 'MATCHLIVE_WINDOW_READY':
         dispatch(setMatchliveWindowReady(true));
@@ -117,6 +123,7 @@ const MatchliveIpc = () => {
       case 'MATCHLIVE_WINDOW_CLOSED':
         dispatch(clearFixtureLive());
         dispatch(setMatchliveWindowReady(false));
+        break;
       case 'GET_FIXTURE_INFO':
         setGetFixtureInfoFlag(true);
         break;
@@ -184,9 +191,11 @@ const MatchliveIpc = () => {
 
   useEffect(() => {
     sendEvents(fixtureEvents);
+    console.log('fixtureEvents updated. data:', fixtureEvents);
   }, [fixtureEvents]);
 
   useEffect(() => {
+    showPhotoRef.current = showPhoto;
     sendShowPhoto(showPhoto);
   }, [showPhoto]);
 
