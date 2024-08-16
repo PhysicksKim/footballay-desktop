@@ -33,7 +33,6 @@ import {
 } from './LineupTypes';
 
 export interface LineupTabProps {
-  showPhoto?: boolean;
   applyEvents?: boolean;
 }
 
@@ -41,15 +40,13 @@ export interface LineupTabProps {
 인천 : 2763
 제주 : 2761
 */
-const LineupTab: React.FC<LineupTabProps> = ({
-  showPhoto = true,
-  applyEvents = true,
-}) => {
+const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const lineup = useSelector(
     (state: RootState) => state.fixture.lineup,
   )?.lineup;
   const info = useSelector((state: RootState) => state.fixture.info);
   const events = useSelector((state: RootState) => state.fixture.events);
+  const showPhoto = useSelector((state: RootState) => state.options.showPhoto);
   const homeTeamContainerRef = useRef<HTMLDivElement>(null);
   const awayTeamContainerRef = useRef<HTMLDivElement>(null);
   const [homeGridPlayerHeight, setHomeGridPlayerHeight] = useState(0);
@@ -71,13 +68,11 @@ const LineupTab: React.FC<LineupTabProps> = ({
     if (homeTeamContainerRef.current) {
       const height =
         homeTeamContainerRef.current.clientHeight / homeLineupGridCount;
-      console.log('home height', height);
       setHomeGridPlayerHeight(height);
     }
     if (awayTeamContainerRef.current) {
       const height =
         awayTeamContainerRef.current.clientHeight / awayLineupGridCount;
-      console.log('away height', height);
       setAwayGridPlayerHeight(height);
     }
   }, 150);
@@ -97,15 +92,14 @@ const LineupTab: React.FC<LineupTabProps> = ({
     }
   }, [lineup]);
 
+  const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
+
   const processedHomeLineup = lineup
     ? processLineupToView(lineup.home, events?.events || [], applyEvents)
     : null;
   const processedAwayLineup = lineup
     ? processLineupToView(lineup.away, events?.events || [], applyEvents)
     : null;
-
-  console.log('processedHomeLineup', processedHomeLineup);
-  console.log('processedAwayLineup', processedAwayLineup);
 
   return (
     <LineupTabContainer>
@@ -115,7 +109,8 @@ const LineupTab: React.FC<LineupTabProps> = ({
           <LineupView
             lineup={processedHomeLineup}
             isAway={false}
-            playerSize={homeGridPlayerHeight}
+            playerSize={playerSize}
+            lineHeight={homeGridPlayerHeight}
             showPhoto={showPhoto}
           />
         )}
@@ -135,7 +130,8 @@ const LineupTab: React.FC<LineupTabProps> = ({
           <LineupView
             lineup={processedAwayLineup}
             isAway={true}
-            playerSize={awayGridPlayerHeight}
+            playerSize={playerSize}
+            lineHeight={awayGridPlayerHeight}
             showPhoto={showPhoto}
           />
         )}

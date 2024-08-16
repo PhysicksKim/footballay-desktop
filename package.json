@@ -1,5 +1,5 @@
 {
-  "name": "football-stream",
+  "name": "chun-city",
   "description": "FootballStream gives streamers all the tools they need for streaming football matches",
   "keywords": [
     "electron",
@@ -12,13 +12,13 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/PhysicksKim/football-stream#readme",
+  "homepage": "https://github.com/PhysicksKim/chun-city#readme",
   "bugs": {
-    "url": "https://github.com/PhysicksKim/football-stream/issues"
+    "url": "https://github.com/PhysicksKim/chun-city/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PhysicksKim/football-stream.git"
+    "url": "https://github.com/PhysicksKim/chun-city.git"
   },
   "license": "MIT",
   "author": {
@@ -189,8 +189,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "football-stream",
-    "appId": "site.gyechunsick.football-stream",
+    "productName": "춘시티",
+    "appId": "site.gyechunsick.chun-city",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -256,7 +256,7 @@
     "publish": {
       "provider": "github",
       "owner": "PhysicksKim",
-      "repo": "football-stream"
+      "repo": "chun-city"
     }
   },
   "devEngines": {

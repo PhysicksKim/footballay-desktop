@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import fixtureReducer from './slices/fixtureSlice';
+import fixtureLiveOptionSlice from './slices/fixtureLiveOptionSlice';
 
 const store = configureStore({
   reducer: {
     fixture: fixtureReducer,
+    options: fixtureLiveOptionSlice,
   },
 });
 

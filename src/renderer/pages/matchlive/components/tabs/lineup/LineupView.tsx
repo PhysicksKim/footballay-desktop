@@ -24,8 +24,9 @@ const LineupView: React.FC<{
   lineup: ViewLineup;
   isAway: boolean;
   playerSize: number;
+  lineHeight: number;
   showPhoto: boolean;
-}> = ({ lineup, isAway, playerSize, showPhoto }) => {
+}> = ({ lineup, isAway, playerSize, lineHeight, showPhoto }) => {
   const color = isAway ? '#77b2e2' : '#daa88b';
 
   return lineup.players.map((linePlayers, lineIndex) => (
@@ -49,6 +50,7 @@ const LineupView: React.FC<{
             left={leftPosition}
             width={100 / linePlayers.length}
             playerSize={playerSize}
+            lineHeight={lineHeight}
           >
             <div className="player-number-photo-box">
               {showPhoto && finalPlayer.photo ? (

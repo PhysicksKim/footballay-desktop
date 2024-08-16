@@ -8,13 +8,15 @@ import {
   setFixtureLiveStatus,
 } from '@matchlive/store/slices/fixtureSlice';
 import { RootState } from '../store/store';
+import { setShowPhoto } from '../store/slices/fixtureLiveOptionSlice';
 
 export type ReceiveIpcType =
   | 'SET_FIXTURE_ID'
   | 'SET_FIXTURE_INFO'
   | 'SET_LIVE_STATUS'
   | 'SET_LINEUP'
-  | 'SET_EVENTS';
+  | 'SET_EVENTS'
+  | 'SET_SHOW_PHOTO';
 export type SendIpcType =
   | 'GET_FIXTURE_ID'
   | 'GET_FIXTURE_INFO'
@@ -42,15 +44,12 @@ const FixtureIpc = () => {
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
 
-    console.log('message', args);
     switch (type) {
       case 'SET_FIXTURE_ID': {
-        console.log('SET_FIXTURE_ID', data);
         dispatch(setFixtureId(data));
         break;
       }
       case 'SET_FIXTURE_INFO': {
-        console.log('SET_FIXTURE_INFO', data);
         if (!data) {
           setTimeout(() => {
             sendFixtureInfoRequest();
@@ -63,21 +62,21 @@ const FixtureIpc = () => {
       }
       case 'SET_LIVE_STATUS': {
         dispatch(setFixtureLiveStatus(data));
-        console.log('SET_LIVE_STATUS', data);
         break;
       }
       case 'SET_LINEUP': {
         dispatch(setFixtureLineup(data));
-        console.log('SET_LINEUP', data);
         break;
       }
       case 'SET_EVENTS': {
         dispatch(setFixtureEvents(data));
-        console.log('SET_EVENTS', data);
+        break;
+      }
+      case 'SET_SHOW_PHOTO': {
+        dispatch(setShowPhoto(data));
         break;
       }
       default: {
-        console.log('Unknown message type:', type);
         break;
       }
     }
@@ -87,8 +86,16 @@ const FixtureIpc = () => {
     sendFixtureInfoRequest();
   }, [fixtureId]);
 
+  useEffect(() => {
+    sendMatchliveReactReady();
+  }, []);
+
   const sendFixtureInfoRequest = () => {
     window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_INFO' });
+  };
+
+  const sendMatchliveReactReady = () => {
+    window.electron.ipcRenderer.send('matchlive-react-ready');
   };
 
   const receiveMessage = useEffect(() => {

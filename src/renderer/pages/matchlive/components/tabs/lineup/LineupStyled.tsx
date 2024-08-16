@@ -52,6 +52,7 @@ const GridPlayer = styled.div<{
   left: number;
   width: number;
   playerSize: number;
+  lineHeight: number;
 }>`
   position: absolute;
   display: flex;
@@ -61,7 +62,7 @@ const GridPlayer = styled.div<{
   top: 0%;
   left: ${(props) => props.left}%;
   width: ${(props) => props.width}%;
-  height: ${(props) => props.playerSize}px;
+  height: ${(props) => props.lineHeight}px;
   transform: translateX(-50%);
 
   .player-number-photo-box {
@@ -70,7 +71,7 @@ const GridPlayer = styled.div<{
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    height: ${(props) => props.playerSize - 30}px;
+    height: ${(props) => props.lineHeight - 30}px;
 
     img {
       height: 100%;

@@ -4,6 +4,7 @@ import leagueReducer from './slices/leagueSlice';
 import footballSelectionReducer from './slices/footballSelectionSlice';
 import ipcStatusReducer from './slices/ipc/ipcStatusSlice';
 import fixtureLiveReducer from './slices/fixtureLiveSlice';
+import fixtureLiveOptionReducer from './slices/fixtureLiveOptionSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     league: leagueReducer,
     selected: footballSelectionReducer,
     ipcStatus: ipcStatusReducer,
+    fixtureLiveOption: fixtureLiveOptionReducer,
   },
 });
 

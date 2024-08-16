@@ -24,7 +24,6 @@ const sendIpcMatchliveWindowReady = async () => {
   if (!mainWindow) {
     console.log('mainWindow is null or undefined');
   }
-  console.log('sendIpcMatchliveWindowReady');
   mainWindow!.webContents.send('to-app', {
     type: 'MATCHLIVE_WINDOW_READY',
   });
@@ -183,7 +182,6 @@ const createMainWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    console.log('main ready to show!');
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -226,12 +224,55 @@ const createMainWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
+
+  ipcMain.on('control-to-matchlive', (event, action: string) => {
+    if (!matchliveWindow) return;
+
+    switch (action) {
+      case 'refresh':
+        matchliveWindow.reload();
+        break;
+      case 'minimize':
+        if (matchliveWindow.isMinimized()) {
+          matchliveWindow.restore(); // 창을 원래 크기로 되돌림
+        } else {
+          matchliveWindow.minimize(); // 창을 최소화
+        }
+        break;
+      case 'close':
+        matchliveWindow.close();
+        break;
+      default:
+        console.log(`Unknown action: ${action}`);
+    }
+  });
 };
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+export type MainWindowControlAction = 'minimize' | 'quit-app';
+
+ipcMain.on('main-window-control', (event, action: MainWindowControlAction) => {
+  if (!mainWindow) return;
+
+  switch (action) {
+    case 'minimize':
+      mainWindow.minimize();
+      break;
+    case 'quit-app':
+      app.quit(); // 모든 창을 닫고 애플리케이션을 종료합니다.
+      break;
+    default:
+      console.log(`Unknown action: ${action}`);
+  }
+});
+
+ipcMain.on('matchlive-react-ready', () => {
+  mainWindow?.webContents.send('to-app', { type: 'SEND_SHOW_PHOTO' });
 });
 
 app

@@ -1,0 +1,284 @@
+@import '@app/styles/Color.scss';
+
+.matchlive-control-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 30px;
+  // border: red 10px solid;
+
+  // 탭 타이틀
+  .matchlive-control-title {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    transform: translateX(-10px);
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      padding-bottom: 9px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-bottom: $background-division 1px solid;
+    }
+  }
+
+  // 경기 정보 표시 영역
+  .match-info-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+
+    .fixture-not-selected {
+      font-size: 14px;
+      font-weight: 300;
+      color: $disabled-font-color;
+    }
+
+    // 리그 표시
+    .league-info-box {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+      box-sizing: border-box;
+      height: 50px;
+      padding: 10px;
+      padding-left: 10px;
+      margin-bottom: 10px;
+      border: 1px $background-division solid;
+      border-radius: 14px;
+      background-color: $card-background;
+
+      .league-logo-img {
+        height: 35px;
+        width: 35px;
+        box-sizing: border-box;
+        padding: 5px;
+
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: contain;
+        }
+      }
+      .league-info {
+        margin-left: 5px;
+        padding-top: 7px;
+        padding-left: 5px;
+        padding-right: 15px;
+        padding-bottom: 3px;
+        box-sizing: border-box;
+        // border-bottom: 1px $background-division-alter solid;
+
+        span {
+          font-size: 16px;
+          font-weight: 300;
+          color: $soft-blue-white;
+        }
+      }
+    }
+
+    // 경기 정보 표시
+    .fixture-info-box {
+      display: flex;
+      flex-direction: row;
+
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 15px;
+      padding-bottom: 12px;
+      background-color: $card-background;
+      border-radius: 14px;
+      margin-bottom: 10px;
+
+      justify-content: space-between;
+
+      .home-team-box {
+        text-align: center;
+        min-width: 205px;
+      }
+      .match-detail-box {
+        width: 20%;
+        text-align: center;
+      }
+
+      .team-box {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        flex-shrink: 0;
+
+        .team-logo {
+          height: 60px;
+          width: 80px;
+          box-sizing: border-box;
+          padding-left: 10px;
+          padding-right: 10px;
+          flex-basis: 60px;
+          flex-shrink: 0;
+
+          img {
+            position: relative;
+            height: 60px;
+            width: 60px;
+            object-fit: contain;
+            box-sizing: border-box;
+          }
+        }
+
+        .home-mark,
+        .away-mark {
+          width: 20px;
+          box-sizing: border-box;
+          margin-top: auto;
+          margin-bottom: auto;
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+
+        .home-mark {
+          font-size: 12px;
+          padding: 3px 4px;
+          text-align: center;
+          background-color: $background-black;
+          border-radius: 4px;
+        }
+      }
+
+      .match-detail-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+  }
+
+  .last-fetch-title-box {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    transform: translateX(-10px);
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      padding-bottom: 9px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-bottom: $background-division 1px solid;
+    }
+  }
+
+  .last-fetch-time-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    box-sizing: border-box;
+
+    .last-fetch-time {
+      margin-top: 5px;
+      &.no-last-fetch {
+        font-size: 14px;
+        font-weight: 300;
+        color: $disabled-font-color;
+      }
+      &.exist-last-fetch {
+        font-size: 16px;
+        font-weight: 500;
+        color: $soft-blue-white;
+      }
+    }
+  }
+
+  .window-control-section-title {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    transform: translateX(-10px);
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      padding-bottom: 9px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-bottom: $background-division 1px solid;
+    }
+  }
+
+  .window-control-section {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    justify-content: start;
+    align-items: start;
+
+    .win-con-btn {
+      width: 80px;
+      height: 30px;
+      box-sizing: border-box;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0;
+      text-align: center;
+      border-radius: 10px;
+      margin-right: 10px;
+    }
+
+    .close-btn {
+      background-color: $danger-button;
+      color: $bright-blue-white;
+    }
+  }
+
+  .additional-options-section {
+    margin-top: 20px;
+    border-bottom: 1px $background-division solid;
+    padding-bottom: 5px;
+
+    .show-profile-checkbox {
+      /* 기본 체크박스 숨김 */
+      display: none;
+
+      /* 커스텀 체크박스 생성 */
+      + label::before {
+        content: '';
+        text-align: center;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        background-color: #ccc; /* 기본 배경색 */
+        border-radius: 4px;
+        transition: background-color 0.1s ease;
+      }
+
+      /* 체크박스가 체크된 경우 스타일 */
+      &:checked + label::before {
+        content: '✔';
+        background-color: #4caf50; /* 체크된 후의 배경색 */
+      }
+    }
+
+    /* 체크박스와 라벨을 함께 스타일링 */
+    .show-profile-box-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+  }
+}

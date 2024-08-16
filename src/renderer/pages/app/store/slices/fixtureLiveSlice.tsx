@@ -23,7 +23,8 @@ export interface FixtureState {
   taskState: {
     init: InitTaskState;
   };
-  intervalIds: NodeJS.Timeout[]; // interval IDs 배열 추가
+  intervalIds: NodeJS.Timeout[]; // interval IDs 배열
+  lastFetchedAt: string | null;
 }
 
 export interface InitTaskState {
@@ -45,7 +46,8 @@ export const initialState: FixtureState = {
       fixtureLiveStateReset: false,
     },
   },
-  intervalIds: [], // 초기값 설정
+  intervalIds: [],
+  lastFetchedAt: null,
 };
 
 const resetFixtureLiveState = (state: FixtureState) => {
@@ -64,6 +66,10 @@ const resetTaskState = (state: FixtureState) => {
 const removeAllIntervals = (state: FixtureState) => {
   state.intervalIds.forEach((id) => clearInterval(id));
   state.intervalIds = [];
+};
+
+const updateLastFetchedAt = (state: FixtureState) => {
+  state.lastFetchedAt = new Date().toISOString();
 };
 
 const fixtureLiveSlice = createSlice({
@@ -111,24 +117,28 @@ const fixtureLiveSlice = createSlice({
         fetchFixtureInfo.fulfilled,
         (state, action: PayloadAction<FixtureInfo>) => {
           state.info = action.payload;
+          updateLastFetchedAt(state);
         },
       )
       .addCase(
         fetchFixtureLiveStatus.fulfilled,
         (state, action: PayloadAction<FixtureLiveStatus>) => {
           state.liveStatus = action.payload;
+          updateLastFetchedAt(state);
         },
       )
       .addCase(
         fetchFixtureLineup.fulfilled,
         (state, action: PayloadAction<FixtureLineup>) => {
           state.lineup = action.payload;
+          updateLastFetchedAt(state);
         },
       )
       .addCase(
         fetchFixtureEvents.fulfilled,
         (state, action: PayloadAction<FixtureEventResponse>) => {
           state.events = action.payload;
+          updateLastFetchedAt(state);
         },
       );
   },

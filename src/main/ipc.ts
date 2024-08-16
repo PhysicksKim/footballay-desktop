@@ -6,7 +6,6 @@ export function setupIpcMainHandlers(
   createMatchliveWindow: () => void,
   appUpdater: AppUpdater,
 ) {
-  console.log('setup ipc.ts');
   ipcMain.on('react-ready', (event, arg) => {
     appUpdater.checkForUpdates();
     mainWindow?.webContents.send('update-status', {

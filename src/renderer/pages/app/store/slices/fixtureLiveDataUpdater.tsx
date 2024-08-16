@@ -20,12 +20,8 @@ export const startFetchLineup = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchLineup = async () => {
       try {
-        if (_DEBUG_CONSOLE_PRINT)
-          console.log('lineup fetch interval id : ', intervalId);
         const response = await dispatch(fetchFixtureLineup(fixtureId)).unwrap();
         if (response && response.lineup !== null) {
-          if (_DEBUG_CONSOLE_PRINT)
-            console.log('lineup fetch success. clear interval!');
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }
@@ -43,23 +39,10 @@ export const startFetchLiveStatus = (fixtureId: number) => {
   return (dispatch: AppDispatch) => {
     const fetchLiveStatus = async () => {
       try {
-        if (_DEBUG_CONSOLE_PRINT)
-          console.log('liveStatus fetch interval id : ', intervalId);
         const response = await dispatch(
           fetchFixtureLiveStatus(fixtureId),
         ).unwrap();
-        if (_DEBUG_CONSOLE_PRINT)
-          console.log(
-            `liveStatus fetch shortStatus=${response.liveStatus.shortStatus}
-          shoudlStop=${shouldStopFetch(response.liveStatus.shortStatus)}
-          / response:`,
-            response,
-          );
         if (shouldStopFetch(response.liveStatus.shortStatus)) {
-          if (_DEBUG_CONSOLE_PRINT)
-            console.log(
-              'liveStatus fetched. interval will be cleared by match finish!',
-            );
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }
@@ -77,16 +60,10 @@ export const startFetchEvents = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchEvents = async () => {
       try {
-        if (_DEBUG_CONSOLE_PRINT)
-          console.log('Events fetch interval id : ', intervalId);
         await dispatch(fetchFixtureEvents(fixtureId)).unwrap();
         const nowStatus =
           getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
-        if (_DEBUG_CONSOLE_PRINT)
-          console.log('Events fetched. live status : ', nowStatus);
         if (nowStatus && shouldStopFetch(nowStatus)) {
-          if (_DEBUG_CONSOLE_PRINT)
-            console.log('Events fetch success. clear interval!');
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }

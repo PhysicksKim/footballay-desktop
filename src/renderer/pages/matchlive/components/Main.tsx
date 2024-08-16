@@ -17,7 +17,7 @@ const Main = () => {
         <ControlIpc />
       </>
       <div className="contents-area">
-        <LineupTab showPhoto={true} />
+        <LineupTab />
       </div>
     </div>
   );

@@ -17,12 +17,12 @@ const SideNavigation = () => {
       <div className="division-bar" />
       <Link to="/matchlive-control" className="matchlive-control">
         <div className="selected-fixture">
-          <div className="selected-fixture-item">라인업 컨트롤</div>
+          <div className="selected-fixture-item">라이브 정보 컨트롤</div>
         </div>
       </Link>
-      <Link to="/debug-tool" className="debug-tool-menu">
+      {/* <Link to="/debug-tool" className="debug-tool-menu">
         <div className="debug-tool">DEBUG</div>
-      </Link>
+      </Link> */}
     </div>
   );
 };

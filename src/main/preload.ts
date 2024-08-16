@@ -3,10 +3,13 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
+  | 'main-window-control'
+  | 'control-to-matchlive'
   // Update Status Channels
   | 'update-status'
   // App Channels
   | 'react-ready'
+  | 'matchlive-react-ready'
   | 'open-matchlive-window'
   // Stomp Channels
   | 'init-stomp-client'
