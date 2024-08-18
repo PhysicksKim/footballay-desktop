@@ -53,7 +53,8 @@ export const applyEventsToLineup = (
   events.forEach((event) => {
     switch (event.type) {
       case 'SUBST': {
-        const { player: inPlayer, assist: outPlayer } = event;
+        // TODO : 교체 이벤트에서 in out 선수가 각각 player 인지 assist 인지가 자꾸 바뀜. 확인 후 차후 동적으로 처리하도록 향상시켜야 할 듯
+        const { player: outPlayer, assist: inPlayer } = event;
 
         if (!inPlayer || !outPlayer) break;
 
