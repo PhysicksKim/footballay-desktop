@@ -1,5 +1,6 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
+import { log } from 'console';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
@@ -21,13 +22,17 @@ export type Channels =
   | 'to-matchlive'
   | 'to-app';
 
+console.log('preload.ts: contextBridge.exposeInMainWorld');
+
 const electronHandler = {
   ipcRenderer: {
     send(channel: Channels, ...args: any[]) {
+      console.log('ipcRenderer.send', channel, args);
       ipcRenderer.send(channel, ...args);
     },
     on(channel: Channels, func: (...args: any[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: any[]) => {
+        console.log('ipcRenderer.on', channel, args);
         func(...args);
       };
       ipcRenderer.on(channel, subscription);

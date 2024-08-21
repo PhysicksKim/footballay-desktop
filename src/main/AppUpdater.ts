@@ -3,7 +3,7 @@ import log from 'electron-log';
 import { BrowserWindow } from 'electron';
 
 export class AppUpdater {
-  constructor(private mainWindow: BrowserWindow | null) {
+  constructor(private mainWindow: BrowserWindow | undefined) {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
