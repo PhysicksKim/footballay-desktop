@@ -79,15 +79,19 @@
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
+      "\\.(css|less|sass|scss)$": "identity-obj-proxy",
+      "^@src/(.*)$": "<rootDir>/src/$1",
+      "^@main/(.*)$": "<rootDir>/src/main/$1",
+      "^@app/(.*)$": "<rootDir>/src/renderer/pages/app/$1",
+      "^@matchlive/(.*)$": "<rootDir>/src/renderer/pages/matchlive/$1"
     },
-    "setupFiles": [
-      "./.erb/scripts/check-build-exists.ts"
-    ],
     "testEnvironment": "jsdom",
     "testEnvironmentOptions": {
       "url": "http://localhost/"
     },
+    "setupFiles": [
+      "./.erb/scripts/check-build-exists.ts"
+    ],
     "testPathIgnorePatterns": [
       "release/app/dist",
       ".erb/dll"

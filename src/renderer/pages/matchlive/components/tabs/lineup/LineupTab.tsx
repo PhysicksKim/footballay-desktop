@@ -52,6 +52,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const [homeGridPlayerHeight, setHomeGridPlayerHeight] = useState(0);
   const [awayGridPlayerHeight, setAwayGridPlayerHeight] = useState(0);
   const lineupRef = useRef<TeamLineups | null | undefined>(lineup);
+  const [processedHomeLineup, setProcessedHomeLineup] =
+    useState<ViewLineup | null>(null);
+  const [processedAwayLineup, setProcessedAwayLineup] =
+    useState<ViewLineup | null>(null);
 
   useEffect(() => {
     lineupRef.current = lineup; // lineup 상태를 최신으로 유지하기 위해 ref를 사용
@@ -87,19 +91,23 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   }, [lineupRef]);
 
   useEffect(() => {
+    const _processedHomeLineup = lineup
+      ? processLineupToView(lineup.home, events?.events || [], applyEvents)
+      : null;
+    const _processedAwayLineup = lineup
+      ? processLineupToView(lineup.away, events?.events || [], applyEvents)
+      : null;
+    setProcessedHomeLineup(_processedHomeLineup);
+    setProcessedAwayLineup(_processedAwayLineup);
+  }, [lineup, events]);
+
+  useEffect(() => {
     if (lineup) {
       updatePlayerSize();
     }
   }, [lineup]);
 
   const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
-
-  const processedHomeLineup = lineup
-    ? processLineupToView(lineup.home, events?.events || [], applyEvents)
-    : null;
-  const processedAwayLineup = lineup
-    ? processLineupToView(lineup.away, events?.events || [], applyEvents)
-    : null;
 
   return (
     <LineupTabContainer>
@@ -125,7 +133,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           </TeamLogoName>
         )}
       </TeamContainer>
-      <TeamContainer ref={awayTeamContainerRef} isAway>
+      <TeamContainer ref={awayTeamContainerRef} $isAway>
         {processedAwayLineup && (
           <LineupView
             lineup={processedAwayLineup}

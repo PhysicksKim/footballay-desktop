@@ -16,7 +16,7 @@ const LineupTabContainer = styled.div`
   padding-bottom: 5px;
 `;
 
-const TeamContainer = styled.div<{ isAway?: boolean }>`
+const TeamContainer = styled.div<{ $isAway?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,7 +24,7 @@ const TeamContainer = styled.div<{ isAway?: boolean }>`
   height: 50%;
   box-sizing: border-box;
   overflow: hidden;
-  flex-direction: ${({ isAway }) => {
+  flex-direction: ${({ $isAway: isAway }) => {
     return isAway ? 'column-reverse' : 'column';
   }};
   margin-top: 10px;
@@ -39,20 +39,19 @@ const TeamName = styled.h2`
   position: absolute;
 `;
 
-const GridLine = styled.div<{ height: number; isAway?: boolean }>`
+const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
   position: relative;
   width: 100%;
-  height: ${(props) => props.height}%;
+  height: ${(props) => props.$height}%;
   display: flex;
-  /* flex-direction: row-reverse; */
 `;
 
 const GridPlayer = styled.div<{
-  top: number;
-  left: number;
-  width: number;
-  playerSize: number;
-  lineHeight: number;
+  $top: number;
+  $left: number;
+  $width: number;
+  $playerSize: number;
+  $lineHeight: number;
 }>`
   position: absolute;
   display: flex;
@@ -60,9 +59,9 @@ const GridPlayer = styled.div<{
   align-items: center;
   text-align: center;
   top: 0%;
-  left: ${(props) => props.left}%;
-  width: ${(props) => props.width}%;
-  height: ${(props) => props.lineHeight}px;
+  left: ${(props) => props.$left}%;
+  width: ${(props) => props.$width}%;
+  height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
 
   .player-number-photo-box {
@@ -71,7 +70,7 @@ const GridPlayer = styled.div<{
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    height: ${(props) => props.lineHeight - 30}px;
+    height: ${(props) => props.$lineHeight - 20}px;
 
     img {
       height: 100%;
@@ -90,7 +89,7 @@ const GridPlayer = styled.div<{
       font-weight: bold;
       border-radius: 50%;
       bottom: 0;
-      width: ${(props) => props.playerSize * 1.2}px;
+      width: ${(props) => props.$playerSize * 1.2}px;
       height: 100%;
 
       svg {
@@ -105,7 +104,7 @@ const GridPlayer = styled.div<{
         bottom: 50%;
         left: 50%;
         transform: translate(-50%, 70%);
-        font-size: ${(props) => props.playerSize * 0.32}px;
+        font-size: ${(props) => props.$playerSize * 0.32}px;
       }
     }
   }
@@ -113,7 +112,8 @@ const GridPlayer = styled.div<{
   // 선수 이름
   span {
     display: inline-block;
-    font-size: 20px;
+    font-size: 14px;
+    font-weight: 500;
     overflow-y: hidden;
     white-space: nowrap;
     margin-top: 3px;
@@ -155,10 +155,10 @@ const TeamLogoName = styled.div`
   }
 `;
 
-const SubInMarkWrapper = styled.div<{ showPhoto?: boolean }>`
+const SubInMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  top: 0;
-  right: ${({ showPhoto }) => (showPhoto ? '-40%' : '5%')};
+  top: 5px;
+  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-31%' : '5%')};
   width: 20px;
   height: 20px;
   display: flex;
@@ -178,7 +178,7 @@ const SubIndicatorInner = styled.div`
 
 const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <SubInMarkWrapper showPhoto={showPhoto}>
+    <SubInMarkWrapper $showPhoto={showPhoto}>
       <SubIndicatorInner>
         <FontAwesomeIcon icon={faArrowUp} />
       </SubIndicatorInner>
@@ -186,10 +186,10 @@ const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   );
 };
 
-const CardYellowWrapper = styled.div<{ showPhoto?: boolean }>`
+const CardYellowWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  top: 50%;
-  right: ${({ showPhoto }) => (showPhoto ? '-30%' : '10%')};
+  bottom: 5%;
+  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-22%' : '10%')};
   width: 14px;
   height: 20px;
   display: flex;
@@ -211,16 +211,16 @@ const CardYellowInner = styled.div`
 
 const CardYellow: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardYellowWrapper showPhoto={showPhoto}>
+    <CardYellowWrapper $showPhoto={showPhoto}>
       <CardYellowInner />
     </CardYellowWrapper>
   );
 };
 
-const CardRedWrapper = styled.div<{ showPhoto?: boolean }>`
+const CardRedWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  top: 50%;
-  right: ${({ showPhoto }) => (showPhoto ? '-30%' : '10%')};
+  bottom: 5%;
+  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-22%' : '10%')};
   width: 14px;
   height: 20px;
   display: flex;
@@ -242,16 +242,16 @@ const CardRedInner = styled.div`
 
 const CardRed: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardRedWrapper showPhoto={showPhoto}>
+    <CardRedWrapper $showPhoto={showPhoto}>
       <CardRedInner />
     </CardRedWrapper>
   );
 };
 
-const GoalMarkWrapper = styled.div<{ showPhoto?: boolean }>`
+const GoalMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
   bottom: 5%;
-  left: ${({ showPhoto }) => (showPhoto ? '-45%' : '3%')};
+  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-30%' : '3%')};
   width: 20px;
   height: 20px;
   display: flex;
@@ -272,7 +272,7 @@ const GoalIndicatorInner = styled.div`
 
 const GoalMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <GoalMarkWrapper showPhoto={showPhoto}>
+    <GoalMarkWrapper $showPhoto={showPhoto}>
       <GoalIndicatorInner>
         <FontAwesomeIcon icon={faFutbol} />
       </GoalIndicatorInner>

@@ -5,7 +5,7 @@ export interface FixtureLiveOptionState {
 }
 
 const initialState: FixtureLiveOptionState = {
-  showPhoto: false,
+  showPhoto: true,
 };
 
 const showPhotoSlice = createSlice({

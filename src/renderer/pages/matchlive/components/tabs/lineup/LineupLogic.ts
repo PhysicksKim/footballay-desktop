@@ -1,6 +1,29 @@
 import { LineupTeam, FixtureEvent } from '@src/types/FixtureIpc';
 import { ViewPlayer, ViewLineup } from './LineupTypes';
 
+export const isSubOutPlayer = (
+  checkId: number,
+  lineup: ViewPlayer[][],
+): boolean => {
+  for (let i = 0; i < lineup.length; i++) {
+    for (let j = 0; j < lineup[i].length; j++) {
+      let currentPlayer = lineup[i][j];
+      if (!currentPlayer) {
+        continue;
+      }
+
+      while (currentPlayer?.subInPlayer) {
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+
+      if (currentPlayer?.id === checkId) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
   const playersByGrid: ViewPlayer[][] = [];
 
@@ -46,17 +69,38 @@ export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
 };
 
 // 퇴장 있는 경기 k리그(292) 대구vs포항(1163025)
+/**
+ *
+ * @param lineup home 또는 away 팀의 라인업 정보
+ * @param events home 과 away 를 모두 포함한 이벤트 정보
+ * @returns
+ */
 export const applyEventsToLineup = (
   lineup: ViewLineup,
   events: FixtureEvent[],
 ): ViewLineup => {
-  events.forEach((event) => {
+  events.forEach((event, index) => {
     switch (event.type) {
       case 'SUBST': {
-        // TODO : 교체 이벤트에서 in out 선수가 각각 player 인지 assist 인지가 자꾸 바뀜. 확인 후 차후 동적으로 처리하도록 향상시켜야 할 듯
-        const { player: outPlayer, assist: inPlayer } = event;
+        const { player, assist } = event;
 
-        if (!inPlayer || !outPlayer) break;
+        if (!player || !assist) break;
+
+        let _out, _in;
+        console.log(
+          'index={' + index + '} isSubOutPlayer',
+          isSubOutPlayer(player.playerId, lineup.players),
+          player.name,
+        );
+        if (isSubOutPlayer(player.playerId, lineup.players)) {
+          _out = player;
+          _in = assist;
+        } else {
+          _out = assist;
+          _in = player;
+        }
+        const outPlayer = _out;
+        const inPlayer = _in;
 
         // lineup.substitutes에서 교체 들어오는 선수 정보를 찾아서 photo와 position 값을 설정
         const substitute = lineup.substitutes.find(
@@ -193,7 +237,6 @@ export const applyEventsToLineup = (
         };
 
         updatePlayerGoal(player.playerId, lineup.players);
-
         break;
       }
 

@@ -11,6 +11,7 @@ import UniformIcon from './UniformIcon';
 import { ViewLineup, ViewPlayer } from './LineupTypes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faCircleArrowUp } from '@fortawesome/free-solid-svg-icons';
+import RetryableImage from '../../common/RetryableImage';
 
 const getFinalPlayer = (player: ViewPlayer): ViewPlayer => {
   let currentPlayer = player;
@@ -33,8 +34,8 @@ const LineupView: React.FC<{
   return lineup.players.map((linePlayers, lineIndex) => (
     <GridLine
       key={`line-${lineIndex}`}
-      height={100 / lineup.players.length}
-      isAway={isAway}
+      $height={100 / lineup.players.length}
+      $isAway={isAway}
     >
       {linePlayers.map((player, index) => {
         const leftPosition = isAway
@@ -48,15 +49,18 @@ const LineupView: React.FC<{
         return (
           <GridPlayer
             key={finalPlayer.id}
-            top={0}
-            left={leftPosition}
-            width={100 / linePlayers.length}
-            playerSize={playerSize}
-            lineHeight={lineHeight}
+            $top={0}
+            $left={leftPosition}
+            $width={100 / linePlayers.length}
+            $playerSize={playerSize}
+            $lineHeight={lineHeight}
           >
             <div className="player-number-photo-box">
               {showPhoto && finalPlayer.photo ? (
-                <img src={finalPlayer.photo} alt={finalPlayer.name} />
+                <RetryableImage
+                  src={finalPlayer.photo}
+                  alt={finalPlayer.name}
+                />
               ) : (
                 <div className="player-number">
                   <UniformIcon color={color} />
