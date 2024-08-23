@@ -110,7 +110,7 @@ const FixtureIpc = () => {
     });
   };
 
-  const receiveMessage = useEffect(() => {
+  useEffect(() => {
     window.electron.ipcRenderer.on('to-matchlive', handleMessage);
 
     return () => {

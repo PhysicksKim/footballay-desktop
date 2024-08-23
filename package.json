@@ -83,7 +83,8 @@
       "^@src/(.*)$": "<rootDir>/src/$1",
       "^@main/(.*)$": "<rootDir>/src/main/$1",
       "^@app/(.*)$": "<rootDir>/src/renderer/pages/app/$1",
-      "^@matchlive/(.*)$": "<rootDir>/src/renderer/pages/matchlive/$1"
+      "^@matchlive/(.*)$": "<rootDir>/src/renderer/pages/matchlive/$1",
+      "^@updatechecker/(.*)$": "<rootDir>/src/renderer/pages/updatechecker/$1"
     },
     "testEnvironment": "jsdom",
     "testEnvironmentOptions": {

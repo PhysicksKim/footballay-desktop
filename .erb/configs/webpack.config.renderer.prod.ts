@@ -27,6 +27,11 @@ const configuration: webpack.Configuration = {
       'matchlive',
       'matchlive.tsx',
     ),
+    updatechecker: path.join(
+      webpackPaths.pagesPath,
+      'updatechecker',
+      'updatechecker.tsx',
+    ),
   },
   resolve: resolveAlias,
   output: {
@@ -122,6 +127,24 @@ const configuration: webpack.Configuration = {
         'matchlive.html',
       ),
       chunks: ['matchlive'],
+      minify: {
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+      },
+      isBrowser: false,
+      env: process.env.NODE_ENV,
+      nodeModules: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'updaterchecker.html',
+      template: path.join(
+        webpackPaths.srcRendererPath,
+        'pages',
+        'updaterchecker',
+        'updaterchecker.html',
+      ),
+      chunks: ['updaterchecker'],
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,

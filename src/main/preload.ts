@@ -6,8 +6,6 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 export type Channels =
   | 'main-window-control'
   | 'control-to-matchlive'
-  // Update Status Channels
-  | 'update-status'
   // App Channels
   | 'react-ready'
   | 'matchlive-react-ready'
@@ -19,8 +17,9 @@ export type Channels =
   | 'stomp-message'
   | 'ws-status'
   // Main - Sub Channels
+  | 'to-app'
   | 'to-matchlive'
-  | 'to-app';
+  | 'to-updatechecker';
 
 console.log('preload.ts: contextBridge.exposeInMainWorld');
 
