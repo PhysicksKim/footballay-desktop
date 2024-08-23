@@ -137,14 +137,14 @@ const configuration: webpack.Configuration = {
       nodeModules: false,
     }),
     new HtmlWebpackPlugin({
-      filename: 'updaterchecker.html',
+      filename: 'updatechecker.html',
       template: path.join(
         webpackPaths.srcRendererPath,
         'pages',
-        'updaterchecker',
-        'updaterchecker.html',
+        'updatechecker',
+        'updatechecker.html',
       ),
-      chunks: ['updaterchecker'],
+      chunks: ['updatechecker'],
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,

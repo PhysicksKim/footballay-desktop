@@ -7,6 +7,7 @@ import {
 } from './windowManager';
 import { setupMainWindowIpcMainHandlers } from './ipcManager';
 import { AppUpdater } from './AppUpdater';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -14,15 +15,20 @@ app.on('window-all-closed', () => {
   }
 });
 
-if (process.env.NODE_ENV === 'development') {
-  // Useful for some dev/debugging tasks, but download can
-  // not be validated becuase dev app is not signed
+const isDev = process.env.NODE_ENV === 'development';
+const isTestAutoUpdate = false;
 
+if (isDev && isTestAutoUpdate) {
+  app.getVersion = () => '0.0.1'; // 임의로 낮은 버전을 설정하여 업데이트를 트리거
   Object.defineProperty(app, 'isPackaged', {
     get() {
       return true;
     },
   });
+} else {
+  if (isDev) {
+    console.log('skipped update property injection for dev environment');
+  }
 }
 
 app
@@ -30,9 +36,23 @@ app
   .then(async () => {
     const mainWindow = await createMainWindow();
     const updatecheckerWindow = await createUpdatecheckerWindow();
-    const appUpdater = new AppUpdater(mainWindow);
+    const appUpdater = new AppUpdater(mainWindow, updatecheckerWindow);
     appUpdater.checkForUpdates();
     setupMainWindowIpcMainHandlers(mainWindow, createMatchliveWindow);
+
+    // setTimeout(() => {
+    //   if (!appUpdater.isUpdateChecked) {
+    //     console.log('Update check was skipped or failed.');
+    //     updatecheckerWindow?.close();
+    //     mainWindow?.show();
+    //   }
+    // }, 3000);
+
+    if (isDev && !isTestAutoUpdate) {
+      setTimeout(() => {
+        updatecheckerWindow?.close();
+      }, 1000);
+    }
   })
   .catch((e) => {
     console.log(e);

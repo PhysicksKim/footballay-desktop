@@ -1,0 +1,39 @@
+@import './Color.scss';
+
+.main-container {
+  display: flex;
+  background-color: $theme-dark-blue;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: $bright-blue-white;
+
+  .update-animation {
+    margin-bottom: 5px;
+  }
+
+  .main-status-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+
+    .update-status {
+      margin-bottom: 10px;
+    }
+
+    .download-progress {
+      .progress-data {
+        color: $text-secondary;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+}

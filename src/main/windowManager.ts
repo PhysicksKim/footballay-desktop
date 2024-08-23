@@ -32,13 +32,6 @@ export const createMainWindow = async () => {
     mainWindow.focus();
     return;
   }
-
-  console.log('createMainWindow');
-  console.log(
-    'preload path:',
-    path.join(__dirname, '../../.erb/dll/preload.js'),
-  );
-
   mainWindow = new BrowserWindow({
     show: false,
     width: 800,
@@ -99,12 +92,12 @@ export const createUpdatecheckerWindow = async () => {
   }
 
   updatecheckerWindow = new BrowserWindow({
-    // width: 400,
-    // height: 300,
-    width: 700,
-    height: 700,
+    width: 300,
+    height: 200,
     resizable: false,
     parent: mainWindow,
+    frame: false,
+    transparent: true,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
