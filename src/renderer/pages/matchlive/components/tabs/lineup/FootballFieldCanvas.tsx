@@ -3,8 +3,8 @@ import React, { useEffect, useRef } from 'react';
 
 const FootballFieldCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fieldColor = '#107241';
-  const fieldLineColor = '#198b52';
+  const fieldColor = '#008cff97';
+  const fieldLineColor = '#dbe7fa39';
   const lineWidth = 10;
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const FootballFieldCanvas: React.FC = () => {
         const outLineOffset = 50;
 
         // 배경 색상 설정 (초록색 잔디)
-        ctx.fillStyle = '#107241';
+        ctx.fillStyle = fieldColor;
         ctx.fillRect(0, 0, width, height);
 
         // 골라인과 터치라인
@@ -109,7 +109,7 @@ const FootballFieldCanvas: React.FC = () => {
     <canvas
       ref={canvasRef}
       width="1000" // 기본 캔버스 너비
-      height="1700" // 기본 캔버스 높이 (세로 길이를 더 길게 설정)
+      height="2000" // 기본 캔버스 높이 (세로 길이를 더 길게 설정)
       style={{
         width: '100%',
         height: '100%',
