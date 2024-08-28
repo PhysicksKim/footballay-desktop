@@ -1,3 +1,4 @@
+import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
 
 export const setupMainWindowIpcMainHandlers = (
@@ -60,6 +61,13 @@ export const setupMatchliveIpcMainHandlers = (
   });
 
   ipcMain.on('to-matchlive', (event, data) => {
-    matchliveWindow!.webContents.send('to-matchlive', data);
+    if (!matchliveWindow) {
+      return;
+    }
+    try {
+      matchliveWindow?.webContents?.send('to-matchlive', data);
+    } catch (e) {
+      log.error('to-matchlive ipc error message', e);
+    }
   });
 };

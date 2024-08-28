@@ -142,7 +142,6 @@ export const createMatchliveWindow = async () => {
     resizable: true,
     transparent: true,
     frame: false,
-    parent: mainWindow,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
