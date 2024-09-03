@@ -45,7 +45,7 @@ export class AppUpdater {
       console.log('Checking for update...');
       AppState.isUpdateInProgress = true;
       if (this.updatecheckerWindow) {
-        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+        this.updatecheckerWindow?.webContents.send('to-updatechecker', {
           type: 'CHECKING_FOR_UPDATE',
           data: {},
         });
@@ -56,7 +56,7 @@ export class AppUpdater {
       log.info('Update available.');
       AppState.isUpdateInProgress = true;
       if (this.updatecheckerWindow) {
-        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+        this.updatecheckerWindow?.webContents.send('to-updatechecker', {
           type: 'UPDATE_AVAILABLE',
           data: {},
         });
@@ -67,7 +67,7 @@ export class AppUpdater {
       log.info('Update not available.');
       AppState.isUpdateInProgress = false;
       if (this.updatecheckerWindow) {
-        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+        this.updatecheckerWindow?.webContents.send('to-updatechecker', {
           type: 'UPDATE_NOT_AVAILABLE',
           data: {},
         });
@@ -83,7 +83,7 @@ export class AppUpdater {
       log.error('Error in auto-updater. ' + err);
       AppState.isUpdateInProgress = false;
       if (this.updatecheckerWindow) {
-        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+        this.updatecheckerWindow?.webContents.send('to-updatechecker', {
           type: 'UPDATE_ERROR',
           data: {
             error: err,
@@ -123,14 +123,16 @@ export class AppUpdater {
     autoUpdater.on('update-downloaded', (info) => {
       log.info('Update downloaded');
       AppState.isUpdateInProgress = false;
-      if (this.updatecheckerWindow) {
-        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+      if (this.updatecheckerWindow && !this.updatecheckerWindow.isDestroyed()) {
+        this.updatecheckerWindow?.webContents.send('to-updatechecker', {
           type: 'UPDATE_DOWNLOADED',
           data: {},
         });
       }
       // quitAndInstall: (isSilent: boolean, isForceRunAfter: boolean) => void;
-      autoUpdater.quitAndInstall(true, true);
+      setTimeout(() => {
+        autoUpdater.quitAndInstall(true, true);
+      }, 1000);
     });
   }
 

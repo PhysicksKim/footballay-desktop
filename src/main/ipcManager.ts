@@ -28,7 +28,7 @@ export const setupMainWindowIpcMainHandlers = (
   );
 
   ipcMain.on('to-app', (event, data) => {
-    mainWindow!.webContents.send('to-app', data);
+    mainWindow?.webContents.send('to-app', data);
   });
 
   ipcMain.on('matchlive-react-ready', () => {
