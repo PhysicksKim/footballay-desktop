@@ -48,6 +48,16 @@ export const fetchFixtureLiveStatus = createAsyncThunk<
   }
 });
 
+// TODO : name decode 가 필요합니다.
+/**
+ * "playerId": 307123,
+ * "name": "N. O&apos;Reilly",
+ * 예를 들어 위와 같은 선수 이름의 경우 &apos; 를 ' 로 변환해주어야 합니다. (어포스트로피)
+ * 이를 위해 html-entities 라이브러리를 사용하기로 생각중입니다.
+ * he 가 많이 언급되고 쓰이기는 하는데 6년전이 마지막 publish 이므로
+ * html-entities 를 사용하는 것이 더 좋을 것 같습니다.
+ * decode는 아래의 api 응답에서 각 문자열 항목들에 대해 decode 해주면 될 것 같다.
+ */
 export const fetchFixtureLineup = createAsyncThunk<
   FixtureLineup,
   number,

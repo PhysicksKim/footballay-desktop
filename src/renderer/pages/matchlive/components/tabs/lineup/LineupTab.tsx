@@ -108,6 +108,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   }, [lineup]);
 
   const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
+  const minGridPlayerHeight = Math.min(
+    homeGridPlayerHeight,
+    awayGridPlayerHeight,
+  );
 
   return (
     <LineupTabContainer>
@@ -118,7 +122,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
             lineup={processedHomeLineup}
             isAway={false}
             playerSize={playerSize}
-            lineHeight={homeGridPlayerHeight}
+            lineHeight={minGridPlayerHeight}
             showPhoto={showPhoto}
           />
         )}
@@ -139,7 +143,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
             lineup={processedAwayLineup}
             isAway={true}
             playerSize={playerSize}
-            lineHeight={awayGridPlayerHeight}
+            lineHeight={minGridPlayerHeight}
             showPhoto={showPhoto}
           />
         )}
