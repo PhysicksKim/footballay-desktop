@@ -58,6 +58,16 @@ const configuration: webpack.Configuration = {
         'matchlive.tsx',
       ),
     ],
+    updatechecker: [
+      `webpack-dev-server/client?http://localhost:${port}/dist`,
+      'webpack/hot/only-dev-server',
+      path.join(
+        webpackPaths.srcRendererPath,
+        'pages',
+        'updatechecker',
+        'updatechecker.tsx',
+      ),
+    ],
   },
   resolve: resolveAlias,
   output: {
@@ -182,6 +192,25 @@ const configuration: webpack.Configuration = {
       isDevelopment: process.env.NODE_ENV !== 'production',
       nodeModules: webpackPaths.appNodeModulesPath,
     }),
+    new HtmlWebpackPlugin({
+      filename: 'updatechecker.html',
+      template: path.join(
+        webpackPaths.srcRendererPath,
+        'pages',
+        'updatechecker',
+        'updatechecker.html',
+      ),
+      chunks: ['updatechecker'],
+      minify: {
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+      },
+      isBrowser: false,
+      env: process.env.NODE_ENV,
+      isDevelopment: process.env.NODE_ENV !== 'production',
+      nodeModules: webpackPaths.appNodeModulesPath,
+    }),
   ],
   node: {
     __dirname: false,
@@ -192,7 +221,6 @@ const configuration: webpack.Configuration = {
     compress: true,
     hot: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
-    // https: false,
     https: true,
     static: {
       publicPath: '/',

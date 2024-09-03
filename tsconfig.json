@@ -13,10 +13,12 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
+      "@assets/*": ["./assets/*"],
       "@src/*": ["./src/*"],
       "@main/*": ["./src/main/*"],
       "@app/*": ["./src/renderer/pages/app/*"],
-      "@matchlive/*": ["./src/renderer/pages/matchlive/*"]
+      "@matchlive/*": ["./src/renderer/pages/matchlive/*"],
+      "@updatechecker/*": ["./src/renderer/pages/updatechecker/*"]
     }
   },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]

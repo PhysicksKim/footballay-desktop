@@ -1,50 +1,100 @@
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { BrowserWindow } from 'electron';
+import { AppState } from './AppState';
+import path from 'path';
 
 export class AppUpdater {
-  constructor(private mainWindow: BrowserWindow | null) {
+  private _isUpdateChecked: boolean = false;
+
+  get isUpdateChecked() {
+    return this._isUpdateChecked;
+  }
+
+  constructor(
+    private mainWindow: BrowserWindow | undefined,
+    private updatecheckerWindow: BrowserWindow | undefined,
+  ) {
+    if (process.env.NODE_ENV === 'development') {
+      autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
+    }
+
+    // 이벤트 리스너를 추가하여 업데이트 체크 여부 확인
+    autoUpdater.on('checking-for-update', () => {
+      this._isUpdateChecked = true;
+    });
+
+    autoUpdater.on('update-available', () => {
+      this._isUpdateChecked = true;
+    });
+
+    autoUpdater.on('update-not-available', () => {
+      this._isUpdateChecked = true;
+    });
+
+    autoUpdater.on('error', () => {
+      this._isUpdateChecked = true;
+    });
+
+    console.log('AppUpdater constructor');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
     autoUpdater.on('checking-for-update', () => {
       log.info('Checking for update...');
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('update-status', {
-          message: '업데이트 확인 중...',
-          status: 'check',
+      console.log('Checking for update...');
+      AppState.isUpdateInProgress = true;
+      if (this.updatecheckerWindow) {
+        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+          type: 'CHECKING_FOR_UPDATE',
+          data: {},
         });
       }
     });
 
     autoUpdater.on('update-available', (info) => {
       log.info('Update available.');
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('update-status', {
-          message: '업데이트가 있습니다. 다운로드 중...',
-          status: 'downloading',
+      AppState.isUpdateInProgress = true;
+      if (this.updatecheckerWindow) {
+        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+          type: 'UPDATE_AVAILABLE',
+          data: {},
         });
       }
     });
 
     autoUpdater.on('update-not-available', (info) => {
       log.info('Update not available.');
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('update-status', {
-          message: '최신 버전입니다.',
-          status: 'latest',
+      AppState.isUpdateInProgress = false;
+      if (this.updatecheckerWindow) {
+        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+          type: 'UPDATE_NOT_AVAILABLE',
+          data: {},
         });
       }
+
+      setTimeout(() => {
+        this.updatecheckerWindow?.close();
+        this.mainWindow?.show();
+      }, 1000);
     });
 
     autoUpdater.on('error', (err) => {
       log.error('Error in auto-updater. ' + err);
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('update-status', {
-          message: '업데이트 중 오류가 발생했습니다.',
-          status: 'error',
+      AppState.isUpdateInProgress = false;
+      if (this.updatecheckerWindow) {
+        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+          type: 'UPDATE_ERROR',
+          data: {
+            error: err,
+          },
         });
       }
+
+      setTimeout(() => {
+        this.updatecheckerWindow?.close();
+        this.mainWindow?.show();
+      }, 1000);
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
@@ -58,21 +108,34 @@ export class AppUpdater {
         progressObj.total +
         ')';
       log.info(logMessage);
+
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'DOWNLOAD_PROGRESS',
+        data: {
+          bytesPerSecond: progressObj.bytesPerSecond,
+          percent: progressObj.percent,
+          transferred: progressObj.transferred,
+          total: progressObj.total,
+        },
+      });
     });
 
     autoUpdater.on('update-downloaded', (info) => {
       log.info('Update downloaded');
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('update-status', {
-          message: '업데이트 다운로드 완료. 앱을 재시작합니다...',
-          status: 'downloaded',
+      AppState.isUpdateInProgress = false;
+      if (this.updatecheckerWindow) {
+        this.updatecheckerWindow.webContents.send('to-updatechecker', {
+          type: 'UPDATE_DOWNLOADED',
+          data: {},
         });
       }
+      // quitAndInstall: (isSilent: boolean, isForceRunAfter: boolean) => void;
       autoUpdater.quitAndInstall(true, true);
     });
   }
 
   checkForUpdates() {
-    autoUpdater.checkForUpdatesAndNotify();
+    console.log('checkForUpdates');
+    autoUpdater.checkForUpdates();
   }
 }
