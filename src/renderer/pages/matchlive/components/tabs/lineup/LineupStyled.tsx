@@ -1,6 +1,7 @@
 import { faArrowUp, faFutbol } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
+import { Goal } from './LineupTypes';
 
 const LineupTabContainer = styled.div`
   position: relative;
@@ -257,25 +258,47 @@ const GoalMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e8eaff;
+  /* background-color: #e8eaff; */
   color: black;
   box-sizing: border-box;
   border-radius: 40%;
 `;
 
-const GoalIndicatorInner = styled.div`
+const GoalIndicatorInner = styled.div<{ $index: number; $isOwnGoal: boolean }>`
   display: flex;
+  position: absolute;
   justify-content: center;
   align-items: center;
   font-size: 22px;
+  // Own goal인 경우 background 빨간색으로 표시
+  background-color: ${({ $isOwnGoal }) => ($isOwnGoal ? '#f1e1e1' : 'white')};
+  border-radius: 50%;
+
+  // index 만큼 좌측으로 5px씩 이동
+  left: ${({ $index }) => `-${$index * 7}px`};
+  scale: 1;
 `;
 
-const GoalMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
+// TODO : 골 표시 수정 필요. 멀티 골 표시 방식 및 own goal 표시 방식 수정 필요
+const GoalMark: React.FC<{ goal: Goal[]; showPhoto: boolean }> = ({
+  goal,
+  showPhoto,
+}) => {
   return (
     <GoalMarkWrapper $showPhoto={showPhoto}>
-      <GoalIndicatorInner>
-        <FontAwesomeIcon icon={faFutbol} />
-      </GoalIndicatorInner>
+      {goal.map((goal, index) => {
+        return (
+          <GoalIndicatorInner $index={index} $isOwnGoal={goal.ownGoal}>
+            <FontAwesomeIcon
+              icon={faFutbol}
+              style={{
+                scale: '1.15',
+                color: goal.ownGoal ? '#961d1d' : 'black',
+              }}
+            />
+          </GoalIndicatorInner>
+        );
+      })}
     </GoalMarkWrapper>
   );
 };

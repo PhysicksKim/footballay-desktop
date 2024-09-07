@@ -1,5 +1,6 @@
-import { LineupTeam, FixtureEvent } from '@src/types/FixtureIpc';
-import { ViewPlayer, ViewLineup } from './LineupTypes';
+import { LineupTeam, FixtureEvent, EventPlayer } from '@src/types/FixtureIpc';
+import { ViewPlayer, ViewLineup, ViewPlayerEvents, Goal } from './LineupTypes';
+import { de } from 'date-fns/locale';
 
 export const isSubOutPlayer = (
   checkId: number,
@@ -37,11 +38,11 @@ export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
     if (!playersByGrid[gridLine]) {
       playersByGrid[gridLine] = [];
     }
-    const events = {
+    const events: ViewPlayerEvents = {
       subIn: false,
       yellow: false,
       red: false,
-      scored: false,
+      goal: [],
     };
     const subInPlayer = null;
 
@@ -62,13 +63,123 @@ export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
         subIn: false,
         yellow: false,
         red: false,
-        scored: false,
+        goal: [],
       },
     })),
   };
 };
 
-// 퇴장 있는 경기 k리그(292) 대구vs포항(1163025)
+const updatePlayerGoal = (event: FixtureEvent, players: ViewPlayer[][]) => {
+  const { player } = event;
+
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < players[i].length; j++) {
+      const targetPlayer = players[i][j];
+
+      if (targetPlayer.id === player.playerId) {
+        markPlayerGotScored(targetPlayer, event);
+        return;
+      }
+
+      // 재귀적으로 교체 선수가 골 넣었는지 체크
+      let currentPlayer = targetPlayer.subInPlayer;
+      while (currentPlayer) {
+        if (currentPlayer.id === player.playerId) {
+          markPlayerGotScored(currentPlayer, event);
+          return;
+        }
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+    }
+  }
+};
+
+const updatePlayerCard = (event: FixtureEvent, players: ViewPlayer[][]) => {
+  const { player, detail } = event;
+  const cardType = detail;
+
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < players[i].length; j++) {
+      const targetPlayer = players[i][j];
+
+      if (targetPlayer.id === player.playerId) {
+        if (cardType === 'Yellow Card') {
+          targetPlayer.events.yellow = true;
+        } else if (cardType === 'Red Card') {
+          targetPlayer.events.red = true;
+        }
+        return;
+      }
+
+      let currentPlayer = targetPlayer.subInPlayer;
+      while (currentPlayer) {
+        if (currentPlayer.id === player.playerId) {
+          if (cardType === 'Yellow Card') {
+            currentPlayer.events.yellow = true;
+          } else if (cardType === 'Red Card') {
+            currentPlayer.events.red = true;
+          }
+          return;
+        }
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+    }
+  }
+};
+
+/**
+ * 자책골인 경우 event 에서 detail: "Own Goal" 로 표기됨.
+ * @param player
+ * @param event
+ */
+const markPlayerGotScored = (player: ViewPlayer, event: FixtureEvent): void => {
+  const { elapsed, detail } = event;
+  const isOwnGoal: boolean = (() => {
+    return detail?.toLowerCase().includes('own');
+  })();
+  const goal: Goal = {
+    minute: elapsed,
+    ownGoal: isOwnGoal,
+  };
+  player.events.goal.push(goal);
+};
+
+// players 2차원 배열을 순회하면서 subOutId === viewPlayer.id 인 경우를 찾기
+const updateSubInPlayer = (
+  subInViewPlayer: ViewPlayer,
+  subOutId: number,
+  players: ViewPlayer[][],
+) => {
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < players[i].length; j++) {
+      const player = players[i][j];
+      const grid = player.grid;
+
+      if (player.id === subOutId) {
+        // 교체 되어 나가는 선수를 찾았을 경우, subInPlayer 업데이트
+        subInViewPlayer.grid = grid;
+        player.subInPlayer = subInViewPlayer;
+        return;
+      }
+
+      // 교체된 선수가 다시 교체되었는지 재귀적으로 확인
+      let currentPlayer = player.subInPlayer;
+      while (currentPlayer) {
+        if (currentPlayer.id === subOutId) {
+          subInViewPlayer.grid = grid;
+          currentPlayer.subInPlayer = subInViewPlayer;
+          return;
+        }
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+    }
+  }
+};
+/*
+  퇴장 있는 경기 : k리그(292) 대구vs포항 (1163025)
+  자책골 : epl(39) 시즌2024 맨시티vs웨햄 (1208050)
+  해트트릭 : epl(39) 시즌2024 맨시티vs웨햄 (1208050)
+*/
 /**
  *
  * @param lineup home 또는 away 팀의 라인업 정보
@@ -87,11 +198,6 @@ export const applyEventsToLineup = (
         if (!player || !assist) break;
 
         let _out, _in;
-        console.log(
-          'index={' + index + '} isSubOutPlayer',
-          isSubOutPlayer(player.playerId, lineup.players),
-          player.name,
-        );
         if (isSubOutPlayer(player.playerId, lineup.players)) {
           _out = player;
           _in = assist;
@@ -122,124 +228,25 @@ export const applyEventsToLineup = (
             subIn: true, // 교체되어 들어가는 선수이므로 true
             yellow: false,
             red: false,
-            scored: false,
+            goal: [],
           },
           subInPlayer: null,
         };
 
         const subOutId = outPlayer.playerId;
 
-        // players 2차원 배열을 순회하면서 subOutId === viewPlayer.id 인 경우를 찾기
-        const updateSubInPlayer = (
-          _subInViewPlayer: ViewPlayer,
-          _subOutId: number,
-          players: ViewPlayer[][],
-        ) => {
-          for (let i = 0; i < players.length; i++) {
-            for (let j = 0; j < players[i].length; j++) {
-              const player = players[i][j];
-              const grid = player.grid;
-
-              if (player.id === _subOutId) {
-                // 교체 되어 나가는 선수를 찾았을 경우, subInPlayer 업데이트
-                _subInViewPlayer.grid = grid;
-                player.subInPlayer = _subInViewPlayer;
-                return;
-              }
-
-              // 교체된 선수가 다시 교체되었는지 재귀적으로 확인
-              let currentPlayer = player.subInPlayer;
-              while (currentPlayer) {
-                if (currentPlayer.id === subOutId) {
-                  _subInViewPlayer.grid = grid;
-                  currentPlayer.subInPlayer = subInViewPlayer;
-                  return;
-                }
-                currentPlayer = currentPlayer.subInPlayer;
-              }
-            }
-          }
-        };
-
         // 홈팀과 원정팀의 players를 순회하며 업데이트
         updateSubInPlayer(subInViewPlayer, subOutId, lineup.players);
-
         break;
       }
       case 'CARD': {
-        const { player, detail } = event;
-
-        const updatePlayerCard = (
-          playerId: number,
-          cardType: string,
-          players: ViewPlayer[][],
-        ) => {
-          for (let i = 0; i < players.length; i++) {
-            for (let j = 0; j < players[i].length; j++) {
-              const targetPlayer = players[i][j];
-
-              if (targetPlayer.id === player.playerId) {
-                if (cardType === 'Yellow Card') {
-                  targetPlayer.events.yellow = true;
-                } else if (cardType === 'Red Card') {
-                  targetPlayer.events.red = true;
-                }
-                return;
-              }
-
-              let currentPlayer = targetPlayer.subInPlayer;
-              while (currentPlayer) {
-                if (currentPlayer.id === player.playerId) {
-                  if (cardType === 'Yellow Card') {
-                    currentPlayer.events.yellow = true;
-                  } else if (cardType === 'Red Card') {
-                    currentPlayer.events.red = true;
-                  }
-                  return;
-                }
-                currentPlayer = currentPlayer.subInPlayer;
-              }
-            }
-          }
-        };
-
-        updatePlayerCard(player.playerId, detail, lineup.players);
-
+        updatePlayerCard(event, lineup.players);
         break;
       }
-
       case 'GOAL': {
-        const { player } = event;
-
-        const updatePlayerGoal = (
-          playerId: number,
-          players: ViewPlayer[][],
-        ) => {
-          for (let i = 0; i < players.length; i++) {
-            for (let j = 0; j < players[i].length; j++) {
-              const targetPlayer = players[i][j];
-
-              if (targetPlayer.id === player.playerId) {
-                targetPlayer.events.scored = true;
-                return;
-              }
-
-              let currentPlayer = targetPlayer.subInPlayer;
-              while (currentPlayer) {
-                if (currentPlayer.id === player.playerId) {
-                  currentPlayer.events.scored = true;
-                  return;
-                }
-                currentPlayer = currentPlayer.subInPlayer;
-              }
-            }
-          }
-        };
-
-        updatePlayerGoal(player.playerId, lineup.players);
+        updatePlayerGoal(event, lineup.players);
         break;
       }
-
       default:
         break;
     }
@@ -247,6 +254,7 @@ export const applyEventsToLineup = (
 
   return lineup;
 };
+
 export const processLineupToView = (
   teamLineup: LineupTeam,
   events: FixtureEvent[],

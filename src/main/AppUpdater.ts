@@ -76,7 +76,7 @@ export class AppUpdater {
       setTimeout(() => {
         this.updatecheckerWindow?.close();
         this.mainWindow?.show();
-      }, 1000);
+      }, 200);
     });
 
     autoUpdater.on('error', (err) => {
@@ -94,7 +94,7 @@ export class AppUpdater {
       setTimeout(() => {
         this.updatecheckerWindow?.close();
         this.mainWindow?.show();
-      }, 1000);
+      }, 200);
     });
 
     autoUpdater.on('download-progress', (progressObj) => {

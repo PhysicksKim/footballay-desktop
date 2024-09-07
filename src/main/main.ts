@@ -40,14 +40,6 @@ app
     appUpdater.checkForUpdates();
     setupMainWindowIpcMainHandlers(mainWindow, createMatchliveWindow);
 
-    // setTimeout(() => {
-    //   if (!appUpdater.isUpdateChecked) {
-    //     console.log('Update check was skipped or failed.');
-    //     updatecheckerWindow?.close();
-    //     mainWindow?.show();
-    //   }
-    // }, 3000);
-
     if (isDev && !isTestAutoUpdate) {
       setTimeout(() => {
         updatecheckerWindow?.close();

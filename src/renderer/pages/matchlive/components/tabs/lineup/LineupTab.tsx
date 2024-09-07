@@ -25,12 +25,7 @@ import {
 } from './LineupStyled';
 import LineupView from './LineupView';
 import { processLineupToView } from './LineupLogic';
-import {
-  ViewPlayer,
-  ViewLineup,
-  DisplayPlayer,
-  DisplayLineup,
-} from './LineupTypes';
+import { ViewPlayer, ViewLineup } from './LineupTypes';
 
 export interface LineupTabProps {
   applyEvents?: boolean;

@@ -76,8 +76,11 @@ const LineupView: React.FC<{
               {finalPlayer.events.red && (
                 <CardRed showPhoto={photoExistAndShowPhoto} />
               )}
-              {finalPlayer.events.scored && (
-                <GoalMark showPhoto={photoExistAndShowPhoto} />
+              {finalPlayer.events.goal.length > 0 && (
+                <GoalMark
+                  goal={finalPlayer.events.goal}
+                  showPhoto={photoExistAndShowPhoto}
+                />
               )}
             </div>
             <span style={{ position: 'relative', overflow: 'visible' }}>
