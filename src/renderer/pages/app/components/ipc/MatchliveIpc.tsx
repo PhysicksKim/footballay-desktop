@@ -25,7 +25,7 @@ export type ReceiveIpcType =
   | 'GET_FIXTURE_LIVE_STATUS'
   | 'GET_FIXTURE_LINEUP'
   | 'GET_FIXTURE_EVENTS';
-// export type SendIpcType =
+
 export interface IpcMessage {
   type: ReceiveIpcType;
   data?: any;
@@ -59,10 +59,53 @@ const sendLineup = (fixtureLineup: FixtureLineup | null) => {
   });
 };
 
-const sendEvents = (fixtureEvents: FixtureEventResponse | null) => {
+const getFilteredEvents = (
+  fixtureEvents: FixtureEventResponse,
+  filterEvents: FixtureEvent[],
+): FixtureEventResponse => {
+  const fixtureId = fixtureEvents.fixtureId;
+
+  const filteredEvents: FixtureEvent[] = fixtureEvents.events.filter(
+    (event) => {
+      for (let i = 0; i < filterEvents.length; i++) {
+        const filterEvent = filterEvents[i];
+        if (
+          event.sequence === filterEvent.sequence &&
+          event.type === filterEvent.type &&
+          event.elapsed === filterEvent.elapsed &&
+          event.extraTime === filterEvent.extraTime &&
+          event.team.teamId === filterEvent.team.teamId &&
+          event.player.playerId === filterEvent.player.playerId
+        ) {
+          return false;
+        }
+      }
+      return true;
+    },
+  );
+
+  return {
+    fixtureId: fixtureId,
+    events: filteredEvents,
+  };
+};
+
+const sendEvents = (
+  fixtureEvents: FixtureEventResponse | null,
+  filterList: FixtureEvent[] = [],
+) => {
+  if (!fixtureEvents) {
+    window.electron.ipcRenderer.send('to-matchlive', {
+      type: 'SET_EVENTS',
+      data: fixtureEvents,
+    });
+    return;
+  }
+  const filteredEvents = getFilteredEvents(fixtureEvents, filterList);
+  console.log('send filtered events');
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_EVENTS',
-    data: fixtureEvents,
+    data: filteredEvents,
   });
 };
 
@@ -88,6 +131,9 @@ const MatchliveIpc = () => {
   );
   const fixtureEvents = useSelector(
     (state: RootState) => state.fixtureLive.events,
+  );
+  const filterEvents = useSelector(
+    (state: RootState) => state.fixtureLiveControl.filterEvents,
   );
 
   const showPhoto = useSelector(
@@ -176,7 +222,7 @@ const MatchliveIpc = () => {
 
   useEffect(() => {
     if (getFixtureEventsFlag) {
-      sendEvents(fixtureEvents);
+      sendEvents(fixtureEvents, filterEvents);
       setGetFixtureEventsFlag(false);
     }
   }, [getFixtureEventsFlag]);
@@ -190,9 +236,9 @@ const MatchliveIpc = () => {
   }, [fixtureLineup]);
 
   useEffect(() => {
-    sendEvents(fixtureEvents);
+    sendEvents(fixtureEvents, filterEvents);
     console.log('fixtureEvents updated. data:', fixtureEvents);
-  }, [fixtureEvents]);
+  }, [fixtureEvents, filterEvents]);
 
   useEffect(() => {
     showPhotoRef.current = showPhoto;

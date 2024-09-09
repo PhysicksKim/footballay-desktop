@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import '@app/styles/tabs/MatchliveControlTab.scss';
 import { setShowPhoto } from '../../store/slices/fixtureLiveOptionSlice';
+import {
+  addFilterEvent,
+  removeFilterEvent,
+} from '../../store/slices/fixtureLiveControlSlice';
+import { FixtureEvent } from '@src/types/FixtureIpc';
 
 const MatchliveControlTab = () => {
   const dispatch = useDispatch();
@@ -14,6 +19,12 @@ const MatchliveControlTab = () => {
   const showPhoto = useSelector(
     (state: RootState) => state.fixtureLiveOption.showPhoto,
   );
+  const fixtureEvents = useSelector(
+    (state: RootState) => state.fixtureLive.events,
+  );
+  const filterEvents = useSelector(
+    (state: RootState) => state.fixtureLiveControl.filterEvents,
+  ); // 필터된 이벤트 가져오기
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
   const parseKickoffTime = (dateString: string) => {
@@ -60,6 +71,22 @@ const MatchliveControlTab = () => {
   const closeMatchlive = () => {
     window.electron.ipcRenderer.send('control-to-matchlive', 'close');
   };
+
+  const handleAddFilter = (event: FixtureEvent) => {
+    // TODO : fixtureEvent to filterEvent 변환해서 넣어줘야함
+    dispatch(addFilterEvent(event)); // 이벤트를 필터에 추가
+  };
+
+  const handleRemoveFilter = (event: FixtureEvent) => {
+    dispatch(removeFilterEvent(event)); // 필터에서 이벤트 제거
+  };
+
+  const unfilteredEvents = fixtureEvents?.events.filter(
+    (event) =>
+      !filterEvents.some(
+        (filterEvent) => filterEvent.sequence === event.sequence,
+      ),
+  );
 
   return (
     <div ref={contentTabContainerRef} className="matchlive-control-container">
@@ -166,6 +193,55 @@ const MatchliveControlTab = () => {
         <label htmlFor="show-profile" className="show-profile-box-label">
           프로필 사진 표시
         </label>
+      </div>
+
+      {/* fixture event list */}
+      {/* 이벤트 리스트 */}
+      <div className="fixture-event-list">
+        <div className="fixture-event-list-title">
+          <span>이벤트 리스트</span>
+        </div>
+        <div className="fixture-event-list-box">
+          {unfilteredEvents &&
+            unfilteredEvents.map((event, index) => (
+              <div
+                key={index}
+                className="fixture-event-item"
+                onClick={() => handleAddFilter(event)} // 클릭 시 필터에 추가
+              >
+                <span>
+                  {event.elapsed} {event.extraTime ? '+' + event.extraTime : ''}
+                </span>
+                <span>{event.type}</span>
+                <span>{event.player.name}</span>
+                <span>{event.team.name}</span>
+              </div>
+            ))}
+        </div>
+      </div>
+
+      {/* 필터에 추가된 이벤트 리스트 */}
+      <div className="filtered-event-list">
+        <div className="filtered-event-list-title">
+          <span>필터된 이벤트 리스트</span>
+        </div>
+        <div className="filtered-event-list-box">
+          {filterEvents &&
+            filterEvents.map((event, index) => (
+              <div
+                key={index}
+                className="filtered-event-item"
+                onClick={() => handleRemoveFilter(event)} // 클릭 시 필터에서 제거
+              >
+                <span>
+                  {event.elapsed} {event.extraTime ? '+' + event.extraTime : ''}
+                </span>
+                <span>{event.type}</span>
+                <span>{event.player.name}</span>
+                <span>{event.team.name}</span>
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

@@ -134,7 +134,14 @@ const fixtureLiveSlice = createSlice({
       .addCase(
         fetchFixtureEvents.fulfilled,
         (state, action: PayloadAction<FixtureEventResponse>) => {
-          state.events = action.payload;
+          const sortedEvents = action.payload.events.sort(
+            (a, b) => a.sequence - b.sequence,
+          );
+          const sortedResponse: FixtureEventResponse = {
+            ...action.payload,
+            events: sortedEvents,
+          };
+          state.events = sortedResponse;
           updateLastFetchedAt(state);
         },
       );

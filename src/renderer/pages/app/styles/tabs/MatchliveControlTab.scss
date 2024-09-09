@@ -7,9 +7,12 @@
   align-items: start;
 
   width: 100%;
+  height: 100%; /* 컨테이너 높이 설정 */
   box-sizing: border-box;
   padding: 30px;
   // border: red 10px solid;
+
+  overflow-y: scroll;
 
   // 탭 타이틀
   .matchlive-control-title {
@@ -280,5 +283,29 @@
       align-items: center;
       cursor: pointer;
     }
+  }
+}
+
+.matchlive-control-container {
+  /* 스크롤바 전체 */
+  &::-webkit-scrollbar {
+    width: 8px; /* 스크롤바의 너비 설정 */
+  }
+
+  /* 스크롤바 트랙 (배경) */
+  &::-webkit-scrollbar-track {
+    background-color: $background-black; /* 스크롤바 트랙의 배경색 */
+    border-radius: 10px; /* 모서리를 둥글게 설정 */
+  }
+
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    background-color: $background-division; /* 스크롤바의 색상 */
+    border-radius: 10px; /* 막대 모서리를 둥글게 설정 */
+  }
+
+  /* 스크롤바 막대를 마우스로 클릭할 때 */
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $background-division-alter; /* 마우스를 올렸을 때 색상 변경 */
   }
 }
