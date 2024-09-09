@@ -136,6 +136,9 @@ export const createMatchliveWindow = async () => {
     return;
   }
 
+  /*
+  작게 : 330 x 680
+  */
   matchliveWindow = new BrowserWindow({
     width: 415,
     height: 850,

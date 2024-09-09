@@ -1,7 +1,12 @@
 import { faArrowUp, faFutbol } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Goal } from './LineupTypes';
+import React from 'react';
+
+const commonBoxShadow = css`
+  box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
+`;
 
 const LineupTabContainer = styled.div`
   position: relative;
@@ -78,6 +83,7 @@ const GridPlayer = styled.div<{
       border-radius: 50%;
       object-fit: cover;
       object-position: top;
+      ${commonBoxShadow}
     }
 
     .player-number {
@@ -128,7 +134,6 @@ const TeamLogoName = styled.div`
   width: 30%;
   display: flex;
   flex-direction: row;
-  /* justify-content: center; */
   align-items: center;
 
   .team-logo {
@@ -158,22 +163,28 @@ const TeamLogoName = styled.div`
 
 const SubInMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  top: 5px;
-  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-31%' : '5%')};
-  width: 20px;
-  height: 20px;
+  top: 0px;
+  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-20%' : '5%')};
+  width: 22px;
+  height: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #0d5df1;
   border-radius: 50%;
+  background-color: white;
+  border: 1px solid #5c5c5c;
+  box-sizing: border-box;
 `;
 
 const SubIndicatorInner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 12px;
+  font-size: 10px;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background-color: #0d5df1;
   color: #ffffff; /* 필요에 따라 색상을 조정 */
 `;
 
@@ -187,119 +198,155 @@ const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   );
 };
 
-const CardYellowWrapper = styled.div<{ $showPhoto?: boolean }>`
+const CardWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  bottom: 5%;
-  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-22%' : '10%')};
-  width: 14px;
-  height: 20px;
+  top: 27%;
+  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-30%' : '10%')};
+  width: 22px;
+  height: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f1f10d;
-  border: 1px solid #dfdc44;
   box-sizing: border-box;
-  border-radius: 20%;
+  border: 1px solid #5c5c5c;
+  border-radius: 50%;
+  background-color: white;
+  ${commonBoxShadow}
 `;
 
-const CardYellowInner = styled.div`
+const CardInner = styled.div<{ color: string; borderColor: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 12px;
-  color: #dfdc44; /* 필요에 따라 색상을 조정 */
+  height: 65%;
+  width: 50%;
+  background-color: ${({ color }) => color};
+  border: 1px solid ${({ borderColor }) => borderColor};
+  border-radius: 25%;
 `;
 
 const CardYellow: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardYellowWrapper $showPhoto={showPhoto}>
-      <CardYellowInner />
-    </CardYellowWrapper>
+    <CardWrapper $showPhoto={showPhoto}>
+      <CardInner color="#f1f10d" borderColor="#969617" />
+    </CardWrapper>
   );
 };
 
-const CardRedWrapper = styled.div<{ $showPhoto?: boolean }>`
-  position: absolute;
-  bottom: 5%;
-  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-22%' : '10%')};
-  width: 14px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f10d0d;
-  border: 1px solid #df4444;
-  box-sizing: border-box;
-  border-radius: 20%;
-`;
-
-const CardRedInner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  color: #df4444; /* 필요에 따라 색상을 조정 */
-`;
-
 const CardRed: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   return (
-    <CardRedWrapper $showPhoto={showPhoto}>
-      <CardRedInner />
-    </CardRedWrapper>
+    <CardWrapper $showPhoto={showPhoto}>
+      <CardInner color="#f14141" borderColor="#6b1010" />
+    </CardWrapper>
   );
 };
 
 const GoalMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
   position: absolute;
-  bottom: 5%;
-  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-30%' : '3%')};
+  bottom: -2px;
+  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-0%' : '3%')};
   width: 20px;
   height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: #e8eaff; */
   color: black;
   box-sizing: border-box;
   border-radius: 40%;
 `;
 
+/**
+ * index 는 index+1 번째 골을 나타냅니다. 예를 들어 index=1 은 2번째 골을 나타냅니다.  <br>
+ * index 로 명명한 이유는 LineupPlayer 가 Goal 객체를 배열로 가지고 있기 때문에, Goal 배열의 index 를 바탕으로 멀티골을 표시하기 때문입니다.  <br>
+ * index 만큼 이동한 위치에 겹쳐서 골을 나타냅니다. <br>
+ * OwnGoal 의 경우 빨간색으로 나타냅니다. <br>
+ */
 const GoalIndicatorInner = styled.div<{ $index: number; $isOwnGoal: boolean }>`
   display: flex;
   position: absolute;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
-  // Own goal인 경우 background 빨간색으로 표시
+  font-size: 14px;
   background-color: ${({ $isOwnGoal }) => ($isOwnGoal ? '#f1e1e1' : 'white')};
   border-radius: 50%;
-
-  // index 만큼 좌측으로 5px씩 이동
-  left: ${({ $index }) => `-${$index * 7}px`};
+  right: ${({ $index }) => `-${$index * 7}px`};
   scale: 1;
+  ${commonBoxShadow}
 `;
 
-// TODO : 골 표시 수정 필요. 멀티 골 표시 방식 및 own goal 표시 방식 수정 필요
 const GoalMark: React.FC<{ goal: Goal[]; showPhoto: boolean }> = ({
   goal,
   showPhoto,
 }) => {
   return (
     <GoalMarkWrapper $showPhoto={showPhoto}>
-      {goal.map((goal, index) => {
-        return (
-          <GoalIndicatorInner $index={index} $isOwnGoal={goal.ownGoal}>
-            <FontAwesomeIcon
-              icon={faFutbol}
-              style={{
-                scale: '1.15',
-                color: goal.ownGoal ? '#961d1d' : 'black',
-              }}
-            />
-          </GoalIndicatorInner>
-        );
-      })}
+      {goal
+        .map((goal, index) => {
+          return (
+            <GoalIndicatorInner $index={index} $isOwnGoal={goal.ownGoal}>
+              <FontAwesomeIcon
+                icon={faFutbol}
+                style={{
+                  scale: '1.15',
+                  color: goal.ownGoal ? '#961d1d' : 'black',
+                }}
+              />
+            </GoalIndicatorInner>
+          );
+        })
+        .reverse()}
     </GoalMarkWrapper>
+  );
+};
+
+const PlayerNumberWrapper = styled.div<{ $number: number }>`
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  transform: translate(-50%, 0);
+  width: 24px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid #93939b;
+  border-radius: 5px;
+  background-color: white;
+  ${commonBoxShadow}
+`;
+
+const PlayerNumberInner = styled.div<{ $number: number }>`
+  text-align: center;
+  font-size: 12px;
+  width: 100%;
+  height: 100%;
+  padding-top: 2px;
+  color: black;
+  font-weight: 700;
+`;
+
+const PlayerNumber: React.FC<{ number: number }> = ({ number }) => {
+  return (
+    <PlayerNumberWrapper $number={number}>
+      <PlayerNumberInner $number={number}>{number}</PlayerNumberInner>
+    </PlayerNumberWrapper>
+  );
+};
+
+const PlayerNameSpan = styled.span`
+  position: relative;
+  overflow: visible;
+  transform: translate(0, -3px);
+  background-color: #0a4192c1;
+  padding: 0 2px;
+  border-radius: 5px;
+`;
+
+const PlayerName: React.FC<{ name: string }> = ({ name }) => {
+  return (
+    <PlayerNameSpan>{name}</PlayerNameSpan>
+    // <span style={{ position: 'relative', overflow: 'visible' }}>{name}</span>
   );
 };
 
@@ -314,4 +361,6 @@ export {
   CardYellow,
   CardRed,
   GoalMark,
+  PlayerNumber,
+  PlayerName,
 };

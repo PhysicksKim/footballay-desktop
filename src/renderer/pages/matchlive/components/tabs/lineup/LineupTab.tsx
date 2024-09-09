@@ -110,7 +110,6 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
 
   return (
     <LineupTabContainer>
-      <FootballFieldCanvas />
       <TeamContainer ref={homeTeamContainerRef}>
         {processedHomeLineup && (
           <LineupView
@@ -153,6 +152,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           </TeamLogoName>
         )}
       </TeamContainer>
+      <FootballFieldCanvas />
     </LineupTabContainer>
   );
 };

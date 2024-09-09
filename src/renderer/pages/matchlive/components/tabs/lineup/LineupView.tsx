@@ -5,6 +5,8 @@ import {
   GoalMark,
   GridLine,
   GridPlayer,
+  PlayerName,
+  PlayerNumber,
   SubInMark,
 } from './LineupStyled';
 import UniformIcon from './UniformIcon';
@@ -82,10 +84,11 @@ const LineupView: React.FC<{
                   showPhoto={photoExistAndShowPhoto}
                 />
               )}
+              {finalPlayer.number && (
+                <PlayerNumber number={finalPlayer.number} />
+              )}
             </div>
-            <span style={{ position: 'relative', overflow: 'visible' }}>
-              {finalPlayer.koreanName || finalPlayer.name}
-            </span>
+            <PlayerName name={finalPlayer.koreanName || finalPlayer.name} />
           </GridPlayer>
         );
       })}
