@@ -1,0 +1,75 @@
+@import '@app/styles/Color.scss';
+
+$box-color: $card-background;
+$item-hover: $card-background-hover;
+
+.event-filter__table-wrapper {
+  padding: 10px 10px;
+  background-color: $box-color;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  font-size: 12px;
+}
+
+.event-filter__table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed; // 테이블 레이아웃을 고정
+
+  .event-filter__thead {
+    background-color: $background-division-alter;
+
+    th {
+      text-align: start;
+      border-radius: 0;
+      padding-top: 2px;
+      padding-left: 7px;
+      height: 24px;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .event-filter__legend-item--elapsed {
+      width: 50px;
+      padding-left: 10px;
+      box-sizing: border-box;
+    }
+    .event-filter__legend-item--type {
+      width: 60px;
+    }
+    .event-filter__legend-item--team,
+    .event-filter__legend-item--player {
+      width: 50%;
+      overflow-x: hidden;
+    }
+  }
+
+  .event-filter__body {
+    .event-filter__item {
+      background-color: $box-color;
+      padding: 5px 0;
+      cursor: pointer;
+      margin: 0;
+      transition-duration: 0.05s;
+
+      &:hover {
+        background-color: $item-hover;
+        scale: 1.01;
+        cursor: pointer;
+      }
+
+      td {
+        padding-left: 7px;
+        height: 30px;
+        font-weight: 300;
+        font-size: 12px;
+      }
+
+      .event-filter__item-detail--elapsed {
+        padding-left: 10px;
+      }
+    }
+  }
+}

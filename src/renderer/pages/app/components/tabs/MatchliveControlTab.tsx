@@ -8,6 +8,7 @@ import {
   removeFilterEvent,
 } from '../../store/slices/fixtureLiveControlSlice';
 import { FixtureEvent } from '@src/types/FixtureIpc';
+import FixtureEventList from './FixtureEventList';
 
 const MatchliveControlTab = () => {
   const dispatch = useDispatch();
@@ -196,52 +197,17 @@ const MatchliveControlTab = () => {
       </div>
 
       {/* fixture event list */}
-      {/* 이벤트 리스트 */}
-      <div className="fixture-event-list">
-        <div className="fixture-event-list-title">
-          <span>이벤트 리스트</span>
-        </div>
-        <div className="fixture-event-list-box">
-          {unfilteredEvents &&
-            unfilteredEvents.map((event, index) => (
-              <div
-                key={index}
-                className="fixture-event-item"
-                onClick={() => handleAddFilter(event)} // 클릭 시 필터에 추가
-              >
-                <span>
-                  {event.elapsed} {event.extraTime ? '+' + event.extraTime : ''}
-                </span>
-                <span>{event.type}</span>
-                <span>{event.player.name}</span>
-                <span>{event.team.name}</span>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* 필터에 추가된 이벤트 리스트 */}
-      <div className="filtered-event-list">
-        <div className="filtered-event-list-title">
-          <span>필터된 이벤트 리스트</span>
-        </div>
-        <div className="filtered-event-list-box">
-          {filterEvents &&
-            filterEvents.map((event, index) => (
-              <div
-                key={index}
-                className="filtered-event-item"
-                onClick={() => handleRemoveFilter(event)} // 클릭 시 필터에서 제거
-              >
-                <span>
-                  {event.elapsed} {event.extraTime ? '+' + event.extraTime : ''}
-                </span>
-                <span>{event.type}</span>
-                <span>{event.player.name}</span>
-                <span>{event.team.name}</span>
-              </div>
-            ))}
-        </div>
+      <div className="event-filter" style={{ width: '100%' }}>
+        <FixtureEventList
+          events={unfilteredEvents}
+          isFiltered={false}
+          handleEventClick={handleAddFilter}
+        />
+        <FixtureEventList
+          events={filterEvents}
+          isFiltered={true}
+          handleEventClick={handleRemoveFilter}
+        />
       </div>
     </div>
   );

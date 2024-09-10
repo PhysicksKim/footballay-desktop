@@ -30,6 +30,8 @@ const fixtureLiveControlSlice = createSlice({
     // 필터에 이벤트 추가
     addFilterEvent: (state, action: PayloadAction<FixtureEvent>) => {
       state.filterEvents.push(action.payload);
+      // SORT by filterEvents sequence
+      state.filterEvents.sort((a, b) => a.sequence - b.sequence);
     },
     // 필터에서 이벤트 제거
     removeFilterEvent: (state, action: PayloadAction<FixtureEvent>) => {

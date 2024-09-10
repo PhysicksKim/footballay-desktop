@@ -5,16 +5,13 @@
 @import '@app/styles/Color.scss';
 @import url('../../global/style/Fonts.css');
 
+/*
+ * 폰트는 App.tsx 에서 global styled-components로 설정 됨. Pretendard
+ */
 body {
   position: relative;
   color: white;
   height: 100vh;
-  /* background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  ); */
   overflow-y: hidden;
   display: flex;
   justify-content: center;
