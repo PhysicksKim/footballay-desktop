@@ -6,6 +6,7 @@ import { setShowPhoto } from '../../store/slices/fixtureLiveOptionSlice';
 import {
   addFilterEvent,
   removeFilterEvent,
+  resetFilterEvents,
 } from '../../store/slices/fixtureLiveControlSlice';
 import { FixtureEvent } from '@src/types/FixtureIpc';
 import FixtureEventList from './FixtureEventList';
@@ -27,6 +28,10 @@ const MatchliveControlTab = () => {
     (state: RootState) => state.fixtureLiveControl.filterEvents,
   ); // 필터된 이벤트 가져오기
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dispatch(resetFilterEvents());
+  }, [fixtureLive.fixtureId]);
 
   const parseKickoffTime = (dateString: string) => {
     const kickoffTime = new Date(dateString);
@@ -94,7 +99,6 @@ const MatchliveControlTab = () => {
       <div className="matchlive-control-title">
         <span>라이브 경기 정보</span>
       </div>
-      {/* 상단 영역: 경기 정보 */}
       <div className="match-info-section">
         {isInfoReady ? (
           <>
@@ -144,17 +148,17 @@ const MatchliveControlTab = () => {
         )}
       </div>
 
-      <div className="last-fetch-title-box">
-        <span>데이터 갱신 시각</span>
-      </div>
-      <div className="last-fetch-time-box">
-        <div
-          className={`last-fetch-time ${lastFetch ? 'exist-last-fetch' : 'no-last-fetch'}`}
-        >
-          {lastFetch
-            ? '마지막 데이터 갱신 : ' + parseLastFetchTimeString(lastFetch)
-            : '경기가 선택되지 않았습니다.'}
-        </div>
+      <div className="event-filter" style={{ width: '100%' }}>
+        <FixtureEventList
+          events={unfilteredEvents}
+          isFiltered={false}
+          handleEventClick={handleAddFilter}
+        />
+        <FixtureEventList
+          events={filterEvents}
+          isFiltered={true}
+          handleEventClick={handleRemoveFilter}
+        />
       </div>
 
       <div className="window-control-section-title">
@@ -175,39 +179,36 @@ const MatchliveControlTab = () => {
         </button>
       </div>
 
-      {/* 하단 영역: 추가 옵션 섹션 */}
       <div className="additional-options-section">
         <input
           type="checkbox"
           id="show-profile"
           className="show-profile-checkbox"
-          checked={showPhoto} // 초기값 설정
+          checked={showPhoto}
           onChange={(e) => {
             const isChecked = e.target.checked;
             window.electron.ipcRenderer.send('to-matchlive', {
               type: 'SET_SHOW_PHOTO',
               data: isChecked,
             });
-            dispatch(setShowPhoto(isChecked)); // 리덕스 상태 업데이트
+            dispatch(setShowPhoto(isChecked));
           }}
         />
         <label htmlFor="show-profile" className="show-profile-box-label">
           프로필 사진 표시
         </label>
       </div>
-
-      {/* fixture event list */}
-      <div className="event-filter" style={{ width: '100%' }}>
-        <FixtureEventList
-          events={unfilteredEvents}
-          isFiltered={false}
-          handleEventClick={handleAddFilter}
-        />
-        <FixtureEventList
-          events={filterEvents}
-          isFiltered={true}
-          handleEventClick={handleRemoveFilter}
-        />
+      <div className="last-fetch-title-box">
+        <span>데이터 갱신 시각</span>
+      </div>
+      <div className="last-fetch-time-box">
+        <div
+          className={`last-fetch-time ${lastFetch ? 'exist-last-fetch' : 'no-last-fetch'}`}
+        >
+          {lastFetch
+            ? '마지막 데이터 갱신 : ' + parseLastFetchTimeString(lastFetch)
+            : '경기가 선택되지 않았습니다.'}
+        </div>
       </div>
     </div>
   );

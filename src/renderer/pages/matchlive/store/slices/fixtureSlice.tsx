@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-  FixtureEventResponse,
+  FixtureEventState,
   FixtureInfo,
   FixtureLineup,
   FixtureLiveStatus,
@@ -14,7 +14,7 @@ export interface FixtureState {
   fixtureId: string | null;
   info: FixtureInfo | null;
   lineup: FixtureLineup | null;
-  events: FixtureEventResponse | null;
+  events: FixtureEventState | null;
   liveStatus: FixtureLiveStatus | null;
   intervalIds: NodeJS.Timeout[];
 }
@@ -41,7 +41,7 @@ const fixtureSlice = createSlice({
     setFixtureLineup(state, action: PayloadAction<FixtureLineup>) {
       state.lineup = action.payload;
     },
-    setFixtureEvents(state, action: PayloadAction<FixtureEventResponse>) {
+    setFixtureEvents(state, action: PayloadAction<FixtureEventState>) {
       state.events = action.payload;
     },
     setFixtureLiveStatus(state, action: PayloadAction<FixtureLiveStatus>) {

@@ -17,6 +17,28 @@ interface EventListProps {
   handleEventClick: (event: FixtureEvent) => void;
 }
 
+const translateEventType = (type: string, detail: string): string => {
+  const typeLowerCase = type.toLowerCase();
+  const detailLowerCase = detail.toLowerCase();
+
+  switch (typeLowerCase) {
+    case 'goal':
+      return '골';
+    case 'card':
+      if (detailLowerCase.includes('yellow')) {
+        return '경고';
+      } else if (detailLowerCase.includes('red')) {
+        return '퇴장';
+      } else {
+        return '카드';
+      }
+    case 'subst':
+      return '교체';
+    default:
+      return type;
+  }
+};
+
 const FixtureEventList: React.FC<EventListProps> = ({
   events,
   isFiltered,
@@ -63,7 +85,7 @@ const FixtureEventList: React.FC<EventListProps> = ({
                     {event.extraTime ? '+' + event.extraTime : ''}
                   </td>
                   <td className="event-filter__item-detail event-filter__item-detail--type">
-                    {event.type}
+                    {translateEventType(event.type, event.detail)}
                   </td>
                   <td className="event-filter__item-detail event-filter__item-detail--team">
                     {event.team.name}

@@ -7,7 +7,7 @@ import UniformIcon from './UniformIcon';
 import FootballFieldCanvas from './FootballFieldCanvas';
 import {
   FixtureEvent,
-  FixtureEventResponse,
+  FixtureEventState,
   FixtureLineup,
   LineupTeam,
   Team,

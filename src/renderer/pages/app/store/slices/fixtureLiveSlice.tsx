@@ -4,7 +4,9 @@ import {
   FixtureInfo,
   FixtureLiveStatus,
   FixtureLineup,
-  FixtureEventResponse,
+  FixtureEventState,
+  EventPlayer,
+  FixtureEventMeta,
 } from '@src/types/FixtureIpc';
 import {
   fetchFixtureEvents,
@@ -19,13 +21,19 @@ export interface FixtureState {
   info: FixtureInfo | null;
   liveStatus: FixtureLiveStatus | null;
   lineup: FixtureLineup | null;
-  events: FixtureEventResponse | null;
+  events: FixtureEventState | null;
   taskState: {
     init: InitTaskState;
   };
   intervalIds: NodeJS.Timeout[]; // interval IDs 배열
   lastFetchedAt: string | null;
 }
+
+export type EventMeta =
+  | { type: 'subst'; inPlayer: EventPlayer; outPlayer: EventPlayer }
+  | { type: 'card'; cardType: 'yellow' | 'red'; player: EventPlayer }
+  | { type: 'goal'; scorer: EventPlayer; assist?: EventPlayer }
+  | { type: 'var'; decision: string; player?: EventPlayer };
 
 export interface InitTaskState {
   matchliveWindowReady: boolean;
@@ -133,11 +141,14 @@ const fixtureLiveSlice = createSlice({
       )
       .addCase(
         fetchFixtureEvents.fulfilled,
-        (state, action: PayloadAction<FixtureEventResponse>) => {
+        (state, action: PayloadAction<FixtureEventState>) => {
           const sortedEvents = action.payload.events.sort(
             (a, b) => a.sequence - b.sequence,
           );
-          const sortedResponse: FixtureEventResponse = {
+
+          // TODO : SubstMeta 를 이용해 subst in/out 플레이어를 EventMeta 에 추가하는 로직
+
+          const sortedResponse: FixtureEventState = {
             ...action.payload,
             events: sortedEvents,
           };

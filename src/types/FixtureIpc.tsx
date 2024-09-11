@@ -48,9 +48,20 @@ export interface FixtureEvent {
   comments: string | null;
 }
 
-export interface FixtureEventResponse {
+export type SubstMeta = {
+  inPlayer: 'player' | 'assist';
+  outPlayer: 'player' | 'assist';
+};
+
+export type FixtureEventMeta = {
+  sequence: number;
+  data: SubstMeta | null;
+};
+
+export interface FixtureEventState {
   fixtureId: number;
   events: FixtureEvent[];
+  meta: FixtureEventMeta[];
 }
 
 export interface FixtureLiveStatus {

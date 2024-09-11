@@ -11,7 +11,7 @@ import {
 } from '../../store/slices/fixtureLiveSlice';
 import {
   FixtureEvent,
-  FixtureEventResponse,
+  FixtureEventState,
   FixtureInfo,
   FixtureLineup,
   FixtureLiveStatus,
@@ -60,9 +60,9 @@ const sendLineup = (fixtureLineup: FixtureLineup | null) => {
 };
 
 const getFilteredEvents = (
-  fixtureEvents: FixtureEventResponse,
+  fixtureEvents: FixtureEventState,
   filterEvents: FixtureEvent[],
-): FixtureEventResponse => {
+): FixtureEventState => {
   const fixtureId = fixtureEvents.fixtureId;
 
   const filteredEvents: FixtureEvent[] = fixtureEvents.events.filter(
@@ -91,7 +91,7 @@ const getFilteredEvents = (
 };
 
 const sendEvents = (
-  fixtureEvents: FixtureEventResponse | null,
+  fixtureEvents: FixtureEventState | null,
   filterList: FixtureEvent[] = [],
 ) => {
   if (!fixtureEvents) {

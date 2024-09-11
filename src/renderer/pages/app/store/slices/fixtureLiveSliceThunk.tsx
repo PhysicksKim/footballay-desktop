@@ -5,7 +5,7 @@ import {
   FixtureInfo,
   FixtureLiveStatus,
   FixtureLineup,
-  FixtureEventResponse,
+  FixtureEventState,
 } from '@src/types/FixtureIpc';
 import { AppDispatch, RootState } from '../store';
 
@@ -77,7 +77,7 @@ export const fetchFixtureLineup = createAsyncThunk<
 });
 
 export const fetchFixtureEvents = createAsyncThunk<
-  FixtureEventResponse,
+  FixtureEventState,
   number,
   { rejectValue: string }
 >('fixture/fetchEvents', async (fixtureId: number, { rejectWithValue }) => {
