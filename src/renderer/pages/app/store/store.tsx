@@ -6,6 +6,7 @@ import ipcStatusReducer from './slices/ipc/ipcStatusSlice';
 import fixtureLiveReducer from './slices/fixtureLiveSlice';
 import fixtureLiveOptionReducer from './slices/fixtureLiveOptionSlice';
 import fixtureLiveControlReducer from './slices/fixtureLiveControlSlice';
+import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     ipcStatus: ipcStatusReducer,
     fixtureLiveOption: fixtureLiveOptionReducer,
     fixtureLiveControl: fixtureLiveControlReducer,
+    fixtureProcessedData: fixtureProcessedDataSlice,
   },
 });
 

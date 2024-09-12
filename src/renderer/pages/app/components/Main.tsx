@@ -3,12 +3,14 @@ import '@app/styles/Main.scss';
 import TopBar from './TopBar';
 import SideNavigation from './SideNavigation';
 import { HashRouter } from 'react-router-dom';
-import MatchliveIpc from '@app/components/ipc/MatchliveIpc';
+import MatchliveIpc from '@app/components/processing/MatchliveIpc';
+import ViewLineupProcessor from './processing/ViewLineupProcessor';
 
 const Main = () => {
   return (
     <div className="main-container">
       <MatchliveIpc />
+      <ViewLineupProcessor />
       <div className="top-bar-area">
         <TopBar />
       </div>

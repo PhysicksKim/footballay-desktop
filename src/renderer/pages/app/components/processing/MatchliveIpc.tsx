@@ -85,6 +85,7 @@ const getFilteredEvents = (
   );
 
   return {
+    ...fixtureEvents,
     fixtureId: fixtureId,
     events: filteredEvents,
   };

@@ -31,25 +31,3 @@ export interface ViewLineup {
   players: ViewPlayer[][];
   substitutes: ViewPlayer[];
 }
-
-// export interface DisplayPlayer {
-//   id: number;
-//   name: string;
-//   number: number;
-//   position: string;
-//   grid: string | null;
-//   substitute: boolean;
-//   card?: string; // 예: Yellow Card, Red Card
-//   /**
-//    * Sort by minute
-//    */
-//   goals: Goal[];
-//   // scored?: boolean; // 골 여부
-// }
-
-// export interface DisplayLineup {
-//   teamId: number;
-//   teamName: string;
-//   players: DisplayPlayer[];
-//   substitutes: DisplayPlayer[];
-// }

@@ -1,5 +1,10 @@
 import { LineupTeam, FixtureEvent, EventPlayer } from '@src/types/FixtureIpc';
-import { ViewPlayer, ViewLineup, ViewPlayerEvents, Goal } from './LineupTypes';
+import {
+  ViewPlayer,
+  ViewLineup,
+  ViewPlayerEvents,
+  Goal,
+} from '@src/types/FixtureIpc';
 
 export const isSubOutPlayer = (
   checkId: number,
@@ -257,8 +262,7 @@ export const applyEventsToLineup = (
 export const processLineupToView = (
   teamLineup: LineupTeam,
   events: FixtureEvent[],
-  applyEvents: boolean,
 ): ViewLineup => {
   const lineup = processTeamLineup(teamLineup);
-  return applyEvents ? applyEventsToLineup(lineup, events) : lineup;
+  return applyEventsToLineup(lineup, events);
 };
