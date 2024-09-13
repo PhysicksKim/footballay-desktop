@@ -2,12 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ViewLineup } from '@src/types/FixtureIpc';
 
 export interface FixtureProcessedDataState {
-  lineup: ProcessedLineup;
-}
-
-export interface ProcessedLineup {
-  home: ViewLineup | null;
-  away: ViewLineup | null;
+  lineup: {
+    home: ViewLineup | null;
+    away: ViewLineup | null;
+  };
 }
 
 const initialState: FixtureProcessedDataState = {
@@ -21,7 +19,13 @@ const fixtureProcessedDataSlice = createSlice({
   name: 'fixtureProcessedData',
   initialState,
   reducers: {
-    setProcessedLineup: (state, action: PayloadAction<ProcessedLineup>) => {
+    setProcessedLineup: (
+      state,
+      action: PayloadAction<{
+        home: ViewLineup | null;
+        away: ViewLineup | null;
+      }>,
+    ) => {
       state.lineup.home = action.payload.home;
       state.lineup.away = action.payload.away;
     },

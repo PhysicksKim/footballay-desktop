@@ -47,6 +47,8 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const [homeGridPlayerHeight, setHomeGridPlayerHeight] = useState(0);
   const [awayGridPlayerHeight, setAwayGridPlayerHeight] = useState(0);
   const lineupRef = useRef<TeamLineups | null | undefined>(lineup);
+
+  // TODO : REDUX 로 app window 에서 ipc 로 ViewLineup 받아서 처리
   const [processedHomeLineup, setProcessedHomeLineup] =
     useState<ViewLineup | null>(null);
   const [processedAwayLineup, setProcessedAwayLineup] =
@@ -85,16 +87,16 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     };
   }, [lineupRef]);
 
-  useEffect(() => {
-    const _processedHomeLineup = lineup
-      ? processLineupToView(lineup.home, events?.events || [], applyEvents)
-      : null;
-    const _processedAwayLineup = lineup
-      ? processLineupToView(lineup.away, events?.events || [], applyEvents)
-      : null;
-    setProcessedHomeLineup(_processedHomeLineup);
-    setProcessedAwayLineup(_processedAwayLineup);
-  }, [lineup, events]);
+  // useEffect(() => {
+  //   const _processedHomeLineup = lineup
+  //     ? processLineupToView(lineup.home, events?.events || [], applyEvents)
+  //     : null;
+  //   const _processedAwayLineup = lineup
+  //     ? processLineupToView(lineup.away, events?.events || [], applyEvents)
+  //     : null;
+  //   setProcessedHomeLineup(_processedHomeLineup);
+  //   setProcessedAwayLineup(_processedAwayLineup);
+  // }, [lineup, events]);
 
   useEffect(() => {
     if (lineup) {

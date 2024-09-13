@@ -7,8 +7,9 @@ import {
   setFixtureLineup,
   setFixtureLiveStatus,
 } from '@matchlive/store/slices/fixtureSlice';
-import { RootState } from '../store/store';
-import { setShowPhoto } from '../store/slices/fixtureLiveOptionSlice';
+import { setProcessedLineup } from '@matchlive/store/slices/fixtureProcessedDataSlice';
+import { RootState } from '@matchlive/store/store';
+import { setShowPhoto } from '@matchlive/store/slices/fixtureLiveOptionSlice';
 
 export type ReceiveIpcType =
   | 'SET_FIXTURE_ID'
@@ -16,7 +17,8 @@ export type ReceiveIpcType =
   | 'SET_LIVE_STATUS'
   | 'SET_LINEUP'
   | 'SET_EVENTS'
-  | 'SET_SHOW_PHOTO';
+  | 'SET_SHOW_PHOTO'
+  | 'SET_PROCESSED_LINEUP';
 export type SendIpcType =
   | 'GET_FIXTURE_ID'
   | 'GET_FIXTURE_INFO'
@@ -33,6 +35,7 @@ const requestFixtureInitialLiveData = () => {
     type: 'GET_FIXTURE_LIVE_STATUS',
   });
   window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_LINEUP' });
+  window.electron.ipcRenderer.send('to-app', { type: 'GET_PROCESSED_LINEUP' });
   window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_EVENTS' });
 };
 
@@ -73,8 +76,12 @@ const FixtureIpc = () => {
         break;
       }
       case 'SET_SHOW_PHOTO': {
-        console.log('SET_SHOW_PHOTO received. data:', data);
         dispatch(setShowPhoto(data));
+        break;
+      }
+      case 'SET_PROCESSED_LINEUP': {
+        console.log('SET_PROCESSED_LINEUP received. data:', data);
+        dispatch(setProcessedLineup(data));
         break;
       }
       default: {

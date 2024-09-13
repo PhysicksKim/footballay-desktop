@@ -24,7 +24,8 @@ export type ReceiveIpcType =
   | 'GET_FIXTURE_INFO'
   | 'GET_FIXTURE_LIVE_STATUS'
   | 'GET_FIXTURE_LINEUP'
-  | 'GET_FIXTURE_EVENTS';
+  | 'GET_FIXTURE_EVENTS'
+  | 'GET_PROCESSED_LINEUP';
 
 export interface IpcMessage {
   type: ReceiveIpcType;
@@ -117,6 +118,13 @@ const sendShowPhoto = (_showPhoto: boolean) => {
   });
 };
 
+const sendProcessedLineup = (processedLineup: any) => {
+  window.electron.ipcRenderer.send('to-matchlive', {
+    type: 'SET_PROCESSED_LINEUP',
+    data: processedLineup,
+  });
+};
+
 const MatchliveIpc = () => {
   const dispatch = useDispatch();
 
@@ -136,6 +144,9 @@ const MatchliveIpc = () => {
   const filterEvents = useSelector(
     (state: RootState) => state.fixtureLiveControl.filterEvents,
   );
+  const processedLineup = useSelector(
+    (state: RootState) => state.fixtureProcessedData.lineup,
+  );
 
   const showPhoto = useSelector(
     (state: RootState) => state.fixtureLiveOption.showPhoto,
@@ -152,6 +163,7 @@ const MatchliveIpc = () => {
     useState(false);
   const [getFixtureLineupFlag, setGetFixtureLineupFlag] = useState(false);
   const [getFixtureEventsFlag, setGetFixtureEventsFlag] = useState(false);
+  const [getProcessedLineupFlag, setGetProcessedLineupFlag] = useState(false);
 
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
@@ -179,6 +191,9 @@ const MatchliveIpc = () => {
         break;
       case 'GET_FIXTURE_LINEUP':
         setGetFixtureLineupFlag(true);
+        break;
+      case 'GET_PROCESSED_LINEUP':
+        setGetProcessedLineupFlag(true);
         break;
       case 'GET_FIXTURE_EVENTS':
         setGetFixtureEventsFlag(true);
@@ -229,12 +244,23 @@ const MatchliveIpc = () => {
   }, [getFixtureEventsFlag]);
 
   useEffect(() => {
+    if (getProcessedLineupFlag) {
+      sendProcessedLineup(processedLineup);
+      setGetProcessedLineupFlag(false);
+    }
+  }, [getProcessedLineupFlag]);
+
+  useEffect(() => {
     sendLiveStatus(fixtureLiveStatus);
   }, [fixtureLiveStatus]);
 
   useEffect(() => {
     sendLineup(fixtureLineup);
   }, [fixtureLineup]);
+
+  useEffect(() => {
+    sendProcessedLineup(processedLineup);
+  }, [processedLineup]);
 
   useEffect(() => {
     sendEvents(fixtureEvents, filterEvents);
