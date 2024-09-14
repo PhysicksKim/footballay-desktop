@@ -42,6 +42,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const info = useSelector((state: RootState) => state.fixture.info);
   const events = useSelector((state: RootState) => state.fixture.events);
   const showPhoto = useSelector((state: RootState) => state.options.showPhoto);
+  const processedLineup = useSelector(
+    (state: RootState) => state.fixtureProcessedData.lineup,
+  );
+
   const homeTeamContainerRef = useRef<HTMLDivElement>(null);
   const awayTeamContainerRef = useRef<HTMLDivElement>(null);
   const [homeGridPlayerHeight, setHomeGridPlayerHeight] = useState(0);
@@ -87,16 +91,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     };
   }, [lineupRef]);
 
-  // useEffect(() => {
-  //   const _processedHomeLineup = lineup
-  //     ? processLineupToView(lineup.home, events?.events || [], applyEvents)
-  //     : null;
-  //   const _processedAwayLineup = lineup
-  //     ? processLineupToView(lineup.away, events?.events || [], applyEvents)
-  //     : null;
-  //   setProcessedHomeLineup(_processedHomeLineup);
-  //   setProcessedAwayLineup(_processedAwayLineup);
-  // }, [lineup, events]);
+  useEffect(() => {
+    setProcessedHomeLineup(processedLineup.home);
+    setProcessedAwayLineup(processedLineup.away);
+  }, [processedLineup]);
 
   useEffect(() => {
     if (lineup) {

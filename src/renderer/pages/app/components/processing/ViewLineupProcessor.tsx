@@ -9,22 +9,28 @@ import {
 } from '@src/types/FixtureIpc';
 import { processLineupToView } from './ViewLineupLogic';
 import { setProcessedLineup } from '../../store/slices/fixtureProcessedDataSlice';
+import { getFilteredEvents } from './MatchliveIpc';
 
 const ViewLineupProcessor = () => {
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.fixtureLive.events);
   const lineup = useSelector((state: RootState) => state.fixtureLive.lineup);
-  const fixtureProcessedData = useSelector(
-    (state: RootState) => state.fixtureProcessedData,
+  const filterEvents = useSelector(
+    (state: RootState) => state.fixtureLiveControl.filterEvents,
   );
 
   useEffect(() => {
-    console.log('processed lineup');
+    let processedEvents;
+    if (events) {
+      processedEvents = getFilteredEvents(events, filterEvents).events;
+    } else {
+      processedEvents = [] as FixtureEvent[];
+    }
     const homeViewLineup = lineup
-      ? processLineupToView(lineup.lineup.home, events?.events || [])
+      ? processLineupToView(lineup.lineup.home, processedEvents)
       : null;
     const awayViewLineup = lineup
-      ? processLineupToView(lineup.lineup.away, events?.events || [])
+      ? processLineupToView(lineup.lineup.away, processedEvents)
       : null;
 
     dispatch(
@@ -33,11 +39,7 @@ const ViewLineupProcessor = () => {
         away: awayViewLineup,
       }),
     );
-  }, [lineup, events]);
-
-  useEffect(() => {
-    console.log('fixtureProcessedData', fixtureProcessedData);
-  }, [fixtureProcessedData]);
+  }, [lineup, events, filterEvents]);
 
   return <></>;
 };

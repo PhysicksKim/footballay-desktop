@@ -60,7 +60,7 @@ const sendLineup = (fixtureLineup: FixtureLineup | null) => {
   });
 };
 
-const getFilteredEvents = (
+export const getFilteredEvents = (
   fixtureEvents: FixtureEventState,
   filterEvents: FixtureEvent[],
 ): FixtureEventState => {
@@ -104,7 +104,6 @@ const sendEvents = (
     return;
   }
   const filteredEvents = getFilteredEvents(fixtureEvents, filterList);
-  console.log('send filtered events');
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_EVENTS',
     data: filteredEvents,
@@ -264,7 +263,6 @@ const MatchliveIpc = () => {
 
   useEffect(() => {
     sendEvents(fixtureEvents, filterEvents);
-    console.log('fixtureEvents updated. data:', fixtureEvents);
   }, [fixtureEvents, filterEvents]);
 
   useEffect(() => {

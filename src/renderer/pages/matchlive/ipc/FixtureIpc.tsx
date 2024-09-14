@@ -80,7 +80,6 @@ const FixtureIpc = () => {
         break;
       }
       case 'SET_PROCESSED_LINEUP': {
-        console.log('SET_PROCESSED_LINEUP received. data:', data);
         dispatch(setProcessedLineup(data));
         break;
       }
