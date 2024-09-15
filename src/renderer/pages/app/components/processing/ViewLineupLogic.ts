@@ -1,4 +1,4 @@
-import { LineupTeam, FixtureEvent, EventPlayer } from '@src/types/FixtureIpc';
+import { LineupTeam, FixtureEvent } from '@src/types/FixtureIpc';
 import {
   ViewPlayer,
   ViewLineup,
@@ -183,6 +183,7 @@ const updateSubInPlayer = (
   퇴장 있는 경기 : k리그(292) 대구vs포항 (1163025)
   자책골 : epl(39) 시즌2024 맨시티vs웨햄 (1208050)
   해트트릭 : epl(39) 시즌2024 맨시티vs웨햄 (1208050)
+  경고누적퇴장 : epl(39) 시즌2425(2024) 아스날vs브라이튼 (1208041)
 */
 /**
  *

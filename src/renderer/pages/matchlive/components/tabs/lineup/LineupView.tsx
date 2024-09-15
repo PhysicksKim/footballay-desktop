@@ -10,9 +10,7 @@ import {
   SubInMark,
 } from './LineupStyled';
 import UniformIcon from './UniformIcon';
-import { ViewLineup, ViewPlayer } from './LineupTypes';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faCircleArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { ViewLineup, ViewPlayer } from '@src/types/FixtureIpc';
 import RetryableImage from '../../common/RetryableImage';
 
 const getFinalPlayer = (player: ViewPlayer): ViewPlayer => {
@@ -72,7 +70,7 @@ const LineupView: React.FC<{
               {finalPlayer.events.subIn && (
                 <SubInMark showPhoto={photoExistAndShowPhoto} />
               )}
-              {finalPlayer.events.yellow && (
+              {finalPlayer.events.yellow && !finalPlayer.events.red && (
                 <CardYellow showPhoto={photoExistAndShowPhoto} />
               )}
               {finalPlayer.events.red && (

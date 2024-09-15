@@ -1,40 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { RootState } from '../../../store/store';
-import { is } from 'date-fns/locale';
-import UniformIcon from './UniformIcon';
 import FootballFieldCanvas from './FootballFieldCanvas';
-import {
-  FixtureEvent,
-  FixtureEventState,
-  FixtureLineup,
-  LineupTeam,
-  Team,
-  TeamLineups,
-} from '@src/types/FixtureIpc';
+import { TeamLineups } from '@src/types/FixtureIpc';
 import { debounce } from 'lodash';
-import TeamLogo from '@src/renderer/pages/app/components/tabs/TeamLogo';
 import {
   LineupTabContainer,
   TeamContainer,
-  TeamName,
-  GridLine,
-  GridPlayer,
   TeamLogoName,
 } from './LineupStyled';
 import LineupView from './LineupView';
-import { processLineupToView } from './LineupLogic';
-import { ViewPlayer, ViewLineup } from './LineupTypes';
+import { ViewLineup } from '@src/types/FixtureIpc';
 
 export interface LineupTabProps {
   applyEvents?: boolean;
 }
 
-/*
-인천 : 2763
-제주 : 2761
-*/
 const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const lineup = useSelector(
     (state: RootState) => state.fixture.lineup,
@@ -52,15 +33,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   const [awayGridPlayerHeight, setAwayGridPlayerHeight] = useState(0);
   const lineupRef = useRef<TeamLineups | null | undefined>(lineup);
 
-  // TODO : REDUX 로 app window 에서 ipc 로 ViewLineup 받아서 처리
   const [processedHomeLineup, setProcessedHomeLineup] =
     useState<ViewLineup | null>(null);
   const [processedAwayLineup, setProcessedAwayLineup] =
     useState<ViewLineup | null>(null);
-
-  useEffect(() => {
-    lineupRef.current = lineup; // lineup 상태를 최신으로 유지하기 위해 ref를 사용
-  }, [lineup]);
 
   const updatePlayerSize = debounce(() => {
     const _lineup = lineupRef.current;
@@ -83,24 +59,24 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   }, 150);
 
   useEffect(() => {
-    updatePlayerSize();
-    window.addEventListener('resize', updatePlayerSize);
+    lineupRef.current = lineup;
+  }, [lineup]);
 
+  useEffect(() => {
+    updatePlayerSize();
+  }, [lineupRef]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updatePlayerSize);
     return () => {
       window.removeEventListener('resize', updatePlayerSize);
     };
-  }, [lineupRef]);
+  }, []);
 
   useEffect(() => {
     setProcessedHomeLineup(processedLineup.home);
     setProcessedAwayLineup(processedLineup.away);
   }, [processedLineup]);
-
-  useEffect(() => {
-    if (lineup) {
-      updatePlayerSize();
-    }
-  }, [lineup]);
 
   const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
   const minGridPlayerHeight = Math.min(

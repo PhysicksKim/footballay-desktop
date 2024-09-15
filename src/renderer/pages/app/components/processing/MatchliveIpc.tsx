@@ -1,9 +1,6 @@
 import { RootState } from '@app/store/store';
-import { ar } from 'date-fns/locale';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setWaitFixtureInfo } from '@app/store/slices/ipc/ipcStatusSlice';
-import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
 import {
   clearFixtureLive,
   resetInitTaskState,

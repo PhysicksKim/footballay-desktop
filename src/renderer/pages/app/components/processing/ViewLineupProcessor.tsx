@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import {
-  FixtureEvent,
-  FixtureLineup,
-  LineupTeam,
-  ViewLineup,
-} from '@src/types/FixtureIpc';
+import { FixtureEvent } from '@src/types/FixtureIpc';
 import { processLineupToView } from './ViewLineupLogic';
 import { setProcessedLineup } from '../../store/slices/fixtureProcessedDataSlice';
 import { getFilteredEvents } from './MatchliveIpc';
@@ -26,11 +21,11 @@ const ViewLineupProcessor = () => {
     } else {
       processedEvents = [] as FixtureEvent[];
     }
-    const homeViewLineup = lineup
-      ? processLineupToView(lineup.lineup.home, processedEvents)
+    const homeViewLineup = lineup?.lineup
+      ? processLineupToView(lineup.lineup?.home, processedEvents)
       : null;
-    const awayViewLineup = lineup
-      ? processLineupToView(lineup.lineup.away, processedEvents)
+    const awayViewLineup = lineup?.lineup
+      ? processLineupToView(lineup.lineup?.away, processedEvents)
       : null;
 
     dispatch(

@@ -1,6 +1,5 @@
-// isSubOutPlayer.test.ts
-import { isSubOutPlayer } from '../components/tabs/lineup/LineupLogic';
-import { ViewPlayer } from '../components/tabs/lineup/LineupTypes';
+import { isSubOutPlayer } from '@app/components/processing/ViewLineupLogic';
+import { ViewPlayer } from '@src/types/FixtureIpc';
 
 describe('isSubOutPlayer', () => {
   it('should return true when the player is currently on the field', () => {

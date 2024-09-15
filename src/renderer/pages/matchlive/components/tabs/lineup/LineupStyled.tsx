@@ -1,7 +1,7 @@
 import { faArrowUp, faFutbol } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
-import { Goal } from './LineupTypes';
+import { Goal } from '@src/types/FixtureIpc';
 import React from 'react';
 
 const commonBoxShadow = css`

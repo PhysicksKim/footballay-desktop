@@ -10,6 +10,7 @@ import {
 import { setProcessedLineup } from '@matchlive/store/slices/fixtureProcessedDataSlice';
 import { RootState } from '@matchlive/store/store';
 import { setShowPhoto } from '@matchlive/store/slices/fixtureLiveOptionSlice';
+import { send } from 'process';
 
 export type ReceiveIpcType =
   | 'SET_FIXTURE_ID'
@@ -22,27 +23,37 @@ export type ReceiveIpcType =
 export type SendIpcType =
   | 'GET_FIXTURE_ID'
   | 'GET_FIXTURE_INFO'
-  | 'GET_LIVE_STATUS'
-  | 'GET_LINEUP'
-  | 'GET_EVENTS';
+  | 'GET_FIXTURE_LIVE_STATUS'
+  | 'GET_FIXTURE_LINEUP'
+  | 'GET_FIXTURE_EVENTS'
+  | 'GET_PROCESSED_LINEUP'
+  | 'MATCHLIVE_REACT_READY'
+  | 'SEND_SHOW_PHOTO';
 export interface IpcMessage {
   type: ReceiveIpcType;
   data?: any;
 }
 
+const sendToApp = (type: SendIpcType, data?: any) => {
+  window.electron.ipcRenderer.send('to-app', { type, data });
+};
+
 const requestFixtureInitialLiveData = () => {
-  window.electron.ipcRenderer.send('to-app', {
-    type: 'GET_FIXTURE_LIVE_STATUS',
-  });
-  window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_LINEUP' });
-  window.electron.ipcRenderer.send('to-app', { type: 'GET_PROCESSED_LINEUP' });
-  window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_EVENTS' });
+  sendToApp('GET_FIXTURE_LIVE_STATUS');
+  sendToApp('GET_FIXTURE_LINEUP');
+  sendToApp('GET_PROCESSED_LINEUP');
+  sendToApp('GET_FIXTURE_EVENTS');
 };
 
 const FixtureIpc = () => {
   const dispatch = useDispatch();
   const fixtureId = useSelector((state: RootState) => state.fixture.fixtureId);
   const fixtureInfo = useSelector((state: RootState) => state.fixture.info);
+
+  useEffect(() => {
+    sendMatchliveReactReady();
+    getShowPhoto();
+  }, []);
 
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
@@ -93,27 +104,16 @@ const FixtureIpc = () => {
     sendFixtureInfoRequest();
   }, [fixtureId]);
 
-  useEffect(() => {
-    sendMatchliveReactReady();
-  }, []);
-
-  useEffect(() => {
-    getShowPhoto();
-  }, []);
-
   const sendFixtureInfoRequest = () => {
-    window.electron.ipcRenderer.send('to-app', { type: 'GET_FIXTURE_INFO' });
+    sendToApp('GET_FIXTURE_INFO');
   };
 
   const sendMatchliveReactReady = () => {
-    window.electron.ipcRenderer.send('matchlive-react-ready');
+    sendToApp('MATCHLIVE_REACT_READY');
   };
 
   const getShowPhoto = () => {
-    console.log('getShowPhoto called');
-    window.electron.ipcRenderer.send('to-app', {
-      type: 'SEND_SHOW_PHOTO',
-    });
+    sendToApp('SEND_SHOW_PHOTO');
   };
 
   useEffect(() => {

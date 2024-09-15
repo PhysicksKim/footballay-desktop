@@ -1,4 +1,3 @@
-import { off } from 'process';
 import React, { useEffect, useRef } from 'react';
 
 const FootballFieldCanvas: React.FC = () => {
