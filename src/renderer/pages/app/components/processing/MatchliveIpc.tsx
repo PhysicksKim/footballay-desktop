@@ -165,11 +165,6 @@ const MatchliveIpc = () => {
     const { type, data } = args[0];
     switch (type) {
       case 'SEND_SHOW_PHOTO':
-        console.log(
-          'ipc request SEND_SHOW_PHOTO received. nowShowPhoto : ',
-          showPhotoRef.current,
-        );
-
         sendShowPhoto(showPhotoRef.current);
         break;
       case 'MATCHLIVE_WINDOW_READY':

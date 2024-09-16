@@ -52,6 +52,16 @@ const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
   display: flex;
 `;
 
+const textShadowColor = 'rgba(31, 18, 105, 0.863)';
+const textShadowStyle = css`
+  text-shadow:
+    -1px 0px ${textShadowColor},
+    0px 1px ${textShadowColor},
+    1px 0px ${textShadowColor},
+    0px -1px ${textShadowColor};
+`;
+const isTextShadow = true;
+
 const GridPlayer = styled.div<{
   $top: number;
   $left: number;
@@ -116,15 +126,15 @@ const GridPlayer = styled.div<{
     }
   }
 
-  // 선수 이름
   span {
     display: inline-block;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 700;
     overflow-y: hidden;
     white-space: nowrap;
     margin-top: 3px;
     color: white;
+    ${() => isTextShadow && textShadowStyle}
   }
 `;
 
@@ -135,29 +145,39 @@ const TeamLogoName = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  height: 24px;
+  margin-left: 8px;
+
+  &.team-name__home {
+    top: 8px;
+  }
+  &.team-name__away {
+    bottom: 8px;
+  }
 
   .team-logo {
-    width: 30px;
-    height: 24px;
-    margin-left: 10px;
+    height: 20px;
+    width: 20px;
 
     img {
-      width: 100%;
       height: 100%;
-      min-width: 30px;
-      min-height: 30px;
       object-fit: contain;
     }
   }
 
   .team-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
     overflow-x: visible;
-    margin-left: 3px;
-    margin-top: 10px;
+    padding-left: 3px;
+    padding-bottom: 1px;
     color: beige;
+    height: 100%;
+    vertical-align: bottom;
   }
 `;
 
@@ -305,7 +325,7 @@ const PlayerNumberWrapper = styled.div<{ $number: number }>`
   left: 0%;
   transform: translate(-50%, 0);
   width: 24px;
-  height: 16px;
+  height: 19px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -318,7 +338,7 @@ const PlayerNumberWrapper = styled.div<{ $number: number }>`
 
 const PlayerNumberInner = styled.div<{ $number: number }>`
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   width: 100%;
   height: 100%;
   padding-top: 2px;
@@ -341,13 +361,11 @@ const PlayerNameSpan = styled.span`
   background-color: #0a4192c1;
   padding: 0 2px;
   border-radius: 5px;
+  font-size: 20px;
 `;
 
 const PlayerName: React.FC<{ name: string }> = ({ name }) => {
-  return (
-    <PlayerNameSpan>{name}</PlayerNameSpan>
-    // <span style={{ position: 'relative', overflow: 'visible' }}>{name}</span>
-  );
+  return <PlayerNameSpan>{name}</PlayerNameSpan>;
 };
 
 export {

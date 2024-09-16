@@ -39,9 +39,12 @@ $item-hover: $card-background-hover;
     .event-filter__legend-item--type {
       width: 60px;
     }
-    .event-filter__legend-item--team,
+    .event-filter__legend-item--team {
+      width: 140px;
+    }
     .event-filter__legend-item--player {
-      width: 50%;
+      // width: 50%;
+      width: auto;
       overflow-x: hidden;
     }
   }

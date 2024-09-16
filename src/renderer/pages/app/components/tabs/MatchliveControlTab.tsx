@@ -79,7 +79,6 @@ const MatchliveControlTab = () => {
   };
 
   const handleAddFilter = (event: FixtureEvent) => {
-    // TODO : fixtureEvent to filterEvent 변환해서 넣어줘야함
     dispatch(addFilterEvent(event)); // 이벤트를 필터에 추가
   };
 
@@ -151,11 +150,13 @@ const MatchliveControlTab = () => {
       <div className="event-filter" style={{ width: '100%' }}>
         <FixtureEventList
           events={unfilteredEvents}
+          meta={fixtureEvents?.meta || []}
           isFiltered={false}
           handleEventClick={handleAddFilter}
         />
         <FixtureEventList
           events={filterEvents}
+          meta={fixtureEvents?.meta || []}
           isFiltered={true}
           handleEventClick={handleRemoveFilter}
         />

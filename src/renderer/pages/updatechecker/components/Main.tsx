@@ -12,7 +12,6 @@ const Main = () => {
   const [progress, setProgress] = useState<any>(null);
 
   const handleMessage = (message: IPCMessage) => {
-    console.log('handleMessage', message);
     switch (message.type) {
       case 'CHECKING_FOR_UPDATE':
         setStatus('업데이트 확인 중...');

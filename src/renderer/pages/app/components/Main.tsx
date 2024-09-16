@@ -5,12 +5,13 @@ import SideNavigation from './SideNavigation';
 import { HashRouter } from 'react-router-dom';
 import MatchliveIpc from '@app/components/processing/MatchliveIpc';
 import ViewLineupProcessor from './processing/ViewLineupProcessor';
+import Processors from './processing/Processors';
 
 const Main = () => {
   return (
     <div className="main-container">
       <MatchliveIpc />
-      <ViewLineupProcessor />
+      <Processors />
       <div className="top-bar-area">
         <TopBar />
       </div>

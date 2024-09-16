@@ -97,7 +97,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           />
         )}
         {info && (
-          <TeamLogoName className="team-name-logo-box">
+          <TeamLogoName className="team-name-logo-box team-name__home">
             <div className="team-logo">
               <img src={info.home.logo} alt={info.home.name} />
             </div>
@@ -118,7 +118,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           />
         )}
         {info && (
-          <TeamLogoName className="team-name-logo-box">
+          <TeamLogoName className="team-name-logo-box team-name__away">
             <div className="team-logo">
               <img src={info.away.logo} alt={info.away.name} />
             </div>

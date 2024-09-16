@@ -6,7 +6,6 @@ import dateToYearMonthDay, {
   isoStringToYearMonthDay,
 } from '@app/common/DateUtils';
 
-// 요청에 필요한 파라미터 타입 정의
 export interface FetchFixtureListParams {
   leagueId: number;
   date: string;

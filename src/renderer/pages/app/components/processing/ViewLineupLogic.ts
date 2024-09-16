@@ -195,10 +195,7 @@ export const applyEventsToLineup = (
   lineup: ViewLineup,
   events: FixtureEvent[],
 ): ViewLineup => {
-  console.log('applyEventsToLineup :: lineup', lineup);
-  console.log('applyEventsToLineup :: events', events);
   events.forEach((event, index) => {
-    console.log('applyEventsToLineup :: event', event);
     switch (event.type) {
       case 'SUBST': {
         const { player, assist } = event;
@@ -267,7 +264,6 @@ export const processLineupToView = (
   teamLineup: LineupTeam,
   events: FixtureEvent[],
 ): ViewLineup => {
-  console.log('processLineupToView', teamLineup, events);
   const lineup = processTeamLineup(teamLineup);
   return applyEventsToLineup(lineup, events);
 };

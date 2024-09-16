@@ -3,6 +3,8 @@ import '@app/styles/tabs/FixtureListBox.scss';
 import FixtureListItem from './FixtureListItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@app/store/store';
+import { cloneDeep } from 'lodash';
+import { parseDateTimeString } from '../../common/DateUtils';
 
 const FixtureListBox = () => {
   const fixtures = useSelector(
@@ -28,6 +30,26 @@ const FixtureListBox = () => {
         </div>
       );
     }
+
+    const copiedFixtures = cloneDeep(fixtures);
+    // 1) 경기 시작 시간 2) 경기 ID 순으로 정렬
+    copiedFixtures.sort((a, b) => {
+      const aKickOffDate = parseDateTimeString(a.matchSchedule.kickoff);
+      const bKickOffDate = parseDateTimeString(b.matchSchedule.kickoff);
+
+      if (isNaN(aKickOffDate.getTime()) || isNaN(bKickOffDate.getTime())) {
+        console.error('유효하지 않은 날짜 형식입니다.');
+        return 0;
+      }
+
+      if (aKickOffDate < bKickOffDate) {
+        return -1;
+      } else if (aKickOffDate > bKickOffDate) {
+        return 1;
+      } else {
+        return a.fixtureId - b.fixtureId;
+      }
+    });
 
     return fixtures.map((fixture, index) => (
       <FixtureListItem

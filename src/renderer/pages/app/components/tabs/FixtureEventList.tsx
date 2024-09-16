@@ -1,4 +1,8 @@
-import { FixtureEvent } from '@src/types/FixtureIpc';
+import {
+  FixtureEvent,
+  FixtureEventMeta,
+  SubstMeta,
+} from '@src/types/FixtureIpc';
 import React from 'react';
 
 import '@app/styles/tabs/FixtureEventList.scss';
@@ -13,6 +17,7 @@ interface Event {
 
 interface EventListProps {
   events: FixtureEvent[] | undefined;
+  meta: FixtureEventMeta[];
   isFiltered: boolean;
   handleEventClick: (event: FixtureEvent) => void;
 }
@@ -39,8 +44,31 @@ const translateEventType = (type: string, detail: string): string => {
   }
 };
 
+const substDetailSubInOut = (
+  event: FixtureEvent,
+  meta: FixtureEventMeta,
+): string => {
+  if (event.type.toLowerCase() !== 'subst') {
+    console.error('Event type is not subst');
+    return 'ERROR';
+  }
+  if (!event || !meta || event.sequence !== meta.sequence) {
+    console.error('Event sequence does not match with meta sequence');
+    return 'ERROR';
+  }
+
+  const substMeta = meta.data as SubstMeta;
+  const { inPlayer, outPlayer } =
+    substMeta.inPlayer === 'player'
+      ? { inPlayer: event.player, outPlayer: event.assist }
+      : { inPlayer: event.assist, outPlayer: event.player };
+
+  return `${outPlayer?.name} → ${inPlayer?.name}`;
+};
+
 const FixtureEventList: React.FC<EventListProps> = ({
   events,
+  meta,
   isFiltered,
   handleEventClick,
 }) => {
@@ -91,7 +119,12 @@ const FixtureEventList: React.FC<EventListProps> = ({
                     {event.team.name}
                   </td>
                   <td className="event-filter__item-detail event-filter__item-detail--player">
-                    {event.player.name}
+                    {event.type.toLowerCase() === 'subst'
+                      ? substDetailSubInOut(
+                          event,
+                          meta.find((m) => m.sequence === event.sequence)!,
+                        )
+                      : event.player.name}
                   </td>
                 </tr>
               ))}

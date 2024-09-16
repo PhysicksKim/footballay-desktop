@@ -19,7 +19,7 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
       setRetryCount(retryCount + 1);
       setCurrentSrc(`${src}?retry=${retryCount + 1}`); // 쿼리 파라미터로 캐시 우회를 시도
     } else {
-      console.log('이미지 로딩에 실패했습니다.');
+      console.log('이미지 로딩에 실패했습니다. src:', src);
     }
   };
 
