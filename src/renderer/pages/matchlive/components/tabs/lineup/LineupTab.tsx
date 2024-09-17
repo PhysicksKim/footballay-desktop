@@ -65,7 +65,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
 
   useEffect(() => {
     updatePlayerSize();
-  }, [lineupRef]);
+  }, [lineupRef.current]);
 
   useEffect(() => {
     window.addEventListener('resize', updatePlayerSize);
