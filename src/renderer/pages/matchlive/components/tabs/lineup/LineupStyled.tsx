@@ -128,7 +128,7 @@ const GridPlayer = styled.div<{
 
   span {
     display: inline-block;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     overflow-y: hidden;
     white-space: nowrap;
@@ -141,12 +141,17 @@ const GridPlayer = styled.div<{
 const TeamLogoName = styled.div`
   position: absolute;
   left: 0;
-  width: 30%;
+  width: auto;
   display: flex;
   flex-direction: row;
   align-items: center;
   height: 24px;
+  background-color: #002e6b;
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-bottom: 2px;
   margin-left: 8px;
+  padding-right: 5px;
 
   &.team-name__home {
     top: 8px;
@@ -156,6 +161,7 @@ const TeamLogoName = styled.div`
   }
 
   .team-logo {
+    margin-top: 1px;
     height: 20px;
     width: 20px;
 
@@ -173,18 +179,23 @@ const TeamLogoName = styled.div`
     font-weight: 700;
     white-space: nowrap;
     overflow-x: visible;
-    padding-left: 3px;
-    padding-bottom: 1px;
-    color: beige;
-    height: 100%;
-    vertical-align: bottom;
+    margin-left: 3px;
+    transform: translate(0, 2px);
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    padding-right: 3px;
   }
 `;
 
-const SubInMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
+const SubInMarkWrapper = styled.div<{
+  $showPhoto?: boolean;
+  $photoSize?: number;
+}>`
   position: absolute;
   top: 0px;
-  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-20%' : '5%')};
+  left: ${({ $photoSize }) => ($photoSize ? `0` : '-20%')};
+  transform: translate(-50%, 0);
   width: 22px;
   height: 22px;
   display: flex;
@@ -208,9 +219,12 @@ const SubIndicatorInner = styled.div`
   color: #ffffff; /* 필요에 따라 색상을 조정 */
 `;
 
-const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
+const SubInMark: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
+  showPhoto,
+  photoSize,
+}) => {
   return (
-    <SubInMarkWrapper $showPhoto={showPhoto}>
+    <SubInMarkWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       <SubIndicatorInner>
         <FontAwesomeIcon icon={faArrowUp} />
       </SubIndicatorInner>
@@ -218,10 +232,11 @@ const SubInMark: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
   );
 };
 
-const CardWrapper = styled.div<{ $showPhoto?: boolean }>`
+const CardWrapper = styled.div<{ $showPhoto?: boolean; $photoSize?: number }>`
   position: absolute;
   top: 27%;
-  left: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-30%' : '10%')};
+  left: ${({ $photoSize }) => ($photoSize ? 0 : '-30%')};
+  transform: translate(-75%, 0);
   width: 22px;
   height: 22px;
   display: flex;
@@ -245,26 +260,36 @@ const CardInner = styled.div<{ color: string; borderColor: string }>`
   border-radius: 25%;
 `;
 
-const CardYellow: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
+const CardYellow: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
+  showPhoto,
+  photoSize,
+}) => {
   return (
-    <CardWrapper $showPhoto={showPhoto}>
+    <CardWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       <CardInner color="#f1f10d" borderColor="#969617" />
     </CardWrapper>
   );
 };
 
-const CardRed: React.FC<{ showPhoto: boolean }> = ({ showPhoto }) => {
+const CardRed: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
+  showPhoto,
+  photoSize,
+}) => {
   return (
-    <CardWrapper $showPhoto={showPhoto}>
+    <CardWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       <CardInner color="#f14141" borderColor="#6b1010" />
     </CardWrapper>
   );
 };
 
-const GoalMarkWrapper = styled.div<{ $showPhoto?: boolean }>`
+const GoalMarkWrapper = styled.div<{
+  $showPhoto?: boolean;
+  $photoSize?: number;
+}>`
   position: absolute;
   bottom: -2px;
-  right: ${({ $showPhoto: showPhoto }) => (showPhoto ? '-0%' : '3%')};
+  right: ${({ $photoSize }) => ($photoSize ? '0' : '0%')};
+  transform: translate(-5%, 0);
   width: 20px;
   height: 20px;
   display: flex;
@@ -294,12 +319,13 @@ const GoalIndicatorInner = styled.div<{ $index: number; $isOwnGoal: boolean }>`
   ${commonBoxShadow}
 `;
 
-const GoalMark: React.FC<{ goal: Goal[]; showPhoto: boolean }> = ({
-  goal,
-  showPhoto,
-}) => {
+const GoalMark: React.FC<{
+  goal: Goal[];
+  showPhoto: boolean;
+  photoSize?: number;
+}> = ({ goal, showPhoto, photoSize }) => {
   return (
-    <GoalMarkWrapper $showPhoto={showPhoto}>
+    <GoalMarkWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       {goal
         .map((goal, index) => {
           return (
@@ -319,7 +345,9 @@ const GoalMark: React.FC<{ goal: Goal[]; showPhoto: boolean }> = ({
   );
 };
 
-const PlayerNumberWrapper = styled.div<{ $number: number }>`
+const PlayerNumberWrapper = styled.div<{
+  $number: number;
+}>`
   position: absolute;
   bottom: 0%;
   left: 0%;
@@ -368,6 +396,37 @@ const PlayerName: React.FC<{ name: string }> = ({ name }) => {
   return <PlayerNameSpan>{name}</PlayerNameSpan>;
 };
 
+const HomeMarkerInner = styled.div`
+  font-size: 12px;
+  text-align: center;
+  font-weight: 900;
+  border-radius: 5px;
+  /* font-family: 'GmarketSansBold'; */
+  transform: translate(0, 1px);
+  padding-top: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  box-sizing: border-box;
+  background-color: #12089e;
+  color: #eef2f7;
+  border: 1px solid #c5dcff;
+`;
+
+const HomeMarkerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 3px;
+`;
+
+const HomeMarker: React.FC = () => {
+  return (
+    <HomeMarkerWrapper>
+      <HomeMarkerInner>H</HomeMarkerInner>
+    </HomeMarkerWrapper>
+  );
+};
+
 export {
   LineupTabContainer,
   TeamContainer,
@@ -381,4 +440,5 @@ export {
   GoalMark,
   PlayerNumber,
   PlayerName,
+  HomeMarker,
 };

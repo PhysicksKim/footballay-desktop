@@ -1,9 +1,13 @@
+# Temporary disabled
+
 name: Publish
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - '**'
+    # branches:
+    #   - main
 
 jobs:
   publish:

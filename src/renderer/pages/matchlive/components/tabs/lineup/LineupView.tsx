@@ -45,6 +45,8 @@ const LineupView: React.FC<{
         // 최종적으로 표시할 선수를 결정 (재귀적으로 subInPlayer를 탐색)
         const finalPlayer = getFinalPlayer(player);
         const photoExistAndShowPhoto = !!finalPlayer.photo && showPhoto;
+        const photoSize = lineHeight - 20;
+        console.log('photoSize', photoSize);
 
         return (
           <GridPlayer
@@ -68,18 +70,28 @@ const LineupView: React.FC<{
                 </div>
               )}
               {finalPlayer.events.subIn && (
-                <SubInMark showPhoto={photoExistAndShowPhoto} />
+                <SubInMark
+                  showPhoto={photoExistAndShowPhoto}
+                  photoSize={photoSize}
+                />
               )}
               {finalPlayer.events.yellow && !finalPlayer.events.red && (
-                <CardYellow showPhoto={photoExistAndShowPhoto} />
+                <CardYellow
+                  showPhoto={photoExistAndShowPhoto}
+                  photoSize={photoSize}
+                />
               )}
               {finalPlayer.events.red && (
-                <CardRed showPhoto={photoExistAndShowPhoto} />
+                <CardRed
+                  showPhoto={photoExistAndShowPhoto}
+                  photoSize={photoSize}
+                />
               )}
               {finalPlayer.events.goal.length > 0 && (
                 <GoalMark
                   goal={finalPlayer.events.goal}
                   showPhoto={photoExistAndShowPhoto}
+                  photoSize={photoSize}
                 />
               )}
               {finalPlayer.number && (

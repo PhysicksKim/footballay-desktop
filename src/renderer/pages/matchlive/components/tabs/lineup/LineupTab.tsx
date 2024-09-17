@@ -5,6 +5,7 @@ import FootballFieldCanvas from './FootballFieldCanvas';
 import { TeamLineups } from '@src/types/FixtureIpc';
 import { debounce } from 'lodash';
 import {
+  HomeMarker,
   LineupTabContainer,
   TeamContainer,
   TeamLogoName,
@@ -104,6 +105,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
             <div className="team-name">
               {info.home.koreanName || info.home.name}
             </div>
+            <HomeMarker />
           </TeamLogoName>
         )}
       </TeamContainer>
