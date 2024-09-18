@@ -59,6 +59,18 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     }
   }, 150);
 
+  const updateStoredWindowSize = debounce(() => {
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+    window.electronStore.set('matchlive_window_height', height);
+    window.electronStore.set('matchlive_window_width', width);
+  }, 150);
+
+  const resizeEventListner = () => {
+    updatePlayerSize();
+    updateStoredWindowSize();
+  };
+
   useEffect(() => {
     lineupRef.current = lineup;
   }, [lineup]);
@@ -68,9 +80,9 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   }, [lineupRef]);
 
   useEffect(() => {
-    window.addEventListener('resize', updatePlayerSize);
+    window.addEventListener('resize', resizeEventListner);
     return () => {
-      window.removeEventListener('resize', updatePlayerSize);
+      window.removeEventListener('resize', resizeEventListner);
     };
   }, []);
 

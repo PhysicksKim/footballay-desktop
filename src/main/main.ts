@@ -8,6 +8,7 @@ import {
 import { setupMainWindowIpcMainHandlers } from './ipcManager';
 import { AppUpdater } from './AppUpdater';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+import CustomElectronStoreIpc from './store/customElectronStoreIpc';
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -34,6 +35,7 @@ if (isDev && isTestAutoUpdate) {
 app
   .whenReady()
   .then(async () => {
+    new CustomElectronStoreIpc();
     const mainWindow = await createMainWindow();
     const updatecheckerWindow = await createUpdatecheckerWindow();
     const appUpdater = new AppUpdater(mainWindow, updatecheckerWindow);
