@@ -63,7 +63,9 @@ const substDetailSubInOut = (
       ? { inPlayer: event.player, outPlayer: event.assist }
       : { inPlayer: event.assist, outPlayer: event.player };
 
-  return `${outPlayer?.name} → ${inPlayer?.name}`;
+  const outName = outPlayer?.koreanName || outPlayer?.name || 'ERROR';
+  const inName = inPlayer?.koreanName || inPlayer?.name || 'ERROR';
+  return `${outName} → ${inName}`;
 };
 
 const FixtureEventList: React.FC<EventListProps> = ({
@@ -116,7 +118,7 @@ const FixtureEventList: React.FC<EventListProps> = ({
                     {translateEventType(event.type, event.detail)}
                   </td>
                   <td className="event-filter__item-detail event-filter__item-detail--team">
-                    {event.team.name}
+                    {event.team.koreanName || event.team.name}
                   </td>
                   <td className="event-filter__item-detail event-filter__item-detail--player">
                     {event.type.toLowerCase() === 'subst'
@@ -124,7 +126,7 @@ const FixtureEventList: React.FC<EventListProps> = ({
                           event,
                           meta.find((m) => m.sequence === event.sequence)!,
                         )
-                      : event.player.name}
+                      : event.player.koreanName || event.player.name}
                   </td>
                 </tr>
               ))}

@@ -46,7 +46,6 @@ const LineupView: React.FC<{
         const finalPlayer = getFinalPlayer(player);
         const photoExistAndShowPhoto = !!finalPlayer.photo && showPhoto;
         const photoSize = lineHeight - 20;
-        console.log('photoSize', photoSize);
 
         return (
           <GridPlayer
