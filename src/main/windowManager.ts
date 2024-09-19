@@ -5,6 +5,7 @@ import { resolveHtmlPath } from './util';
 import { setupMatchliveIpcMainHandlers } from './ipcManager';
 import { AppState } from './AppState';
 import { getMatchliveWindowSize } from './store/DefaultSettingData';
+import log from 'electron-log';
 
 let mainWindow: BrowserWindow | null = null;
 let matchliveWindow: BrowserWindow | null = null;
@@ -113,15 +114,22 @@ export const createUpdatecheckerWindow = async () => {
 
   updatecheckerWindow.loadURL(resolveHtmlPath('updatechecker.html'));
 
-  updatecheckerWindow.on('ready-to-show', () => {
-    if (updatecheckerWindow === null) return;
+  updatecheckerWindow?.on('ready-to-show', () => {
+    if (updatecheckerWindow === null) {
+      return;
+    }
     updatecheckerWindow.show();
   });
 
-  updatecheckerWindow.on('closed', () => {
-    mainWindow?.webContents.send('to-app', {
-      type: 'AUTO_UPDATER_WINDOW_CLOSED',
-    });
+  updatecheckerWindow?.on('closed', () => {
+    try {
+      mainWindow?.webContents?.send('to-app', {
+        type: 'AUTO_UPDATER_WINDOW_CLOSED',
+      });
+    } catch (e) {
+      console.error(e);
+      log.error(e);
+    }
   });
 
   return updatecheckerWindow;

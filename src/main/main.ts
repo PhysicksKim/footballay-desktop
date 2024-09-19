@@ -7,8 +7,7 @@ import {
 } from './windowManager';
 import { setupMainWindowIpcMainHandlers } from './ipcManager';
 import { AppUpdater } from './AppUpdater';
-import { faL } from '@fortawesome/free-solid-svg-icons';
-import CustomElectronStoreIpc from './store/customElectronStoreIpc';
+import CustomElectronStoreIpc from './store/CustomElectronStoreIpc';
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

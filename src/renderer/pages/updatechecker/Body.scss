@@ -6,6 +6,7 @@ body {
   background-color: transparent;
   width: 100%;
   height: 100%;
+  user-select: none;
 }
 
 #root {
@@ -15,4 +16,5 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  user-select: none;
 }
