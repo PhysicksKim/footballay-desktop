@@ -93,6 +93,13 @@ const MatchliveControlTab = () => {
       ),
   );
 
+  /**
+   * matchlive window 의 사이즈를 초기화하고, 화면 중앙에 위치하도록 한다.
+   */
+  const resetMatchliveWindowSizeAndPosition = () => {
+    window.electronStore.resetMatchliveWindowSizeAndPosition();
+  };
+
   return (
     <div ref={contentTabContainerRef} className="matchlive-control-container">
       <div className="matchlive-control-title">
@@ -175,12 +182,18 @@ const MatchliveControlTab = () => {
         >
           최소화
         </button>
+        <button
+          className="reset-window-btn win-con-btn"
+          onClick={resetMatchliveWindowSizeAndPosition}
+        >
+          크기 초기화
+        </button>
         <button className="close-btn win-con-btn" onClick={closeMatchlive}>
           닫기
         </button>
       </div>
 
-      <div className="additional-options-section">
+      {/* <div className="additional-options-section">
         <input
           type="checkbox"
           id="show-profile"
@@ -198,7 +211,7 @@ const MatchliveControlTab = () => {
         <label htmlFor="show-profile" className="show-profile-box-label">
           프로필 사진 표시
         </label>
-      </div>
+      </div> */}
       <div className="last-fetch-title-box">
         <span>데이터 갱신 시각</span>
       </div>

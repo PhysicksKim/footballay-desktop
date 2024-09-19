@@ -1,5 +1,7 @@
 import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
+import { getMatchliveWindowSize } from './store/DefaultSettingData';
+import matchliveWindowService from './matchliveWindowService';
 
 export const setupMainWindowIpcMainHandlers = (
   mainWindow: BrowserWindow | undefined,
@@ -68,6 +70,17 @@ export const setupMatchliveIpcMainHandlers = (
       matchliveWindow?.webContents?.send('to-matchlive', data);
     } catch (e) {
       log.error('to-matchlive ipc error message', e);
+    }
+  });
+
+  ipcMain.handle('reset-matchlive-window', async () => {
+    const { height, width } =
+      await matchliveWindowService.getDefaultWindowSize();
+
+    if (matchliveWindow) {
+      matchliveWindow.setSize(width, height);
+      matchliveWindow.center();
+      matchliveWindow.focus();
     }
   });
 };

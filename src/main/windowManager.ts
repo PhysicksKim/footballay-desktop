@@ -4,6 +4,7 @@ import { app } from 'electron';
 import { resolveHtmlPath } from './util';
 import { setupMatchliveIpcMainHandlers } from './ipcManager';
 import { AppState } from './AppState';
+import { getMatchliveWindowSize } from './store/DefaultSettingData';
 
 let mainWindow: BrowserWindow | null = null;
 let matchliveWindow: BrowserWindow | null = null;
@@ -139,9 +140,10 @@ export const createMatchliveWindow = async () => {
   /*
   작게 : 330 x 680
   */
+  const { height, width } = await getMatchliveWindowSize();
   matchliveWindow = new BrowserWindow({
-    width: 415,
-    height: 850,
+    width: width,
+    height: height,
     resizable: true,
     transparent: true,
     frame: false,
