@@ -1,6 +1,5 @@
-import { contextBridge, ipcMain, ipcRenderer } from 'electron';
+import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from 'electron';
 import Store from 'electron-store';
-import { StoreKey } from './StoreKey';
 
 export default class CustomElectronStoreIpc {
   constructor() {
