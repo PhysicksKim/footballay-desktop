@@ -116,6 +116,7 @@ const FootballFieldCanvas: React.FC = () => {
         top: 0,
         left: 0,
         zIndex: -9999,
+        borderRadius: '30px',
       }}
     />
   );

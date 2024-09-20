@@ -150,7 +150,9 @@ const TeamLogoName = styled.div`
   border-radius: 5px;
   padding-left: 5px;
   padding-bottom: 2px;
-  margin-left: 8px;
+  margin-left: 18px;
+  margin-top: 12px;
+  margin-bottom: 12px;
   padding-right: 5px;
 
   &.team-name__home {
@@ -402,11 +404,11 @@ const HomeMarkerInner = styled.div`
   font-weight: 900;
   border-radius: 5px;
   /* font-family: 'GmarketSansBold'; */
-  transform: translate(0, 3px);
-  padding-top: 1px;
+  transform: translate(0, 1px);
+  padding-top: 2px;
   padding-left: 4px;
   padding-right: 4px;
-  padding-bottom: 1px;
+  padding-bottom: 2px;
   box-sizing: border-box;
   background-color: #12089e;
   color: #eef2f7;
