@@ -130,7 +130,7 @@ const GridPlayer = styled.div<{
     display: inline-block;
     font-size: 16px;
     font-weight: 700;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     white-space: nowrap;
     margin-top: 3px;
     color: white;
@@ -402,10 +402,11 @@ const HomeMarkerInner = styled.div`
   font-weight: 900;
   border-radius: 5px;
   /* font-family: 'GmarketSansBold'; */
-  transform: translate(0, 1px);
-  padding-top: 2px;
+  transform: translate(0, 3px);
+  padding-top: 1px;
   padding-left: 4px;
   padding-right: 4px;
+  padding-bottom: 1px;
   box-sizing: border-box;
   background-color: #12089e;
   color: #eef2f7;
