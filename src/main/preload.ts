@@ -2,6 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import electronStore from './store/ipcElectronStore';
+import { __APP_VERSION__ } from './Constants';
 
 export type Channels =
   | 'main-window-control'
@@ -72,6 +73,7 @@ const electronHandler = {
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
 contextBridge.exposeInMainWorld('electronStore', electronStore);
+contextBridge.exposeInMainWorld('appVersion', __APP_VERSION__);
 
 export type ElectronHandler = typeof electronHandler;
 export type ElectronStore = typeof electronStore;

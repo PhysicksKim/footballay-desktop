@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import '@app/styles/SideNavigation.scss';
 import { Link } from 'react-router-dom';
-import MatchliveControlTab from './tabs/MatchliveControlTab';
 
 const SideNavigation = () => {
+  const version = window.appVersion;
+  console.log('version', version);
   return (
     <div className="side-navigation-container">
       {/* <div className="fixture-selection"> */}
@@ -23,6 +24,9 @@ const SideNavigation = () => {
       {/* <Link to="/debug-tool" className="debug-tool-menu">
         <div className="debug-tool">DEBUG</div>
       </Link> */}
+      <div className="version-text-box">
+        <div className="version-text">v {version}</div>
+      </div>
     </div>
   );
 };

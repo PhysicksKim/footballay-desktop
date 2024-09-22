@@ -82,6 +82,19 @@ $menu-btn-hover: #ffffff4b;
     }
   }
 
+  .version-text-box {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    margin-bottom: 4px;
+    color: $background-division-alter;
+    .version-text {
+      font-size: 12px;
+    }
+  }
+
   .debug-tool-menu {
     width: 100%;
     position: absolute;
