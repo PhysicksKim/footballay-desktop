@@ -3,6 +3,7 @@ import './App.scss';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import { createGlobalStyle } from 'styled-components';
+import '@src/renderer/global/style/Fonts.css';
 
 const GlobalStyle = createGlobalStyle`
   body {
