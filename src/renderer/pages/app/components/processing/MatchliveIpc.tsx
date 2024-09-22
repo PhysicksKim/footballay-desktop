@@ -242,6 +242,10 @@ const MatchliveIpc = () => {
   }, [getProcessedLineupFlag]);
 
   useEffect(() => {
+    sendFixtureInfo(fixtureInfo);
+  }, [fixtureInfo]);
+
+  useEffect(() => {
     sendLiveStatus(fixtureLiveStatus);
   }, [fixtureLiveStatus]);
 

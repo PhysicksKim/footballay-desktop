@@ -41,7 +41,9 @@ export const setupMainWindowIpcMainHandlers = (
 export const setupMatchliveIpcMainHandlers = (
   matchliveWindow: BrowserWindow | undefined,
 ) => {
-  if (!matchliveWindow) return;
+  if (!matchliveWindow) {
+    return;
+  }
   ipcMain.on('control-to-matchlive', async (event, action: string) => {
     switch (action) {
       case 'refresh':
@@ -63,7 +65,7 @@ export const setupMatchliveIpcMainHandlers = (
   });
 
   ipcMain.on('to-matchlive', (event, data) => {
-    if (!matchliveWindow) {
+    if (!matchliveWindow || matchliveWindow.isDestroyed()) {
       return;
     }
     try {
