@@ -51,7 +51,7 @@ const FixtureListBox = () => {
       }
     });
 
-    return fixtures.map((fixture, index) => (
+    return copiedFixtures.map((fixture, index) => (
       <FixtureListItem
         key={index}
         {...fixture}

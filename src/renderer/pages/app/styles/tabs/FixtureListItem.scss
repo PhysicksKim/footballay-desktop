@@ -19,6 +19,7 @@ $away-team-color: #d89066;
   .match-schedule-box {
     margin-left: 17px;
     text-wrap: nowrap;
+    width: 60px;
 
     display: flex;
     flex-direction: column;
@@ -98,12 +99,12 @@ $away-team-color: #d89066;
         }
       }
     }
-    .team-a-logo-box {
-      margin-left: 20px;
-    }
-    .team-b-logo-box {
-      margin-right: 5px;
-    }
+    // .team-a-logo-box {
+    //   margin-left: 20px;
+    // }
+    // .team-b-logo-box {
+    //   margin-right: 5px;
+    // }
 
     .team-versus-box {
       width: 210px;
@@ -118,7 +119,6 @@ $away-team-color: #d89066;
       .team-a-name {
         width: 85px;
         text-align: center;
-        overflow-y: hidden;
         overflow-x: visible;
         display: flex;
         flex-direction: column;
@@ -141,7 +141,6 @@ $away-team-color: #d89066;
       .team-b-name {
         width: 85px;
         text-align: center;
-        overflow-y: hidden;
         overflow-x: visible;
         display: flex;
         flex-direction: column;
