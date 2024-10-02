@@ -6,7 +6,7 @@ import '@src/renderer/global/style/Fonts.css';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'GmarketSans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
   }
 `;
 

@@ -3,7 +3,6 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 @import '@app/styles/Color.scss';
-@import url('../../global/style/Fonts.css');
 
 /*
  * 폰트는 App.tsx 에서 global styled-components로 설정 됨. Pretendard
