@@ -10,6 +10,9 @@ const ViewLineupProcessor = () => {
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.fixtureLive.events);
   const lineup = useSelector((state: RootState) => state.fixtureLive.lineup);
+  const statistics = useSelector(
+    (state: RootState) => state.fixtureLive.statistics,
+  );
   const filterEvents = useSelector(
     (state: RootState) => state.fixtureLiveControl.filterEvents,
   );
@@ -22,11 +25,22 @@ const ViewLineupProcessor = () => {
       processedEvents = [] as FixtureEvent[];
     }
     const homeViewLineup = lineup?.lineup
-      ? processLineupToView(lineup.lineup?.home, processedEvents)
+      ? processLineupToView(
+          lineup.lineup?.home,
+          processedEvents,
+          statistics?.home.playerStatistics,
+        )
       : null;
     const awayViewLineup = lineup?.lineup
-      ? processLineupToView(lineup.lineup?.away, processedEvents)
+      ? processLineupToView(
+          lineup.lineup?.away,
+          processedEvents,
+          statistics?.away.playerStatistics,
+        )
       : null;
+
+    console.log('homeViewLineup', homeViewLineup);
+    console.log('awayViewLineup', awayViewLineup);
 
     dispatch(
       setProcessedLineup({
@@ -34,7 +48,7 @@ const ViewLineupProcessor = () => {
         away: awayViewLineup,
       }),
     );
-  }, [lineup, events, filterEvents]);
+  }, [lineup, events, filterEvents, statistics]);
 
   return <></>;
 };

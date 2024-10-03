@@ -47,6 +47,8 @@ const LineupView: React.FC<{
         const photoExistAndShowPhoto = !!finalPlayer.photo && showPhoto;
         const photoSize = lineHeight - 20;
 
+        console.log('final player stats', finalPlayer.statistics);
+
         return (
           <GridPlayer
             key={finalPlayer.id}
@@ -95,6 +97,11 @@ const LineupView: React.FC<{
               )}
               {finalPlayer.number && (
                 <PlayerNumber number={finalPlayer.number} />
+              )}
+              {finalPlayer.statistics && (
+                <div className="player-statistics">
+                  {finalPlayer.statistics.rating}
+                </div>
               )}
             </div>
             <PlayerName name={finalPlayer.koreanName || finalPlayer.name} />

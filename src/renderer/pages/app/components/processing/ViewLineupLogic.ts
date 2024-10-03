@@ -1,4 +1,9 @@
-import { LineupTeam, FixtureEvent } from '@src/types/FixtureIpc';
+import {
+  LineupTeam,
+  FixtureEvent,
+  FixtureStatistics,
+  PlayerStatistics,
+} from '@src/types/FixtureIpc';
 import {
   ViewPlayer,
   ViewLineup,
@@ -29,7 +34,10 @@ export const isSubOutPlayer = (
   return false;
 };
 
-export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
+export const processTeamLineup = (
+  teamLineup: LineupTeam,
+  statisticsMap: Map<number, PlayerStatistics>,
+): ViewLineup => {
   const playersByGrid: ViewPlayer[][] = [];
 
   /**
@@ -50,26 +58,40 @@ export const processTeamLineup = (teamLineup: LineupTeam): ViewLineup => {
     };
     const subInPlayer = null;
 
+    const statistics = statisticsMap.get(player.id) || null;
+
     playersByGrid[gridLine].push({
       ...player,
       events,
+      statistics,
       subInPlayer,
     });
+  });
+
+  const substituteViewLineup = teamLineup.substitutes.map((sub) => {
+    const events: ViewPlayerEvents = {
+      subIn: false,
+      yellow: false,
+      red: false,
+      goal: [],
+    };
+    const subInPlayer = null;
+
+    const statistics = statisticsMap.get(sub.id) || null;
+
+    return {
+      ...sub,
+      events,
+      statistics,
+      subInPlayer,
+    };
   });
 
   return {
     teamId: teamLineup.teamId,
     teamName: teamLineup.teamName,
     players: playersByGrid,
-    substitutes: teamLineup.substitutes.map((sub) => ({
-      ...sub,
-      events: {
-        subIn: false,
-        yellow: false,
-        red: false,
-        goal: [],
-      },
-    })),
+    substitutes: substituteViewLineup,
   };
 };
 
@@ -235,6 +257,7 @@ export const applyEventsToLineup = (
             red: false,
             goal: [],
           },
+          statistics: substitute.statistics,
           subInPlayer: null,
         };
 
@@ -260,10 +283,33 @@ export const applyEventsToLineup = (
   return lineup;
 };
 
+/**
+ * Map < playerId, PlayerStatistics > 로 된 맵을 생성합니다.
+ * @param map
+ * @param statistics
+ */
+const setStatisticsMap = (
+  map: Map<number, PlayerStatistics>,
+  statistics: PlayerStatistics[],
+) => {
+  statistics.forEach((stat) => {
+    map.set(stat.id, stat);
+  });
+};
+
 export const processLineupToView = (
   teamLineup: LineupTeam,
   events: FixtureEvent[],
+  playerStatisticsArray?: PlayerStatistics[],
 ): ViewLineup => {
-  const lineup = processTeamLineup(teamLineup);
-  return applyEventsToLineup(lineup, events);
+  const statisticsMap: Map<number, PlayerStatistics> = new Map();
+  if (playerStatisticsArray) {
+    setStatisticsMap(statisticsMap, playerStatisticsArray);
+    console.log('statisticsMap', statisticsMap);
+  }
+
+  let lineup: ViewLineup;
+  lineup = processTeamLineup(teamLineup, statisticsMap);
+  lineup = applyEventsToLineup(lineup, events);
+  return lineup;
 };

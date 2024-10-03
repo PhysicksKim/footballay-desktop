@@ -135,6 +135,7 @@ export interface ViewPlayer {
   position: string;
   grid: string | null;
   events: ViewPlayerEvents;
+  statistics: PlayerStatistics | null;
   /**
    * 교체된 선수가 있을 경우 객체가 들어가며, 교체 선수가 다시 교체된 경우가 있을 수 있으므로 재귀적으로 검사해야 함
    */
@@ -162,17 +163,15 @@ export interface ViewLineup {
 
 export interface FixtureStatistics {
   fixtureId: number;
-  team: {
-    home: Team;
-    away: Team;
+  home: {
+    team: Team;
+    teamStatistics: TeamStatistics;
+    playerStatistics: PlayerStatistics[];
   };
-  teamStatistics: {
-    home: TeamStatistics;
-    away: TeamStatistics;
-  };
-  playerStatistics: {
-    home: PlayerStatistics[];
-    away: PlayerStatistics[];
+  away: {
+    team: Team;
+    teamStatistics: TeamStatistics;
+    playerStatistics: PlayerStatistics[];
   };
 }
 
