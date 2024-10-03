@@ -9,7 +9,7 @@ interface RetryableImageProps {
 const RetryableImage: React.FC<RetryableImageProps> = ({
   src,
   alt,
-  maxRetries = 3,
+  maxRetries = 5,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [retryCount, setRetryCount] = useState<number>(0);

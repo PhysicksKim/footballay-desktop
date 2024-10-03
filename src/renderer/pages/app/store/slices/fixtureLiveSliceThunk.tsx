@@ -6,6 +6,7 @@ import {
   FixtureLiveStatus,
   FixtureLineup,
   FixtureEventState,
+  FixtureStatistics,
 } from '@src/types/FixtureIpc';
 import { AppDispatch, RootState } from '../store';
 
@@ -86,6 +87,25 @@ export const fetchFixtureEvents = createAsyncThunk<
       `${Urls.apiUrl}${Urls.football.fixtureEvents}`,
       { params: { fixtureId } },
     );
+    return response.data.response[0];
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response ? error.response.data : error.message,
+    );
+  }
+});
+
+export const fetchFixtureStatistics = createAsyncThunk<
+  FixtureStatistics,
+  number,
+  { rejectValue: string }
+>('fixture/fetchStatistics', async (fixtureId: number, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(
+      `${Urls.apiUrl}${Urls.football.fixtureStatistics}`,
+      { params: { fixtureId } },
+    );
+    console.log('statistics fetch response', response.data.response[0]);
     return response.data.response[0];
   } catch (error: any) {
     return rejectWithValue(

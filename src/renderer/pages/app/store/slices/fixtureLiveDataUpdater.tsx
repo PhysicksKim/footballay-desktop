@@ -4,6 +4,7 @@ import {
   fetchFixtureLineup,
   fetchFixtureEvents,
   fetchFixtureLiveStatus,
+  fetchFixtureStatistics,
 } from './fixtureLiveSliceThunk';
 import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
 
@@ -74,5 +75,26 @@ export const startFetchEvents = (fixtureId: number) => {
     const intervalId = setInterval(fetchEvents, intervalTime);
     dispatch(addIntervalId(intervalId));
     fetchEvents();
+  };
+};
+
+export const startFetchStatistics = (fixtureId: number) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
+    const fetchStatistics = async () => {
+      try {
+        await dispatch(fetchFixtureStatistics(fixtureId)).unwrap();
+        const nowStatus =
+          getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
+        if (nowStatus && shouldStopFetch(nowStatus)) {
+          clearInterval(intervalId);
+          dispatch(removeIntervalId(intervalId));
+        }
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error);
+      }
+    };
+    const intervalId = setInterval(fetchStatistics, intervalTime);
+    dispatch(addIntervalId(intervalId));
+    fetchStatistics();
   };
 };

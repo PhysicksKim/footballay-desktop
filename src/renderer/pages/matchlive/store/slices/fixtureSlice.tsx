@@ -4,6 +4,7 @@ import {
   FixtureInfo,
   FixtureLineup,
   FixtureLiveStatus,
+  FixtureStatistics,
 } from '@src/types/FixtureIpc';
 
 /**
@@ -16,6 +17,7 @@ export interface FixtureState {
   lineup: FixtureLineup | null;
   events: FixtureEventState | null;
   liveStatus: FixtureLiveStatus | null;
+  statistics: FixtureStatistics | null;
   intervalIds: NodeJS.Timeout[];
 }
 
@@ -25,6 +27,7 @@ export const initialState: FixtureState = {
   lineup: null,
   events: null,
   liveStatus: null,
+  statistics: null,
   intervalIds: [],
 };
 
@@ -47,6 +50,9 @@ const fixtureSlice = createSlice({
     setFixtureLiveStatus(state, action: PayloadAction<FixtureLiveStatus>) {
       state.liveStatus = action.payload;
     },
+    setFixtureStatistics(state, action: PayloadAction<FixtureStatistics>) {
+      state.statistics = action.payload;
+    },
     clearFixture(state) {
       state.fixtureId = null;
       state.info = null;
@@ -63,6 +69,7 @@ export const {
   setFixtureLineup,
   setFixtureEvents,
   setFixtureLiveStatus,
+  setFixtureStatistics,
   clearFixture,
 } = fixtureSlice.actions;
 export default fixtureSlice.reducer;

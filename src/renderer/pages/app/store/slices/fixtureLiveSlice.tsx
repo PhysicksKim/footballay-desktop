@@ -9,12 +9,14 @@ import {
   FixtureEventMeta,
   SubstMeta,
   SubstPlayer,
+  FixtureStatistics,
 } from '@src/types/FixtureIpc';
 import {
   fetchFixtureEvents,
   fetchFixtureInfo,
   fetchFixtureLineup,
   fetchFixtureLiveStatus,
+  fetchFixtureStatistics,
 } from './fixtureLiveSliceThunk';
 import { AppDispatch, RootState } from '../store';
 import { set } from 'lodash';
@@ -25,6 +27,7 @@ export interface FixtureState {
   liveStatus: FixtureLiveStatus | null;
   lineup: FixtureLineup | null;
   events: FixtureEventState | null;
+  statistics: FixtureStatistics | null;
   taskState: {
     init: InitTaskState;
   };
@@ -44,6 +47,7 @@ export const initialState: FixtureState = {
   liveStatus: null,
   lineup: null,
   events: null,
+  statistics: null,
   taskState: {
     init: {
       matchliveWindowReady: false,
@@ -165,6 +169,13 @@ const fixtureLiveSlice = createSlice({
             events: sortedEvents,
           };
           state.events = processedEvents;
+          updateLastFetchedAt(state);
+        },
+      )
+      .addCase(
+        fetchFixtureStatistics.fulfilled,
+        (state, action: PayloadAction<FixtureStatistics>) => {
+          state.statistics = action.payload;
           updateLastFetchedAt(state);
         },
       );

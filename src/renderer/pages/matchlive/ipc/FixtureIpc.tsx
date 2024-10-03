@@ -6,11 +6,11 @@ import {
   setFixtureInfo,
   setFixtureLineup,
   setFixtureLiveStatus,
+  setFixtureStatistics,
 } from '@matchlive/store/slices/fixtureSlice';
 import { setProcessedLineup } from '@matchlive/store/slices/fixtureProcessedDataSlice';
 import { RootState } from '@matchlive/store/store';
 import { setShowPhoto } from '@matchlive/store/slices/fixtureLiveOptionSlice';
-import { send } from 'process';
 
 export type ReceiveIpcType =
   | 'SET_FIXTURE_ID'
@@ -18,6 +18,7 @@ export type ReceiveIpcType =
   | 'SET_LIVE_STATUS'
   | 'SET_LINEUP'
   | 'SET_EVENTS'
+  | 'SET_STATISTICS'
   | 'SET_SHOW_PHOTO'
   | 'SET_PROCESSED_LINEUP';
 export type SendIpcType =
@@ -26,6 +27,7 @@ export type SendIpcType =
   | 'GET_FIXTURE_LIVE_STATUS'
   | 'GET_FIXTURE_LINEUP'
   | 'GET_FIXTURE_EVENTS'
+  | 'GET_FIXTURE_STATISTICS'
   | 'GET_PROCESSED_LINEUP'
   | 'MATCHLIVE_REACT_READY'
   | 'SEND_SHOW_PHOTO';
@@ -43,6 +45,7 @@ const requestFixtureInitialLiveData = () => {
   sendToApp('GET_FIXTURE_LINEUP');
   sendToApp('GET_PROCESSED_LINEUP');
   sendToApp('GET_FIXTURE_EVENTS');
+  sendToApp('GET_FIXTURE_STATISTICS');
 };
 
 const FixtureIpc = () => {
@@ -92,6 +95,10 @@ const FixtureIpc = () => {
       }
       case 'SET_PROCESSED_LINEUP': {
         dispatch(setProcessedLineup(data));
+        break;
+      }
+      case 'SET_STATISTICS': {
+        dispatch(setFixtureStatistics(data));
         break;
       }
       default: {

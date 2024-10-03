@@ -9,6 +9,7 @@ const Urls = {
     fixtureLiveStatus: '/api/football/fixtures/live-status',
     fixtureLineup: '/api/football/fixtures/lineup',
     fixtureEvents: '/api/football/fixtures/events',
+    fixtureStatistics: '/api/football/fixtures/statistics',
     availableFixtures: '/api/football/stream/fixtures/available',
   },
 };

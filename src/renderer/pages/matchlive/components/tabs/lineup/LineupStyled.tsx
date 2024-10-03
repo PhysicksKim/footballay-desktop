@@ -251,14 +251,14 @@ const CardWrapper = styled.div<{ $showPhoto?: boolean; $photoSize?: number }>`
   ${commonBoxShadow}
 `;
 
-const CardInner = styled.div<{ color: string; borderColor: string }>`
+const CardInner = styled.div<{ color: string; $borderColor: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 65%;
   width: 50%;
   background-color: ${({ color }) => color};
-  border: 1px solid ${({ borderColor }) => borderColor};
+  border: 1px solid ${({ $borderColor }) => $borderColor};
   border-radius: 25%;
 `;
 
@@ -268,7 +268,7 @@ const CardYellow: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
 }) => {
   return (
     <CardWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
-      <CardInner color="#f1f10d" borderColor="#969617" />
+      <CardInner color="#f1f10d" $borderColor="#969617" />
     </CardWrapper>
   );
 };
@@ -279,7 +279,7 @@ const CardRed: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
 }) => {
   return (
     <CardWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
-      <CardInner color="#f14141" borderColor="#6b1010" />
+      <CardInner color="#f14141" $borderColor="#6b1010" />
     </CardWrapper>
   );
 };
@@ -331,7 +331,11 @@ const GoalMark: React.FC<{
       {goal
         .map((goal, index) => {
           return (
-            <GoalIndicatorInner $index={index} $isOwnGoal={goal.ownGoal}>
+            <GoalIndicatorInner
+              key={`${index}_${goal.minute}`}
+              $index={index}
+              $isOwnGoal={goal.ownGoal}
+            >
               <FontAwesomeIcon
                 icon={faFutbol}
                 style={{

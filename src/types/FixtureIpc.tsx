@@ -126,7 +126,6 @@ export interface LineupPlayer {
   substitute: boolean;
 }
 
-// ---------------------------------------------------
 export interface ViewPlayer {
   id: number;
   name: string;
@@ -159,4 +158,79 @@ export interface ViewLineup {
   teamName: string;
   players: ViewPlayer[][];
   substitutes: ViewPlayer[];
+}
+
+export interface FixtureStatistics {
+  fixtureId: number;
+  team: {
+    home: Team;
+    away: Team;
+  };
+  teamStatistics: {
+    home: TeamStatistics;
+    away: TeamStatistics;
+  };
+  playerStatistics: {
+    home: PlayerStatistics[];
+    away: PlayerStatistics[];
+  };
+}
+
+export interface TeamStatistics {
+  shotsOnGoal: number;
+  shotsOffGoal: number;
+  totalShots: number;
+  blockedShots: number;
+  shotsInsideBox: number;
+  shotsOutsideBox: number;
+  fouls: number;
+  cornerKicks: number;
+  offsides: number;
+  ballPossession: number;
+  yellowCards: number;
+  redCards: number;
+  goalkeeperSaves: number;
+  totalPasses: number;
+  passesAccurate: number;
+  passesAccuracyPercentage: number;
+  goalsPrevented: number;
+  xg: XG[];
+}
+
+export interface XG {
+  elapsed: number;
+  xg: string;
+}
+
+export interface PlayerStatistics {
+  id: number;
+  name: string;
+  koreanName: string | null;
+  minutesPlayed: number;
+  position: string;
+  rating: string;
+  captain: boolean;
+  substitute: boolean;
+  shotsTotal: number;
+  shotsOn: number;
+  goals: number;
+  goalsConceded: number;
+  assists: number;
+  saves: number;
+  passesTotal: number;
+  passesKey: number;
+  passesAccuracy: string;
+  tacklesTotal: number;
+  interceptions: number;
+  duelsTotal: number;
+  duelsWon: number;
+  dribblesAttempts: number;
+  dribblesSuccess: number;
+  foulsCommitted: number;
+  foulsDrawn: number;
+  yellowCards: number;
+  redCards: number;
+  penaltiesScored: number;
+  penaltiesMissed: number;
+  penaltiesSaved: number;
 }

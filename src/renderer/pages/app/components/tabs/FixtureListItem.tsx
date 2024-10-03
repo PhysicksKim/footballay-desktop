@@ -13,6 +13,7 @@ import {
   startFetchEvents,
   startFetchLineup,
   startFetchLiveStatus,
+  startFetchStatistics,
 } from '../../store/slices/fixtureLiveDataUpdater';
 import TeamLogo from './TeamLogo';
 
@@ -80,6 +81,7 @@ const FixtureListItem = ({
       dispatch(startFetchLineup(fixtureId));
       dispatch(startFetchLiveStatus(fixtureId));
       dispatch(startFetchEvents(fixtureId));
+      dispatch(startFetchStatistics(fixtureId));
     }
   };
 
