@@ -1,4 +1,4 @@
-import { faArrowUp, faFutbol } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
 import { Goal } from '@src/types/FixtureIpc';
@@ -17,7 +17,6 @@ const LineupTabContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  -webkit-app-region: drag;
   padding-top: 12px;
   padding-bottom: 5px;
 `;
@@ -36,6 +35,7 @@ const TeamContainer = styled.div<{ $isAway?: boolean }>`
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: visible;
+  -webkit-app-region: drag;
 `;
 
 const TeamName = styled.h2`
@@ -87,6 +87,12 @@ const GridPlayer = styled.div<{
     flex-direction: column-reverse;
     align-items: center;
     height: ${(props) => props.$lineHeight - 20}px;
+
+    // 클릭이 가능하도록 no-drag 설정
+    & > * {
+      -webkit-app-region: no-drag;
+    }
+    user-select: none;
 
     img {
       height: 100%;
@@ -408,11 +414,11 @@ const HomeMarkerInner = styled.div`
   font-weight: 900;
   border-radius: 5px;
   /* font-family: 'GmarketSansBold'; */
-  transform: translate(0, 1px);
-  padding-top: 2px;
+  transform: translate(0, 2px);
+  padding-top: 3px;
   padding-left: 4px;
   padding-right: 4px;
-  padding-bottom: 2px;
+  padding-bottom: 1px;
   box-sizing: border-box;
   background-color: #12089e;
   color: #eef2f7;
@@ -434,6 +440,67 @@ const HomeMarker: React.FC = () => {
   );
 };
 
+const RatingBox: React.FC<{ rating: string }> = ({ rating }) => {
+  const floatRating = parseFloat(rating);
+  const formattedRating = floatRating.toFixed(1);
+  const ratingColor =
+    floatRating > 7.9
+      ? '#0026a1'
+      : floatRating > 7.4
+        ? '#07ad0f'
+        : floatRating > 6.9
+          ? '#28ac00'
+          : floatRating > 6.4
+            ? '#76a71b'
+            : floatRating > 5.9
+              ? '#96a00e'
+              : floatRating > 5.4
+                ? '#ad4b09'
+                : '#860000';
+
+  const outstandingPlayerMark =
+    floatRating > 8.5 ? OutstandingPlayerMark : null;
+
+  return (
+    <RatingWrapper $ratingColor={ratingColor}>
+      {formattedRating}
+      {outstandingPlayerMark}
+    </RatingWrapper>
+  );
+};
+
+const OutstandingPlayerMark = (
+  <FontAwesomeIcon
+    icon={faStar}
+    style={{
+      color: '#ffffff',
+      fontSize: '0.6rem',
+      paddingLeft: '2px',
+      transform: 'translate(1px, 0)',
+    }}
+  />
+);
+
+const RatingWrapper = styled.div<{ $ratingColor: string }>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(35%, -12%);
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-width: 1.9rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  background-color: ${({ $ratingColor }) => $ratingColor};
+  ${commonBoxShadow}
+`;
+
 export {
   LineupTabContainer,
   TeamContainer,
@@ -448,4 +515,5 @@ export {
   PlayerNumber,
   PlayerName,
   HomeMarker,
+  RatingBox,
 };
