@@ -11,7 +11,11 @@ import {
   SubInMark,
 } from './LineupStyled';
 import UniformIcon from './UniformIcon';
-import { ViewLineup, ViewPlayer } from '@src/types/FixtureIpc';
+import {
+  PlayerStatistics,
+  ViewLineup,
+  ViewPlayer,
+} from '@src/types/FixtureIpc';
 import RetryableImage from '../../common/RetryableImage';
 import Modal from '../../common/Modal';
 import styled from 'styled-components';
@@ -24,32 +28,57 @@ const getFinalPlayer = (player: ViewPlayer): ViewPlayer => {
   return currentPlayer;
 };
 
-const PlayerModalOverlayStyle = styled.div`
+export const PlayerModalOverlayStyle = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(10, 27, 44, 0.473);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  z-index: 999;
   -webkit-app-region: no-drag;
+  transition: opacity 0.1s ease-in-out;
+  opacity: 0;
   cursor: pointer;
+
+  &.modal-enter,
+  &.modal-enter-active {
+    opacity: 0;
+  }
+
+  &.modal-enter-done {
+    opacity: 1;
+  }
+
+  &.modal-exit {
+    opacity: 1;
+  }
+
+  &.modal-exit-active,
+  &.modal-exit-done {
+    opacity: 0;
+  }
 `;
 
-const PlayerModalContentStyle = styled.div`
+export const PlayerModalContentStyle = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
+  width: 70%;
+  height: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   z-index: 999;
   -webkit-app-region: no-drag;
-  cursor: pointer;
+  transition: opacity 0.1s ease-in-out;
+  opacity: 1;
+  cursor: default;
+  overflow: hidden;
 `;
 
 const LineupView: React.FC<{
@@ -58,53 +87,26 @@ const LineupView: React.FC<{
   playerSize: number;
   lineHeight: number;
   showPhoto: boolean;
-}> = ({ lineup, isAway, playerSize, lineHeight, showPhoto }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlayerStatistics, setSelectedPlayerStatistics] =
-    useState<any>(null); // 선택된 선수의 통계 정보 관리
-  const modalCloseTimoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handlePlayerClick = (finalPlayer: ViewPlayer) => {
-    console.log('선수 클릭', finalPlayer);
-    if (!finalPlayer?.statistics) {
-      return;
-    }
-
-    setModalOpen(true);
-    if (modalCloseTimoutRef.current) {
-      clearTimeout(modalCloseTimoutRef.current);
-    }
-    setSelectedPlayerStatistics(finalPlayer.statistics);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    modalCloseTimoutRef.current = setTimeout(() => {
-      setSelectedPlayerStatistics(null);
-    }, 500);
-  };
-
+  isModalOpen: boolean;
+  closeModal: () => void;
+  selectedPlayerStatistics: PlayerStatistics | null;
+  handlePlayerClick: (finalPlayer: ViewPlayer) => void;
+}> = ({
+  lineup,
+  isAway,
+  playerSize,
+  lineHeight,
+  showPhoto,
+  isModalOpen,
+  closeModal,
+  selectedPlayerStatistics,
+  handlePlayerClick,
+}) => {
   const color = isAway ? '#77b2e2' : '#daa88b';
   // showPhoto={!!finalPlayer.photo && showPhoto}
 
   return (
     <>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        $StyledOverlay={PlayerModalOverlayStyle}
-        $StyledContent={PlayerModalContentStyle}
-      >
-        {selectedPlayerStatistics ? (
-          <div>
-            <h3>선수 통계</h3>
-            <p>평점: {selectedPlayerStatistics.rating}</p>
-          </div>
-        ) : (
-          <p>통계 정보가 없습니다.</p>
-        )}
-      </Modal>
-
       {lineup.players.map((linePlayers, lineIndex) => (
         <GridLine
           key={`line-${lineIndex}`}

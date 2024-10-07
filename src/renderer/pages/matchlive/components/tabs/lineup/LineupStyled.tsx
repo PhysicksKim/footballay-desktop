@@ -8,7 +8,7 @@ const commonBoxShadow = css`
   box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
 `;
 
-const LineupTabContainer = styled.div`
+const LineupTabContainer = styled.div<{ isModalOpen: boolean }>`
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -19,6 +19,16 @@ const LineupTabContainer = styled.div`
   align-items: center;
   padding-top: 12px;
   padding-bottom: 5px;
+  user-select: none;
+
+  // Modal이 열렸을 때 모든 자식 요소의 drag 비활성화
+  ${({ isModalOpen }) =>
+    isModalOpen &&
+    `
+      & * {
+        -webkit-app-region: no-drag !important;
+      }
+    `}
 `;
 
 const TeamContainer = styled.div<{ $isAway?: boolean }>`
@@ -50,6 +60,7 @@ const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
   width: 100%;
   height: ${(props) => props.$height}%;
   display: flex;
+  -webkit-app-region: drag;
 `;
 
 const textShadowColor = 'rgba(31, 18, 105, 0.863)';
@@ -79,6 +90,12 @@ const GridPlayer = styled.div<{
   width: ${(props) => props.$width}%;
   height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
+  -webkit-app-region: drag;
+
+  // 자식들은 클릭이 가능하도록 no-drag 설정
+  & > * {
+    -webkit-app-region: no-drag;
+  }
 
   .player-number-photo-box {
     top: 0;
@@ -88,10 +105,6 @@ const GridPlayer = styled.div<{
     align-items: center;
     height: ${(props) => props.$lineHeight - 20}px;
 
-    // 클릭이 가능하도록 no-drag 설정
-    & > * {
-      -webkit-app-region: no-drag;
-    }
     user-select: none;
 
     img {
@@ -99,6 +112,13 @@ const GridPlayer = styled.div<{
       border-radius: 50%;
       object-fit: cover;
       object-position: top;
+      /**
+      이미지를 드래그할 때 브라우저의 기본 동작으로 인해
+      이미지가 마우스 커서를 따라 이동하는 현상이 발생합니다.
+      이러한 동작을 방지하기 위해 -webkit-user-drag: none; 속성을 적용하여
+      사용자가 이미지를 드래그할 수 없도록 설정하였습니다.
+       */
+      -webkit-user-drag: none;
       ${commonBoxShadow}
     }
 

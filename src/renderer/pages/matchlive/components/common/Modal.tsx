@@ -5,6 +5,7 @@ interface ModalProps {
   isOpen: boolean;
   children: React.ReactNode;
   onClose: () => void;
+  timeout?: number;
   $StyledOverlay: React.ElementType;
   $StyledContent: React.ElementType;
 }
@@ -13,10 +14,12 @@ const Modal: React.FC<ModalProps> = ({
   isOpen,
   children,
   onClose,
+  timeout = 100,
   $StyledOverlay: StyledOverlay,
   $StyledContent: StyledContent,
 }) => {
-  const modalContentRef = useRef<HTMLDivElement>(null);
+  const nodeRef = useRef(null);
+  const modalContentRef = useRef<HTMLElement | null>(null);
 
   const handleMouseDown = (e: MouseEvent) => {
     if (!modalContentRef.current) return;
@@ -57,8 +60,14 @@ const Modal: React.FC<ModalProps> = ({
   }, [isOpen]);
 
   return (
-    <CSSTransition in={isOpen} timeout={300} classNames="modal" unmountOnExit>
-      <StyledOverlay>
+    <CSSTransition
+      in={isOpen}
+      timeout={timeout}
+      classNames="modal"
+      unmountOnExit
+      nodeRef={nodeRef}
+    >
+      <StyledOverlay ref={nodeRef}>
         <StyledContent ref={modalContentRef}>{children}</StyledContent>
       </StyledOverlay>
     </CSSTransition>
