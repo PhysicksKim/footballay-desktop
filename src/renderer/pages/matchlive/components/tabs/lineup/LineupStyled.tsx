@@ -535,7 +535,6 @@ const StatisticsListSection = styled.div`
 const PlayerStatisticsContent: React.FC<{
   stats: PlayerStatisticsResponse;
 }> = ({ stats }) => {
-  console.log(stats);
   return (
     <PlayerStatisticsContainer>
       {/* 프로필 영역 */}
