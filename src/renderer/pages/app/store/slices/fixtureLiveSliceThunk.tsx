@@ -105,7 +105,12 @@ export const fetchFixtureStatistics = createAsyncThunk<
       `${Urls.apiUrl}${Urls.football.fixtureStatistics}`,
       { params: { fixtureId } },
     );
-    console.log('statistics fetch response', response.data.response[0]);
+    if (
+      response.data.response[0]?.metaData &&
+      response.data.response[0].metaData.responseCode !== 200
+    ) {
+      return rejectWithValue(response.data.response[0].metaData.message);
+    }
     return response.data.response[0];
   } catch (error: any) {
     return rejectWithValue(

@@ -39,9 +39,6 @@ const ViewLineupProcessor = () => {
         )
       : null;
 
-    console.log('homeViewLineup', homeViewLineup);
-    console.log('awayViewLineup', awayViewLineup);
-
     dispatch(
       setProcessedLineup({
         home: homeViewLineup,

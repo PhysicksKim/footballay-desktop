@@ -84,7 +84,7 @@ export const startFetchStatistics = (fixtureId: number) => {
       try {
         await dispatch(fetchFixtureStatistics(fixtureId)).unwrap();
         const nowStatus =
-          getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
+          getState().fixtureLive?.liveStatus?.liveStatus?.shortStatus;
         if (nowStatus && shouldStopFetch(nowStatus)) {
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
