@@ -230,10 +230,10 @@ const GoalMark: React.FC<{ goal: number }> = ({ goal }) => {
 const RatingBox: React.FC<{ ratingColor: string; rating: string }> = ({
   ratingColor,
   rating,
-}) => <RatingBoxStyle ratingColor={ratingColor}>{rating}</RatingBoxStyle>;
+}) => <RatingBoxStyle $ratingColor={ratingColor}>{rating}</RatingBoxStyle>;
 
-const RatingBoxStyle = styled.div<{ ratingColor: string }>`
-  background-color: ${(props) => props.ratingColor};
+const RatingBoxStyle = styled.div<{ $ratingColor: string }>`
+  background-color: ${(props) => props.$ratingColor};
   border-radius: 10px;
   padding: 2px 5px;
   font-size: 14px;
