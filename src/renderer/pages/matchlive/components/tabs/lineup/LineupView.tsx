@@ -43,8 +43,7 @@ export const PlayerModalOverlayStyle = styled.div`
   z-index: 999;
   -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
-  /* opacity: 0; */
-  opacity: 1;
+  opacity: 0;
   cursor: pointer;
 
   &.modal-enter,
