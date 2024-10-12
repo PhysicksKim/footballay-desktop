@@ -2,7 +2,7 @@ import {
   LineupTeam,
   FixtureEvent,
   FixtureStatistics,
-  PlayerStatistics,
+  PlayerStatisticsResponse,
 } from '@src/types/FixtureIpc';
 import {
   ViewPlayer,
@@ -36,7 +36,7 @@ export const isSubOutPlayer = (
 
 export const processTeamLineup = (
   teamLineup: LineupTeam,
-  statisticsMap: Map<number, PlayerStatistics>,
+  statisticsMap: Map<number, PlayerStatisticsResponse>,
 ): ViewLineup => {
   const playersByGrid: ViewPlayer[][] = [];
 
@@ -289,20 +289,20 @@ export const applyEventsToLineup = (
  * @param statistics
  */
 const setStatisticsMap = (
-  map: Map<number, PlayerStatistics>,
-  statistics: PlayerStatistics[],
+  map: Map<number, PlayerStatisticsResponse>,
+  statistics: PlayerStatisticsResponse[],
 ) => {
   statistics.forEach((stat) => {
-    map.set(stat.id, stat);
+    map.set(stat.player.id, stat);
   });
 };
 
 export const processLineupToView = (
   teamLineup: LineupTeam,
   events: FixtureEvent[],
-  playerStatisticsArray?: PlayerStatistics[],
+  playerStatisticsArray?: PlayerStatisticsResponse[],
 ): ViewLineup => {
-  const statisticsMap: Map<number, PlayerStatistics> = new Map();
+  const statisticsMap: Map<number, PlayerStatisticsResponse> = new Map();
   if (playerStatisticsArray) {
     setStatisticsMap(statisticsMap, playerStatisticsArray);
     console.log('statisticsMap', statisticsMap);

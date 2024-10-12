@@ -1,14 +1,16 @@
 import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
-import { Goal } from '@src/types/FixtureIpc';
+import { Goal, PlayerStatisticsResponse } from '@src/types/FixtureIpc';
 import React from 'react';
+import { PlayerStatisticsList, ProfileSection } from './StatisticsStyled';
+import getRatingColor from './RatingUtils';
 
 const commonBoxShadow = css`
   box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
 `;
 
-const LineupTabContainer = styled.div<{ isModalOpen: boolean }>`
+const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -22,8 +24,8 @@ const LineupTabContainer = styled.div<{ isModalOpen: boolean }>`
   user-select: none;
 
   // Modal이 열렸을 때 모든 자식 요소의 drag 비활성화
-  ${({ isModalOpen }) =>
-    isModalOpen &&
+  ${({ $isModalOpen }) =>
+    $isModalOpen &&
     `
       & * {
         -webkit-app-region: no-drag !important;
@@ -463,20 +465,7 @@ const HomeMarker: React.FC = () => {
 const RatingBox: React.FC<{ rating: string }> = ({ rating }) => {
   const floatRating = parseFloat(rating);
   const formattedRating = floatRating.toFixed(1);
-  const ratingColor =
-    floatRating > 7.9
-      ? '#0026a1'
-      : floatRating > 7.4
-        ? '#07ad0f'
-        : floatRating > 6.9
-          ? '#28ac00'
-          : floatRating > 6.4
-            ? '#76a71b'
-            : floatRating > 5.9
-              ? '#96a00e'
-              : floatRating > 5.4
-                ? '#ad4b09'
-                : '#860000';
+  const ratingColor = getRatingColor(floatRating);
 
   const outstandingPlayerMark =
     floatRating > 8.5 ? OutstandingPlayerMark : null;
@@ -521,6 +510,52 @@ const RatingWrapper = styled.div<{ $ratingColor: string }>`
   ${commonBoxShadow}
 `;
 
+const PlayerStatisticsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 0 3px;
+  margin-top: 2px;
+  width: 100%;
+  height: 100%;
+`;
+
+const StatisticsListSection = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  width: 100%;
+`;
+
+const PlayerStatisticsContent: React.FC<{
+  stats: PlayerStatisticsResponse;
+}> = ({ stats }) => {
+  console.log(stats);
+  return (
+    <PlayerStatisticsContainer>
+      {/* 프로필 영역 */}
+      <ProfileSection
+        name={stats.player.name}
+        koreanName={stats.player.koreanName}
+        photo={stats.player.photo}
+        goals={stats.statistics.goals}
+        assists={stats.statistics.assists}
+        rating={stats.statistics.rating}
+      />
+
+      {/* PlayerStatisticsList가 표시될 영역 */}
+      <StatisticsListSection>
+        <PlayerStatisticsList stats={stats.statistics} />
+      </StatisticsListSection>
+    </PlayerStatisticsContainer>
+  );
+};
+
 export {
   LineupTabContainer,
   TeamContainer,
@@ -536,4 +571,5 @@ export {
   PlayerName,
   HomeMarker,
   RatingBox,
+  PlayerStatisticsContent,
 };

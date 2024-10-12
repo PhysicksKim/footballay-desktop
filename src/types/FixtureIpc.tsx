@@ -135,7 +135,7 @@ export interface ViewPlayer {
   position: string;
   grid: string | null;
   events: ViewPlayerEvents;
-  statistics: PlayerStatistics | null;
+  statistics: PlayerStatisticsResponse | null;
   /**
    * 교체된 선수가 있을 경우 객체가 들어가며, 교체 선수가 다시 교체된 경우가 있을 수 있으므로 재귀적으로 검사해야 함
    */
@@ -166,12 +166,12 @@ export interface FixtureStatistics {
   home: {
     team: Team;
     teamStatistics: TeamStatistics;
-    playerStatistics: PlayerStatistics[];
+    playerStatistics: PlayerStatisticsResponse[];
   };
   away: {
     team: Team;
     teamStatistics: TeamStatistics;
-    playerStatistics: PlayerStatistics[];
+    playerStatistics: PlayerStatisticsResponse[];
   };
 }
 
@@ -201,10 +201,16 @@ export interface XG {
   xg: string;
 }
 
-export interface PlayerStatistics {
+export interface PlayerBasicInfo {
   id: number;
   name: string;
   koreanName: string | null;
+  photo: string;
+  number: number;
+  position: string;
+}
+
+export interface PlayerStatistics {
   minutesPlayed: number;
   position: string;
   rating: string;
@@ -218,7 +224,7 @@ export interface PlayerStatistics {
   saves: number;
   passesTotal: number;
   passesKey: number;
-  passesAccuracy: string;
+  passesAccuracy: number;
   tacklesTotal: number;
   interceptions: number;
   duelsTotal: number;
@@ -232,4 +238,9 @@ export interface PlayerStatistics {
   penaltiesScored: number;
   penaltiesMissed: number;
   penaltiesSaved: number;
+}
+
+export interface PlayerStatisticsResponse {
+  player: PlayerBasicInfo;
+  statistics: PlayerStatistics;
 }

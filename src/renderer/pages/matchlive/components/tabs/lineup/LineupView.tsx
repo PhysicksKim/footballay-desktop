@@ -12,13 +12,14 @@ import {
 } from './LineupStyled';
 import UniformIcon from './UniformIcon';
 import {
-  PlayerStatistics,
+  PlayerStatisticsResponse,
   ViewLineup,
   ViewPlayer,
 } from '@src/types/FixtureIpc';
 import RetryableImage from '../../common/RetryableImage';
 import Modal from '../../common/Modal';
 import styled from 'styled-components';
+import { GlobalBorderRadiusPx } from './consts';
 
 const getFinalPlayer = (player: ViewPlayer): ViewPlayer => {
   let currentPlayer = player;
@@ -35,13 +36,15 @@ export const PlayerModalOverlayStyle = styled.div`
   width: 100%;
   height: 100%;
   background-color: rgba(10, 27, 44, 0.473);
+  border-radius: ${GlobalBorderRadiusPx}px;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
   -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
-  opacity: 0;
+  /* opacity: 0; */
+  opacity: 1;
   cursor: pointer;
 
   &.modal-enter,
@@ -68,7 +71,9 @@ export const PlayerModalContentStyle = styled.div`
   top: 50%;
   left: 50%;
   width: 70%;
-  height: 50%;
+  height: 70%;
+  max-width: 400px;
+  max-height: 550px;
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
@@ -89,7 +94,7 @@ const LineupView: React.FC<{
   showPhoto: boolean;
   isModalOpen: boolean;
   closeModal: () => void;
-  selectedPlayerStatistics: PlayerStatistics | null;
+  selectedPlayerStatistics: PlayerStatisticsResponse | null;
   handlePlayerClick: (finalPlayer: ViewPlayer) => void;
 }> = ({
   lineup,
@@ -103,7 +108,6 @@ const LineupView: React.FC<{
   handlePlayerClick,
 }) => {
   const color = isAway ? '#77b2e2' : '#daa88b';
-  // showPhoto={!!finalPlayer.photo && showPhoto}
 
   return (
     <>
@@ -178,8 +182,10 @@ const LineupView: React.FC<{
                   {finalPlayer.number && (
                     <PlayerNumber number={finalPlayer.number} />
                   )}
-                  {finalPlayer.statistics?.rating && (
-                    <RatingBox rating={finalPlayer.statistics.rating} />
+                  {finalPlayer.statistics?.statistics.rating && (
+                    <RatingBox
+                      rating={finalPlayer.statistics.statistics.rating}
+                    />
                   )}
                 </div>
                 <PlayerName name={finalPlayer.koreanName || finalPlayer.name} />

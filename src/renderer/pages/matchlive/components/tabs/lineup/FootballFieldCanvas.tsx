@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { GlobalBorderRadiusPx } from './consts';
 
 const FootballFieldCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -116,7 +117,7 @@ const FootballFieldCanvas: React.FC = () => {
         top: 0,
         left: 0,
         zIndex: -9999,
-        borderRadius: '30px',
+        borderRadius: `${GlobalBorderRadiusPx}px`,
       }}
     />
   );

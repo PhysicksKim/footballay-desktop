@@ -7,6 +7,7 @@ import { debounce } from 'lodash';
 import {
   HomeMarker,
   LineupTabContainer,
+  PlayerStatisticsContent,
   TeamContainer,
   TeamLogoName,
 } from './LineupStyled';
@@ -17,6 +18,7 @@ import LineupView, {
 import { ViewLineup } from '@src/types/FixtureIpc';
 import styled from 'styled-components';
 import Modal from '../../common/Modal';
+import RetryableImage from '../../common/RetryableImage';
 
 export interface LineupTabProps {
   applyEvents?: boolean;
@@ -127,8 +129,10 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     awayGridPlayerHeight,
   );
 
-  // __Modal 창 테스트용 코드__
-  const MODAL_TEST_MODE = false;
+  /*
+  선수 통계 Modal 창 개발 중, hot-reload 이후에도 항상 modal 창을 띄워두고 싶을때 사용합니다
+  */
+  const MODAL_TEST_MODE = true;
   useEffect(() => {
     if (!MODAL_TEST_MODE) {
       return;
@@ -147,7 +151,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
 
     const firstPlayerFORDEBUG = processedHomeLineup.players
       .flat()
-      .find((player) => player.position !== 'G');
+      .find((player) => player.position === 'F');
     if (!firstPlayerFORDEBUG) {
       return;
     }
@@ -163,15 +167,12 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
         $StyledContent={PlayerModalContentStyle}
       >
         {selectedPlayerStatistics ? (
-          <div>
-            <h3>선수 통계</h3>
-            <p>평점: {selectedPlayerStatistics.rating}</p>
-          </div>
+          <PlayerStatisticsContent stats={selectedPlayerStatistics} />
         ) : (
           <p>통계 정보가 없습니다.</p>
         )}
       </Modal>
-      <LineupTabContainer isModalOpen={isModalOpen}>
+      <LineupTabContainer $isModalOpen={isModalOpen}>
         <TeamContainer ref={homeTeamContainerRef}>
           {processedHomeLineup && (
             <LineupView
@@ -189,7 +190,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           {info && (
             <TeamLogoName className="team-name-logo-box team-name__home">
               <div className="team-logo">
-                <img src={info.home.logo} alt={info.home.name} />
+                <RetryableImage src={info.home.logo} alt={info.home.name} />
               </div>
               <div className="team-name">
                 {info.home.koreanName || info.home.name}
@@ -215,7 +216,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
           {info && (
             <TeamLogoName className="team-name-logo-box team-name__away">
               <div className="team-logo">
-                <img src={info.away.logo} alt={info.away.name} />
+                <RetryableImage src={info.away.logo} alt={info.away.name} />
               </div>
               <div className="team-name">
                 {info.away.koreanName || info.away.name}
