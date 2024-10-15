@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
 import { Goal, PlayerStatisticsResponse } from '@src/types/FixtureIpc';
 import React from 'react';
-import { PlayerStatisticsList, ProfileSection } from './StatisticsStyled';
+import { PlayerStatisticsList, ProfileSection } from './PlayerStatisticsStyled';
 import getRatingColor from './RatingUtils';
 
 const commonBoxShadow = css`
@@ -47,7 +47,7 @@ const TeamContainer = styled.div<{ $isAway?: boolean }>`
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: visible;
-  -webkit-app-region: drag;
+  /* -webkit-app-region: drag; */
 `;
 
 const TeamName = styled.h2`
@@ -62,7 +62,7 @@ const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
   width: 100%;
   height: ${(props) => props.$height}%;
   display: flex;
-  -webkit-app-region: drag;
+  /* -webkit-app-region: drag; */
 `;
 
 const textShadowColor = 'rgba(31, 18, 105, 0.863)';
@@ -92,7 +92,7 @@ const GridPlayer = styled.div<{
   width: ${(props) => props.$width}%;
   height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
-  -webkit-app-region: drag;
+  /* -webkit-app-region: drag; */
 
   // 자식들은 클릭이 가능하도록 no-drag 설정
   & > * {
@@ -549,7 +549,10 @@ const PlayerStatisticsContent: React.FC<{
 
       {/* PlayerStatisticsList가 표시될 영역 */}
       <StatisticsListSection>
-        <PlayerStatisticsList stats={stats.statistics} />
+        <PlayerStatisticsList
+          stats={stats.statistics}
+          position={stats.player.position}
+        />
       </StatisticsListSection>
     </PlayerStatisticsContainer>
   );

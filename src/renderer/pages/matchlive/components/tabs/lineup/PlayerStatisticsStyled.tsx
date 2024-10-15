@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import getRatingColor from './RatingUtils';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import RetryableImage from '../../common/RetryableImage';
 
 const SCROLLBAR_WIDTH = 7;
 
@@ -26,12 +27,12 @@ const PlayerStatisticsListWrapper = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #b8b8b8;
+    background-color: #cddef5;
     border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
+    background-color: #8ba4c5;
   }
 `;
 
@@ -39,6 +40,7 @@ const CommonStatisticItem = styled.div`
   width: 95%;
   display: flex;
   justify-content: space-between;
+  align-items: end;
   transition: background-color 0.1s ease;
 
   box-sizing: border-box;
@@ -49,21 +51,29 @@ const CommonStatisticItem = styled.div`
 
   border-bottom: 1px solid #dad8d8;
 
+  /*
+    line-height 는 (hover 시 line-height) * (scale) 값을 계산해서 설정
+    hover line-height = 1rem, scale = 1.2
+    1rem * 1.2 = 1.2rem
+    따라서 평시 line-height = 1.2rem로 설정
+  */
+  line-height: 1.2rem;
+
   &:hover {
-    background-color: #fafeff;
+    background-color: #f5fbff;
     border-top: 3px solid #f1fcff;
 
     & > * {
-      transform: scale(1.5);
-      transition: transform 0.1s ease;
-      line-height: normal;
+      transition: transform 0s;
+      transform: scale(1.2) translate(0, -5%);
+      line-height: 1rem; // 1rem * scale(1.2) = 1.2rem
     }
   }
 `;
 
 const StatisticName = styled.div`
   font-weight: 500;
-  color: #6d6d6d;
+  color: #727272;
   font-size: 1rem;
   padding-top: 3px;
 `;
@@ -85,11 +95,21 @@ const calculatePassesAccuracyPercentString = (
   return `${((success / total) * 100).toFixed(1)}%`;
 };
 
-const statisticsArray = (stats: PlayerStatistics) => {
+const statisticsArray = (stats: PlayerStatistics, position: PositionString) => {
   const passesAccuracyPercent = calculatePassesAccuracyPercentString(
     stats.passesTotal,
     stats.passesAccuracy,
   );
+
+  if (position === 'G') {
+    return [
+      { data: stats.saves, name: '세이브' },
+      { data: stats.goalsConceded, name: '실점' },
+      { data: stats.passesTotal, name: '패스 횟수' },
+      { data: stats.passesAccuracy, name: '패스성공' },
+      { data: passesAccuracyPercent, name: '패스성공률' },
+    ];
+  }
 
   return [
     { data: stats.passesTotal, name: '패스 횟수' },
@@ -120,6 +140,7 @@ const ProfileSectionContainer = styled.div`
     flex-shrink: 0;
     width: 150px;
     height: 150px;
+    max-width: 50%;
 
     img {
       width: 100%;
@@ -230,7 +251,11 @@ const GoalMark: React.FC<{ goal: number }> = ({ goal }) => {
 const RatingBox: React.FC<{ ratingColor: string; rating: string }> = ({
   ratingColor,
   rating,
-}) => <RatingBoxStyle $ratingColor={ratingColor}>{rating}</RatingBoxStyle>;
+}) => (
+  <RatingBoxStyle $ratingColor={ratingColor}>
+    {rating ? rating : ''}
+  </RatingBoxStyle>
+);
 
 const RatingBoxStyle = styled.div<{ $ratingColor: string }>`
   background-color: ${(props) => props.$ratingColor};
@@ -259,17 +284,19 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   rating,
 }) => {
   const ratingColor = getRatingColor(rating);
+  const floatRating = parseFloat(rating);
+  const formattedRating = floatRating.toFixed(1);
   return (
     <ProfileSectionContainer>
       <div className="photo">
-        <img src={photo} alt={`${name} Profile`} />
+        <RetryableImage src={photo} alt={`${name} Profile`} />
       </div>
       <div className="player-infos">
         <div className="player-name">{name}</div>
-        <div className="player-name-korean">{koreanName}</div>
+        <div className="player-name-korean">{koreanName ? koreanName : ''}</div>
         <div className="player-rating-box">
           <div className="rating-title">평점</div>
-          <RatingBox ratingColor={ratingColor} rating={rating} />
+          <RatingBox ratingColor={ratingColor} rating={formattedRating} />
         </div>
         <div className="player-goal-assist-box">
           <div className="player-stat stat-goals">
@@ -287,8 +314,16 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   );
 };
 
-const PlayerStatisticsList = ({ stats }: { stats: PlayerStatistics }) => {
-  const statisticsToDisplay = statisticsArray(stats);
+type PositionString = string | 'G' | 'D' | 'M' | 'F';
+
+const PlayerStatisticsList = ({
+  stats,
+  position,
+}: {
+  stats: PlayerStatistics;
+  position: PositionString;
+}) => {
+  const statisticsToDisplay = statisticsArray(stats, position);
   return (
     <PlayerStatisticsListWrapper>
       {statisticsToDisplay.map((statItem, index) => (

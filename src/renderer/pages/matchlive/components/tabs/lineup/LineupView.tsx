@@ -138,7 +138,7 @@ const LineupView: React.FC<{
                 <div
                   className="player-number-photo-box"
                   onClick={() => handlePlayerClick(finalPlayer)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', pointerEvents: 'all' }}
                 >
                   {showPhoto && finalPlayer.photo ? (
                     <RetryableImage

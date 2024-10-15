@@ -4,7 +4,11 @@
   width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
-  background-color: transparent;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: none;
+  }
 }
 
 .contents-area {
@@ -13,5 +17,4 @@
   width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
-  background-color: transparent;
 }

@@ -1,5 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import { GlobalBorderRadiusPx } from './consts';
+import styled from 'styled-components';
+
+const FootballFieldCanvasStyle = styled.canvas`
+  /* width: '100px'; */
+  /* height: '1000px'; */
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+  border-radius: ${GlobalBorderRadiusPx}px;
+  -webkit-app-region: drag;
+`;
 
 const FootballFieldCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -106,19 +120,10 @@ const FootballFieldCanvas: React.FC = () => {
   }, []);
 
   return (
-    <canvas
+    <FootballFieldCanvasStyle
       ref={canvasRef}
       width="1000" // 기본 캔버스 너비
       height="2000" // 기본 캔버스 높이 (세로 길이를 더 길게 설정)
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: -9999,
-        borderRadius: `${GlobalBorderRadiusPx}px`,
-      }}
     />
   );
 };

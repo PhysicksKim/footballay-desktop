@@ -224,7 +224,6 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
             </TeamLogoName>
           )}
         </TeamContainer>
-        <FootballFieldCanvas />
       </LineupTabContainer>
     </>
   );
