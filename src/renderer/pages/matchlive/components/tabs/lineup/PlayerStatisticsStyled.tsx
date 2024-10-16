@@ -5,6 +5,8 @@ import getRatingColor from './RatingUtils';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RetryableImage from '../../common/RetryableImage';
+import { RatingBox } from './LineupStyled';
+import { format } from 'path';
 
 const SCROLLBAR_WIDTH = 7;
 
@@ -216,7 +218,6 @@ const ProfileSectionContainer = styled.div`
 `;
 
 const GoalFontAwesomeMark = faFutbolBall;
-// const AssistFontAwesomeMark = faShoe
 
 const GoalMarkTranslateDiv = styled.div<{ index: number }>`
   position: absolute;
@@ -225,7 +226,6 @@ const GoalMarkTranslateDiv = styled.div<{ index: number }>`
   border-radius: 50%;
   transform: translate(${(props) => props.index * 75}%, 50%);
   background-color: white;
-  /* transform: translateX(0,{(props) => props.index * 50}); */
 `;
 
 const GoalMarkIcon: React.FC<{ index: number }> = ({ index }) => {
@@ -243,19 +243,10 @@ const GoalMarkWrapper = styled.div`
 const GoalMark: React.FC<{ goal: number }> = ({ goal }) => {
   let GoalMarks = [];
   for (let i = 0; i < goal; i++) {
-    GoalMarks.push(<GoalMarkIcon index={i} />);
+    GoalMarks.push(<GoalMarkIcon index={i} key={'goal_' + i} />);
   }
   return <GoalMarkWrapper>{GoalMarks}</GoalMarkWrapper>;
 };
-
-const RatingBox: React.FC<{ ratingColor: string; rating: string }> = ({
-  ratingColor,
-  rating,
-}) => (
-  <RatingBoxStyle $ratingColor={ratingColor}>
-    {rating ? rating : ''}
-  </RatingBoxStyle>
-);
 
 const RatingBoxStyle = styled.div<{ $ratingColor: string }>`
   background-color: ${(props) => props.$ratingColor};
@@ -265,6 +256,23 @@ const RatingBoxStyle = styled.div<{ $ratingColor: string }>`
   color: #ffffffeb;
   margin-left: 5px;
 `;
+
+const PlayerStatisticsRatingBox: React.FC<{ rating: string }> = ({
+  rating,
+}) => {
+  const ratingColor = getRatingColor(rating);
+  const floatRating = parseFloat(rating);
+  if (!rating || typeof floatRating !== 'number') {
+    return <RatingBoxStyle $ratingColor={ratingColor}></RatingBoxStyle>;
+  }
+
+  const formattedRating = floatRating.toFixed(1);
+  return (
+    <RatingBoxStyle $ratingColor={ratingColor}>
+      {formattedRating}
+    </RatingBoxStyle>
+  );
+};
 
 interface ProfileSectionProps {
   name: string;
@@ -283,9 +291,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   assists,
   rating,
 }) => {
-  const ratingColor = getRatingColor(rating);
-  const floatRating = parseFloat(rating);
-  const formattedRating = floatRating.toFixed(1);
   return (
     <ProfileSectionContainer>
       <div className="photo">
@@ -296,7 +301,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
         <div className="player-name-korean">{koreanName ? koreanName : ''}</div>
         <div className="player-rating-box">
           <div className="rating-title">평점</div>
-          <RatingBox ratingColor={ratingColor} rating={formattedRating} />
+          <PlayerStatisticsRatingBox rating={rating} />
         </div>
         <div className="player-goal-assist-box">
           <div className="player-stat stat-goals">

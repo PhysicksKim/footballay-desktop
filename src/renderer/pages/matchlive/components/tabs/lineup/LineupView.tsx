@@ -41,6 +41,7 @@ export const PlayerModalOverlayStyle = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 999;
+  pointer-events: all;
   -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
   opacity: 0;
@@ -78,6 +79,7 @@ export const PlayerModalContentStyle = styled.div`
   padding: 20px;
   border-radius: 10px;
   z-index: 999;
+  pointer-events: all;
   -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
   opacity: 1;
@@ -173,6 +175,7 @@ const LineupView: React.FC<{
                   )}
                   {finalPlayer.events.goal.length > 0 && (
                     <GoalMark
+                      key={`${finalPlayer.id}_goal_${index}`}
                       goal={finalPlayer.events.goal}
                       showPhoto={photoExistAndShowPhoto}
                       photoSize={photoSize}

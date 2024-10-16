@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 interface RetryableImageProps {
   src: string;
   alt: string;
+  className?: string;
   maxRetries?: number;
 }
 
 const RetryableImage: React.FC<RetryableImageProps> = ({
   src,
   alt,
+  className = '',
   maxRetries = 5,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
@@ -23,7 +25,14 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
     }
   };
 
-  return <img src={currentSrc} alt={alt} onError={handleError} />;
+  return (
+    <img
+      className={className}
+      src={currentSrc}
+      alt={alt}
+      onError={handleError}
+    />
+  );
 };
 
 export default RetryableImage;
