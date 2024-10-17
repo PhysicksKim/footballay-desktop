@@ -132,7 +132,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   /*
   선수 통계 Modal 창 개발 중, hot-reload 이후에도 항상 modal 창을 띄워두고 싶을때 사용합니다
   */
-  const MODAL_TEST_MODE = false;
+  const MODAL_TEST_MODE = true;
   useEffect(() => {
     if (!MODAL_TEST_MODE) {
       return;

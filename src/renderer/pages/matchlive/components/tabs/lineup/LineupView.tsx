@@ -20,6 +20,7 @@ import RetryableImage from '../../common/RetryableImage';
 import Modal from '../../common/Modal';
 import styled from 'styled-components';
 import { GlobalBorderRadiusPx } from './consts';
+import { ThemeColors } from '../../common/Colors';
 
 const getFinalPlayer = (player: ViewPlayer): ViewPlayer => {
   let currentPlayer = player;
@@ -67,6 +68,8 @@ export const PlayerModalOverlayStyle = styled.div`
 `;
 
 export const PlayerModalContentStyle = styled.div`
+  background-color: ${ThemeColors.popWindow.background};
+
   position: fixed;
   top: 50%;
   left: 50%;
@@ -75,7 +78,6 @@ export const PlayerModalContentStyle = styled.div`
   max-width: 400px;
   max-height: 550px;
   transform: translate(-50%, -50%);
-  background-color: white;
   padding: 20px;
   border-radius: 10px;
   z-index: 999;

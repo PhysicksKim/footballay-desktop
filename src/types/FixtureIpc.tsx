@@ -80,10 +80,16 @@ export type EventMeta =
 
 export interface FixtureLiveStatus {
   fixtureId: number;
-  liveStatus: {
-    elapsed: number;
-    shortStatus: string;
-    longStatus: string;
+  liveStatus: LiveStatus;
+}
+
+export interface LiveStatus {
+  elapsed: number;
+  shortStatus: string;
+  longStatus: string;
+  score: {
+    home: number;
+    away: number;
   };
 }
 

@@ -223,15 +223,21 @@ const GoalMarkTranslateDiv = styled.div<{ index: number }>`
   position: absolute;
   bottom: 0;
   font-size: 16px;
-  border-radius: 50%;
+  border-radius: 16px;
   transform: translate(${(props) => props.index * 75}%, 50%);
-  background-color: white;
+  /* background-color: white; */
 `;
 
 const GoalMarkIcon: React.FC<{ index: number }> = ({ index }) => {
   return (
     <GoalMarkTranslateDiv index={index}>
-      <FontAwesomeIcon icon={GoalFontAwesomeMark} />
+      <FontAwesomeIcon
+        style={{
+          backgroundColor: 'white',
+          borderRadius: '50%',
+        }}
+        icon={GoalFontAwesomeMark}
+      />
     </GoalMarkTranslateDiv>
   );
 };

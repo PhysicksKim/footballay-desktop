@@ -5,17 +5,26 @@ import { RootState } from '../../../store/store';
 import { GlobalBorderRadiusPx } from '../lineup/consts';
 import TeamProfile from './TeamProfile';
 import TeamStatisticsContents from './TeamStatisticsContents';
+import MatchStatisticsHeader from './MatchStatisticsHeader';
+import { MatchStatsColor, ThemeColors } from '../../common/Colors';
 
-const TeamStatisticsTabContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+const TeamStatisticsTabWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
+`;
+
+const TeamStatisticsTabContainer = styled.div`
+  position: relative;
+  width: 90%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   opacity: 1;
   transform: translate(0, 0);
   transition:
@@ -24,7 +33,10 @@ const TeamStatisticsTabContainer = styled.div`
 
   box-sizing: border-box;
   border-radius: ${GlobalBorderRadiusPx}px;
-  border: 1px solid red;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6);
+
+  background-color: ${ThemeColors.popWindow.background};
+  /* background-color: white; */
 `;
 
 const TeamProfileContainer = styled.div`
@@ -42,6 +54,10 @@ const TeamProfileContainer = styled.div`
 `;
 
 const TeamStatisticsTab = () => {
+  const info = useSelector((state: RootState) => state.fixture.info);
+  const liveStatus = useSelector(
+    (state: RootState) => state.fixture.liveStatus,
+  );
   const homeInfo = useSelector((state: RootState) => state.fixture.info?.home);
   const awayInfo = useSelector((state: RootState) => state.fixture.info?.away);
   const homeStatistics = useSelector(
@@ -51,19 +67,28 @@ const TeamStatisticsTab = () => {
     (state: RootState) => state.fixture.statistics?.away.teamStatistics,
   );
 
+  const score = liveStatus?.liveStatus.score;
+
   return (
-    <TeamStatisticsTabContainer>
-      <TeamProfileContainer>
-        <TeamProfile teamInfo={homeInfo} isHome={true} />
-        <TeamProfile teamInfo={awayInfo} isHome={false} />
-      </TeamProfileContainer>
-      <TeamStatisticsContents
-        homeInfo={homeInfo}
-        awayInfo={awayInfo}
-        homeStatistics={homeStatistics}
-        awayStatistics={awayStatistics}
-      />
-    </TeamStatisticsTabContainer>
+    <TeamStatisticsTabWrapper>
+      <TeamStatisticsTabContainer>
+        <TeamProfileContainer>
+          <TeamProfile teamInfo={homeInfo} isHome={true} />
+          <MatchStatisticsHeader
+            homeScore={score?.home ? score.home : 0}
+            awayScore={score?.away ? score.away : 0}
+            status={liveStatus?.liveStatus}
+          />
+          <TeamProfile teamInfo={awayInfo} isHome={false} />
+        </TeamProfileContainer>
+        <TeamStatisticsContents
+          homeInfo={homeInfo}
+          awayInfo={awayInfo}
+          homeStatistics={homeStatistics}
+          awayStatistics={awayStatistics}
+        />
+      </TeamStatisticsTabContainer>
+    </TeamStatisticsTabWrapper>
   );
 };
 

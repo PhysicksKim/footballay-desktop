@@ -14,6 +14,7 @@ export type ActiveTab = 'lineup' | 'teamStatistics';
 const ContentAreaContainer = styled.div<{
   $tabname: ActiveTab;
   $active: ActiveTab;
+  $isLineup?: boolean;
 }>`
   position: absolute;
   top: 0;
@@ -22,19 +23,21 @@ const ContentAreaContainer = styled.div<{
   box-sizing: border-box;
   height: 100%;
   width: 100%;
-  opacity: ${(props) => (props.$tabname === props.$active ? 1 : 0)};
+  opacity: ${(props) =>
+    props.$tabname === props.$active ? 1 : props.$isLineup ? 0.2 : 0};
+  scale: ${(props) =>
+    props.$tabname === props.$active ? 1 : props.$isLineup ? 0.95 : 1.05};
   transform: ${(props) =>
     props.$tabname === props.$active ? 'translate(0,0)' : 'translate(0,-10px)'};
 
   transition:
+    scale 0.5s ease-in-out,
     opacity 0.5s ease-in-out,
     transform 0.5s ease-in-out;
 
-  &.fade-exit-done {
-    visibility: hidden;
-  }
-  &.fade-enter {
-    visibility: visible;
+  & > * {
+    pointer-events: ${(props) =>
+      props.$tabname === props.$active ? 'all' : 'none'};
   }
 `;
 
@@ -80,7 +83,7 @@ const SwitchTabButton = styled.div`
 `;
 
 const Main = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('teamStatistics');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('lineup');
   const activeTabRef = useRef(activeTab);
 
   const switchTab = (_activeTab: ActiveTab) => {
@@ -95,7 +98,6 @@ const Main = () => {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    console.log('key pressed:', event.key);
     if (event.key === 'Tab') {
       event.preventDefault(); // 기본 탭 동작 방지 (포커스 이동 방지)
       switchTab(activeTabRef.current);
@@ -115,7 +117,6 @@ const Main = () => {
     activeTabRef.current = activeTab;
   }, [activeTab]);
 
-  // TODO : CSS transition 이용해서 탭 전환 구현
   return (
     <div className="root-container">
       <>
@@ -128,7 +129,6 @@ const Main = () => {
       ></SwitchTabButton>
       <div className="contents-area">
         {/* LineupTab */}
-
         <CSSTransition
           in={activeTab === 'lineup'}
           timeout={500}
@@ -139,10 +139,12 @@ const Main = () => {
             className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
             $tabname="lineup"
             $active={activeTab}
+            $isLineup={true}
           >
             <LineupTab />
           </ContentAreaContainer>
         </CSSTransition>
+
         {/* TeamStatisticsTab */}
         <CSSTransition
           in={activeTab === 'teamStatistics'}
