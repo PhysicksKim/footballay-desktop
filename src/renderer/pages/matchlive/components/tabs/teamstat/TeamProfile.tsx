@@ -1,7 +1,5 @@
 import { Team } from '@src/types/FixtureIpc';
-import { stat } from 'fs';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import RetryableImage from '../../common/RetryableImage';
 import { MatchStatsColor } from '../../common/Colors';
@@ -11,6 +9,7 @@ const TeamProfileStyle = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 1;
 `;
 
 const TeamProfileHeader = styled.div`
@@ -24,10 +23,13 @@ const TeamProfileHeader = styled.div`
 
   padding-top: 15px;
   padding-bottom: 10px;
+  padding-left: 3px;
+  padding-right: 3px;
 
   .team-logo {
     width: 50px;
     height: 50px;
+    object-fit: contain;
   }
 
   .team-korean-name {

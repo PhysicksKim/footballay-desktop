@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface RetryableImageProps {
   src: string;
@@ -15,6 +15,11 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [retryCount, setRetryCount] = useState<number>(0);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setRetryCount(0); // 새로운 이미지로 변경될 때 retryCount 초기화
+  }, [src]);
 
   const handleError = () => {
     if (retryCount < maxRetries) {

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-// 스타일드 컴포넌트 타입 정의
 type StatBarProps = {
   homePercent: number;
   awayPercent: number;
@@ -34,8 +33,8 @@ const StatBarWrapper = styled.div`
 `;
 
 const LabelTextStyle = css`
-  font-weight: bold;
-  font-size: 1.5rem;
+  font-weight: 500;
+  font-size: 1.1rem;
   color: #000;
   background-color: none;
 

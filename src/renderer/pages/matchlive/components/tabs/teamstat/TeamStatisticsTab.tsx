@@ -7,6 +7,7 @@ import TeamProfile from './TeamProfile';
 import TeamStatisticsContents from './TeamStatisticsContents';
 import MatchStatisticsHeader from './MatchStatisticsHeader';
 import { MatchStatsColor, ThemeColors } from '../../common/Colors';
+import PassSuccessPieChart from './PassSuccessPieChart';
 
 const TeamStatisticsTabWrapper = styled.div`
   display: flex;
@@ -35,22 +36,18 @@ const TeamStatisticsTabContainer = styled.div`
   border-radius: ${GlobalBorderRadiusPx}px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6);
 
+  overflow: hidden;
+
   background-color: ${ThemeColors.popWindow.background};
-  /* background-color: white; */
 `;
 
 const TeamProfileContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between; /* 좌우 배치 */
   align-items: stretch;
   margin-bottom: 1rem;
   width: 100%;
-
-  & > * {
-    width: 50%;
-    box-sizing: border-box;
-  }
 `;
 
 const TeamStatisticsTab = () => {
@@ -73,14 +70,21 @@ const TeamStatisticsTab = () => {
     <TeamStatisticsTabWrapper>
       <TeamStatisticsTabContainer>
         <TeamProfileContainer>
-          <TeamProfile teamInfo={homeInfo} isHome={true} />
+          {homeInfo?.id && <TeamProfile teamInfo={homeInfo} isHome={true} />}
           <MatchStatisticsHeader
             homeScore={score?.home ? score.home : 0}
             awayScore={score?.away ? score.away : 0}
             status={liveStatus?.liveStatus}
           />
-          <TeamProfile teamInfo={awayInfo} isHome={false} />
+          {awayInfo?.id && <TeamProfile teamInfo={awayInfo} isHome={false} />}
         </TeamProfileContainer>
+        {homeStatistics?.passesAccuracyPercentage &&
+          awayStatistics?.passesAccuracyPercentage && (
+            <PassSuccessPieChart
+              homePassSuccess={homeStatistics.passesAccuracyPercentage}
+              awayPassSuccess={awayStatistics.passesAccuracyPercentage}
+            />
+          )}
         <TeamStatisticsContents
           homeInfo={homeInfo}
           awayInfo={awayInfo}

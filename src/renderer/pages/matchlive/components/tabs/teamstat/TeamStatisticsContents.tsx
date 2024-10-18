@@ -2,21 +2,31 @@ import React from 'react';
 import { Team, TeamStatistics } from '@src/types/FixtureIpc';
 import TeamStatItem from './TeamStatBar';
 import styled from 'styled-components';
+import { SCROLLBAR_WIDTH, scrollbarStyle } from '../../common/ScrollbarStyle';
 
 const TeamStatisticsItem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 65%;
+  width: 60%;
 `;
 
 const TeamStatisticsContentsStyle = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  justify-content: flex-start;
+  overflow-x: visible;
+  overflow-y: auto;
+  padding-top: 30px;
+  width: calc(100% - ${SCROLLBAR_WIDTH * 1}px);
+
+  padding-left: ${SCROLLBAR_WIDTH}px;
+  padding-top: 5px;
+  padding-bottom: 20px;
+
+  ${scrollbarStyle}
 `;
 
 interface TeamStatisticsContentsProps {
@@ -79,6 +89,42 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       '슈팅 수',
       items,
       'shots',
+    );
+    pushIfExist(
+      homeStats?.cornerKicks,
+      awayStats?.cornerKicks,
+      '코너킥',
+      items,
+      'corner-kicks',
+    );
+    pushIfExist(homeStats?.fouls, awayStats?.fouls, '파울', items, 'fouls');
+    pushIfExist(
+      homeStats?.goalkeeperSaves,
+      awayStats?.goalkeeperSaves,
+      '선방',
+      items,
+      'saves',
+    );
+    pushIfExist(
+      homeStats?.offsides,
+      awayStats?.offsides,
+      '오프사이드',
+      items,
+      'offsides',
+    );
+    pushIfExist(
+      homeStats?.yellowCards,
+      awayStats?.yellowCards,
+      '경고',
+      items,
+      'yellow-cards',
+    );
+    pushIfExist(
+      homeStats?.redCards,
+      awayStats?.redCards,
+      '퇴장',
+      items,
+      'red-cards',
     );
     // 다른 통계 항목들도 여기에 추가할 수 있음
 

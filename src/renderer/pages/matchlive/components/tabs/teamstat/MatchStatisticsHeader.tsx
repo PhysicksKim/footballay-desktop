@@ -9,7 +9,10 @@ const MatchStatsHeaderStyle = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 100px;
+  max-width: 120px;
+  margin: 3px 3px;
+
+  /* flex: 0; */
 `;
 
 const MatchStatsHeaderScore = styled.div`

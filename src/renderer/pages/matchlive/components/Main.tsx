@@ -49,9 +49,6 @@ const SwitchTabButton = styled.div`
   height: 90%;
   width: 10%;
   min-width: 10px;
-  -webkit-app-region: no-drag;
-  user-select: none;
-  pointer-events: all;
   border-top-right-radius: 50%;
   border-bottom-right-radius: 50%;
 
@@ -60,6 +57,10 @@ const SwitchTabButton = styled.div`
     box-shadow 0.2s ease;
 
   cursor: pointer;
+  -webkit-app-region: no-drag;
+  user-select: none;
+  pointer-events: all;
+  z-index: 1;
 
   &:hover {
     background-color: #ffffff4b;
