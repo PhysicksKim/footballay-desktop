@@ -527,6 +527,10 @@ const PlayerStatisticsContainer = styled.div`
   margin-top: 2px;
   width: 100%;
   height: 100%;
+
+  user-select: none;
+  pointer-events: all;
+  -webkit-app-region: no-drag;
 `;
 
 const StatisticsListSection = styled.div`

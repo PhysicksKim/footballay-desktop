@@ -38,7 +38,7 @@ const TeamProfileHeader = styled.div`
     margin-top: 5px;
     margin-bottom: 3px;
     font-size: 1.2rem;
-    font-weight: 500;
+    font-weight: 700;
 
     white-space: nowrap;
   }

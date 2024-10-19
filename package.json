@@ -109,7 +109,6 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.2.6",
     "@stomp/stompjs": "^7.0.0",
-    "@types/react-transition-group": "^4.4.11",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "electron-debug": "^3.2.0",
@@ -141,6 +140,7 @@
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "@types/react-test-renderer": "^18.0.1",
+    "@types/react-transition-group": "^4.4.11",
     "@types/stompjs": "^2.3.9",
     "@types/styled-components": "^5.1.34",
     "@types/terser-webpack-plugin": "^5.0.4",
@@ -273,7 +273,7 @@
       "repo": "chun-city"
     }
   },
-  "devEngines": {
+  "engines": {
     "node": ">=14.x",
     "npm": ">=7.x"
   },

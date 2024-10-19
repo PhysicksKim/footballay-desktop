@@ -53,6 +53,10 @@ const CommonStatisticItem = styled.div`
 
   border-bottom: 1px solid #dad8d8;
 
+  user-select: none;
+  pointer-events: all;
+  -webkit-app-region: no-drag;
+
   /*
     line-height 는 (hover 시 line-height) * (scale) 값을 계산해서 설정
     hover line-height = 1rem, scale = 1.2
@@ -169,9 +173,10 @@ const ProfileSectionContainer = styled.div`
     }
 
     .player-name-korean {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: 18px;
+      font-weight: 700;
       margin-bottom: 5px;
+      white-space: nowrap;
     }
 
     .player-rating-box {

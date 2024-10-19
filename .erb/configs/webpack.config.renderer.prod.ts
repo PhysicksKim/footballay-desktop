@@ -156,9 +156,9 @@ const configuration: webpack.Configuration = {
     }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
-      DEBUG_PROD: false,
-      START_MINIMIZED: false,
-      E2E_BUILD: false,
+      DEBUG_PROD: 'false',
+      START_MINIMIZED: 'false',
+      E2E_BUILD: 'false',
     }),
     new webpack.DefinePlugin({
       'process.env.API_URL': JSON.stringify('https://gyechunsik.site'),

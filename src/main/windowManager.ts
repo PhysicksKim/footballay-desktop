@@ -43,6 +43,7 @@ export const createMainWindow = async () => {
     icon: getAssetPath('icon.png'),
     frame: false,
     webPreferences: {
+      // webSecurity: false, // CORS 비활성화
       contextIsolation: true,
       backgroundThrottling: false,
       preload:
@@ -61,7 +62,7 @@ export const createMainWindow = async () => {
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) throw new Error('"mainWindow" is not defined');
-    if (process.env.START_MINIMIZED) {
+    if (process.env.START_MINIMIZED === 'false') {
       mainWindow.minimize();
     } else {
       mainWindow.show();
@@ -101,6 +102,7 @@ export const createUpdatecheckerWindow = async () => {
     frame: false,
     transparent: true,
     webPreferences: {
+      // webSecurity: false, // CORS 비활성화
       contextIsolation: true,
       nodeIntegration: false,
       backgroundThrottling: false,
@@ -156,6 +158,7 @@ export const createMatchliveWindow = async () => {
     transparent: true,
     frame: false,
     webPreferences: {
+      // webSecurity: false, // CORS 비활성화
       contextIsolation: true,
       nodeIntegration: false,
       backgroundThrottling: false,

@@ -37,6 +37,8 @@ const TeamStatisticsTabContainer = styled.div`
   border-radius: ${GlobalBorderRadiusPx}px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6);
 
+  padding-top: 10px;
+
   overflow: hidden;
 
   background-color: ${ThemeColors.popWindow.background};

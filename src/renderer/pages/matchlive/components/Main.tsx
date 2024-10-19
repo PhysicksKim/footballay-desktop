@@ -5,7 +5,7 @@ import LineupTab from './tabs/lineup/LineupTab';
 import '@matchlive/styles/Body.scss';
 import '@matchlive/styles/Main.scss';
 import TeamStatisticsTab from './tabs/teamstat/TeamStatisticsTab';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import FootballFieldCanvas from './tabs/lineup/FootballFieldCanvas';
 import { CSSTransition } from 'react-transition-group';
 import TeamColorProcessor from './processor/TeamColorProcessor';
@@ -14,6 +14,48 @@ import { stat } from 'fs';
 import { RootState } from '../store/store';
 
 export type ActiveTab = 'lineup' | 'teamStatistics';
+
+const fadeAnimations = css`
+  &.fade-enter {
+    & > * {
+      opacity: 0;
+      scale: 1.05;
+      transform: translate(0, -10px);
+    }
+  }
+
+  &.fade-enter-active {
+    & > * {
+      opacity: 1;
+      scale: 1;
+      transform: translate(0, 0);
+      transition:
+        scale 0.5s ease-in-out,
+        opacity 0.5s ease-in-out,
+        transform 0.5s ease-in-out;
+    }
+  }
+
+  &.fade-exit {
+    & > * {
+      opacity: 1;
+      scale: 1;
+      transform: translate(0, 0);
+    }
+  }
+
+  &.fade-exit-active {
+    & > * {
+      opacity: 0;
+      scale: 1.05;
+      transform: translate(0, -10px);
+      transition:
+        scale 0.5s ease-in-out,
+        opacity 0.5s ease-in-out,
+        transform 0.5s ease-in-out;
+    }
+  }
+`;
 
 const ContentAreaContainer = styled.div<{
   $tabname: ActiveTab;
@@ -43,6 +85,11 @@ const ContentAreaContainer = styled.div<{
     pointer-events: ${(props) =>
       props.$tabname === props.$active ? 'all' : 'none'};
   }
+
+  // teamstat 탭에 대해서만 적용
+  // active 시 1 translate(0,0)
+  // inactive 시 opa 0, scale 1.05 translate(0, -10px)
+  ${(props) => !props.$isLineup && fadeAnimations}
 `;
 
 const SwitchTabButton = styled.div`
@@ -183,7 +230,8 @@ const Main = () => {
           in={activeTab === 'teamStatistics'}
           timeout={500}
           classNames="fade"
-          unmountOnExit={false}
+          /* 비활성시 unmount 하지 않으면 Lineup 을 가리기 때문에 lineup 에서 hover 이벤트가 발생하지 않음 */
+          unmountOnExit={true}
           nodeRef={teamStatisticsRef}
         >
           <ContentAreaContainer
