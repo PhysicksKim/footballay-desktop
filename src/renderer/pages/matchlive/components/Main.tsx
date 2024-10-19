@@ -9,6 +9,9 @@ import styled from 'styled-components';
 import FootballFieldCanvas from './tabs/lineup/FootballFieldCanvas';
 import { CSSTransition } from 'react-transition-group';
 import TeamColorProcessor from './processor/TeamColorProcessor';
+import { useSelector } from 'react-redux';
+import { stat } from 'fs';
+import { RootState } from '../store/store';
 
 export type ActiveTab = 'lineup' | 'teamStatistics';
 
@@ -88,6 +91,16 @@ const Main = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('lineup');
   const activeTabRef = useRef(activeTab);
 
+  const [prevShortStatus, setPrevShortStatus] = useState<string | null>(null);
+
+  const liveShortStatus = useSelector(
+    (state: RootState) => state.fixture.liveStatus?.liveStatus.shortStatus,
+  );
+
+  // CSSTransition 을 위한 nodeRef 생성
+  const lineupRef = useRef<HTMLDivElement>(null);
+  const teamStatisticsRef = useRef<HTMLDivElement>(null);
+
   const switchTab = (_activeTab: ActiveTab) => {
     if (_activeTab === 'lineup') {
       setActiveTab('teamStatistics');
@@ -99,10 +112,25 @@ const Main = () => {
     }
   };
 
+  useEffect(() => {
+    if (liveShortStatus && prevShortStatus !== liveShortStatus) {
+      if (prevShortStatus === '1H' && liveShortStatus === 'HT') {
+        setActiveTab('teamStatistics');
+      }
+      if (prevShortStatus === 'HT' && liveShortStatus === '2H') {
+        setActiveTab('lineup');
+      }
+
+      setPrevShortStatus(liveShortStatus);
+    }
+  }, [liveShortStatus, prevShortStatus]);
+
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault(); // 기본 탭 동작 방지 (포커스 이동 방지)
       switchTab(activeTabRef.current);
+    } else if (event.key === 'Escape') {
+      setActiveTab('lineup');
     }
   };
 
@@ -136,15 +164,17 @@ const Main = () => {
           in={activeTab === 'lineup'}
           timeout={500}
           classNames="fade"
-          unmountOnExit={false} // unmount 방지
+          unmountOnExit={false}
+          nodeRef={lineupRef}
         >
           <ContentAreaContainer
+            ref={lineupRef}
             className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
             $tabname="lineup"
             $active={activeTab}
             $isLineup={true}
           >
-            <LineupTab />
+            <LineupTab isActive={activeTab === 'lineup'} />
           </ContentAreaContainer>
         </CSSTransition>
 
@@ -153,9 +183,11 @@ const Main = () => {
           in={activeTab === 'teamStatistics'}
           timeout={500}
           classNames="fade"
-          unmountOnExit={false} // unmount 방지
+          unmountOnExit={false}
+          nodeRef={teamStatisticsRef}
         >
           <ContentAreaContainer
+            ref={teamStatisticsRef}
             className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
             $tabname="teamStatistics"
             $active={activeTab}

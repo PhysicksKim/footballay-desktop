@@ -130,6 +130,8 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
                 activeShape={renderCustomActiveShape}
                 fill={PIE_BACKGROUND_FILL}
                 dataKey="value"
+                isAnimationActive={true}
+                animationDuration={300}
               >
                 <Cell fill={HOME_COLOR} />
               </Pie>
@@ -152,6 +154,8 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
                 activeShape={renderCustomActiveShape}
                 fill={PIE_BACKGROUND_FILL}
                 dataKey="value"
+                isAnimationActive={true}
+                animationDuration={300}
               >
                 <Cell fill={AWAY_COLOR} />
               </Pie>

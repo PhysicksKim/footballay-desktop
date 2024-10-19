@@ -305,7 +305,6 @@ export const processLineupToView = (
   const statisticsMap: Map<number, PlayerStatisticsResponse> = new Map();
   if (playerStatisticsArray) {
     setStatisticsMap(statisticsMap, playerStatisticsArray);
-    console.log('statisticsMap', statisticsMap);
   }
 
   let lineup: ViewLineup;

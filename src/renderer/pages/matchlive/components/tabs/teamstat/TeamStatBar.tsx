@@ -18,10 +18,10 @@ const StatBarContainer = styled.div`
   border-bottom: 1px solid #b6b6b6;
 `;
 
-const StatSection = styled.div<{ widthPercent: number; bgColor: string }>`
+const StatSection = styled.div<{ $widthPercent: number; $bgColor: string }>`
   height: 100%;
-  width: ${(props) => props.widthPercent}%;
-  background-color: ${(props) => props.bgColor};
+  width: ${(props) => props.$widthPercent}%;
+  background-color: ${(props) => props.$bgColor};
 
   display: flex;
   justify-content: center;
@@ -118,8 +118,8 @@ const TeamStatItem: React.FC<TeamStatItemProps> = ({
       <StatBarWrapper>
         <LeftLabel>{homeStat}</LeftLabel>
         <StatBarContainer>
-          <StatSection widthPercent={homePercent} bgColor={homeColor} />
-          <StatSection widthPercent={awayPercent} bgColor={awayColor} />
+          <StatSection $widthPercent={homePercent} $bgColor={homeColor} />
+          <StatSection $widthPercent={awayPercent} $bgColor={awayColor} />
         </StatBarContainer>
         <RightLabel>{awayStat}</RightLabel>
       </StatBarWrapper>

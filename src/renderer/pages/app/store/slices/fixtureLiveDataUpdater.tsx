@@ -83,6 +83,7 @@ export const startFetchStatistics = (fixtureId: number) => {
     const fetchStatistics = async () => {
       try {
         await dispatch(fetchFixtureStatistics(fixtureId)).unwrap();
+        console.log('fetchStatistics interval function');
         const nowStatus =
           getState().fixtureLive?.liveStatus?.liveStatus?.shortStatus;
         if (nowStatus && shouldStopFetch(nowStatus)) {
@@ -94,7 +95,9 @@ export const startFetchStatistics = (fixtureId: number) => {
       }
     };
     const intervalId = setInterval(fetchStatistics, intervalTime);
+    console.log('start fetch statistics');
     dispatch(addIntervalId(intervalId));
+    console.log('after dispatch');
     fetchStatistics();
   };
 };

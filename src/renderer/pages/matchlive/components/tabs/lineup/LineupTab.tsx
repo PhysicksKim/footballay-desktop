@@ -22,9 +22,13 @@ import RetryableImage from '../../common/RetryableImage';
 
 export interface LineupTabProps {
   applyEvents?: boolean;
+  isActive: boolean;
 }
 
-const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
+const LineupTab: React.FC<LineupTabProps> = ({
+  applyEvents = true,
+  isActive,
+}) => {
   const lineup = useSelector(
     (state: RootState) => state.fixture.lineup,
   )?.lineup;
@@ -43,12 +47,12 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
 
   // Modal manage
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlayerStatistics, setSelectedPlayerStatistics] =
-    useState<any>(null); // 선택된 선수의 통계 정보 관리
+  const [selectedPlayer, setSelectedPlayerStatistics] =
+    useState<ViewPlayer | null>(null); // 선택된 선수의 통계 정보 관리
   const modalCloseTimoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handlePlayerClick = (finalPlayer: ViewPlayer) => {
-    if (!finalPlayer?.statistics) {
+    if (!finalPlayer) {
       return;
     }
 
@@ -56,7 +60,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     if (modalCloseTimoutRef.current) {
       clearTimeout(modalCloseTimoutRef.current);
     }
-    setSelectedPlayerStatistics(finalPlayer.statistics);
+    setSelectedPlayerStatistics(finalPlayer);
   };
 
   const closeModal = () => {
@@ -65,6 +69,12 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
       setSelectedPlayerStatistics(null);
     }, 500);
   };
+
+  useEffect(() => {
+    if (!isActive) {
+      closeModal();
+    }
+  }, [isActive]);
 
   const [processedHomeLineup, setProcessedHomeLineup] =
     useState<ViewLineup | null>(null);
@@ -76,8 +86,17 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
     if (!_lineup || !_lineup.away || !_lineup.home) {
       return;
     }
-    const homeLineupGridCount = _lineup.home.formation.split('-').length + 1;
-    const awayLineupGridCount = _lineup.away.formation.split('-').length + 1;
+
+    const MIN_GRID_COUNT = 5; // 4-3-3 같은 경우 GRID COUNT 4인데, 이러면 너무 선수가 커보임
+
+    const homeLineupGridCount = Math.max(
+      MIN_GRID_COUNT,
+      _lineup.home.formation.split('-').length + 1,
+    );
+    const awayLineupGridCount = Math.max(
+      MIN_GRID_COUNT,
+      _lineup.away.formation.split('-').length + 1,
+    );
 
     if (homeTeamContainerRef.current) {
       const height =
@@ -132,7 +151,7 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
   /*
   선수 통계 Modal 창 개발 중, hot-reload 이후에도 항상 modal 창을 띄워두고 싶을때 사용합니다
   */
-  const MODAL_TEST_MODE = true;
+  const MODAL_TEST_MODE = false;
   useEffect(() => {
     if (!MODAL_TEST_MODE) {
       return;
@@ -166,8 +185,8 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
         $StyledOverlay={PlayerModalOverlayStyle}
         $StyledContent={PlayerModalContentStyle}
       >
-        {selectedPlayerStatistics ? (
-          <PlayerStatisticsContent stats={selectedPlayerStatistics} />
+        {selectedPlayer ? (
+          <PlayerStatisticsContent player={selectedPlayer} />
         ) : (
           <p>통계 정보가 없습니다.</p>
         )}
@@ -183,7 +202,9 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
               showPhoto={showPhoto}
               isModalOpen={isModalOpen}
               closeModal={closeModal}
-              selectedPlayerStatistics={selectedPlayerStatistics}
+              selectedPlayerStatistics={
+                selectedPlayer?.statistics ? selectedPlayer.statistics : null
+              }
               handlePlayerClick={handlePlayerClick}
             />
           )}
@@ -209,7 +230,9 @@ const LineupTab: React.FC<LineupTabProps> = ({ applyEvents = true }) => {
               showPhoto={showPhoto}
               isModalOpen={isModalOpen}
               closeModal={closeModal}
-              selectedPlayerStatistics={selectedPlayerStatistics}
+              selectedPlayerStatistics={
+                selectedPlayer?.statistics ? selectedPlayer.statistics : null
+              }
               handlePlayerClick={handlePlayerClick}
             />
           )}

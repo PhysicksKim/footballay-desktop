@@ -1,7 +1,11 @@
 import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
-import { Goal, PlayerStatisticsResponse } from '@src/types/FixtureIpc';
+import {
+  Goal,
+  PlayerStatisticsResponse,
+  ViewPlayer,
+} from '@src/types/FixtureIpc';
 import React from 'react';
 import { PlayerStatisticsList, ProfileSection } from './PlayerStatisticsStyled';
 import getRatingColor from './RatingUtils';
@@ -532,27 +536,43 @@ const StatisticsListSection = styled.div`
   width: 100%;
 `;
 
+const NoPlayerStatistics = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  margin-top: 20px;
+  font-size: 1rem;
+  font-weight: 500;
+`;
+
 const PlayerStatisticsContent: React.FC<{
-  stats: PlayerStatisticsResponse;
-}> = ({ stats }) => {
+  player: ViewPlayer;
+}> = ({ player }) => {
+  const stats = player.statistics;
   return (
     <PlayerStatisticsContainer>
       {/* 프로필 영역 */}
       <ProfileSection
-        name={stats.player.name}
-        koreanName={stats.player.koreanName}
-        photo={stats.player.photo}
-        goals={stats.statistics.goals}
-        assists={stats.statistics.assists}
-        rating={stats.statistics.rating}
+        name={player.name}
+        koreanName={player.koreanName}
+        photo={player.photo}
+        goals={stats?.statistics?.goals ? stats.statistics.goals : 0}
+        assists={stats?.statistics?.assists ? stats.statistics.assists : 0}
+        rating={stats?.statistics.rating ? stats.statistics.rating : ''}
       />
 
       {/* PlayerStatisticsList가 표시될 영역 */}
       <StatisticsListSection>
-        <PlayerStatisticsList
-          stats={stats.statistics}
-          position={stats.player.position}
-        />
+        {stats ? (
+          <PlayerStatisticsList
+            stats={stats.statistics}
+            position={stats.player.position}
+          />
+        ) : (
+          <NoPlayerStatistics>아직 통계 정보가 없습니다</NoPlayerStatistics>
+        )}
       </StatisticsListSection>
     </PlayerStatisticsContainer>
   );

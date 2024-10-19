@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 
 const SideNavigation = () => {
   const version = window.appVersion;
-  console.log('version', version);
   return (
     <div className="side-navigation-container">
       {/* <div className="fixture-selection"> */}

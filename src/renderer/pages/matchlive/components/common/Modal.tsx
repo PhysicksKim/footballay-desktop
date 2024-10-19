@@ -38,6 +38,25 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
+  /**
+   * Modal이 열려있을 때, ESC 키를 누르면 Modal을 닫습니다.
+   * @param e
+   */
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+
+    // 이벤트 리스너를 정리(cleanup)하는 부분
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       document.addEventListener(

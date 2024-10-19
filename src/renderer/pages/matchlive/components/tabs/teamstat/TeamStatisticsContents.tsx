@@ -26,6 +26,9 @@ const TeamStatisticsContentsStyle = styled.div`
   padding-top: 5px;
   padding-bottom: 20px;
 
+  pointer-events: all;
+  -webkit-app-region: no-drag;
+
   ${scrollbarStyle}
 `;
 

@@ -71,17 +71,36 @@ const getTeamColor = (
 
   if (!homeTeam || !awayTeam) {
     console.log(`팀 정보가 없습니다. homeId: ${homeId}, awayId: ${awayId}`);
-    return {
-      homeColor: '#1919a5',
-      awayColor: '#a01d1d',
-    };
+  }
+  const AlterColors = {
+    alterOne: '#1c1c31',
+    alterTwo: '#968d8d',
+  };
+
+  let homeColor, awayColor;
+  if (!homeTeam) {
+    homeColor = AlterColors.alterOne;
+  } else {
+    homeColor = homeTeam.primary;
+  }
+  if (!awayTeam) {
+    awayColor = AlterColors.alterTwo;
+  } else {
+    awayColor = awayTeam.primary;
   }
 
-  let homeColor = homeTeam.primary;
-  let awayColor = awayTeam.primary;
-
   if (colorSimilarity(homeColor, awayColor) < SIMILARITY_THRESHOLD) {
-    awayColor = awayTeam.secondary;
+    if (awayTeam) {
+      awayColor = awayTeam?.secondary;
+    } else {
+      if (
+        colorSimilarity(homeColor, AlterColors.alterOne) > SIMILARITY_THRESHOLD
+      ) {
+        awayColor = AlterColors.alterOne;
+      } else {
+        awayColor = AlterColors.alterTwo;
+      }
+    }
   }
 
   return { homeColor, awayColor };

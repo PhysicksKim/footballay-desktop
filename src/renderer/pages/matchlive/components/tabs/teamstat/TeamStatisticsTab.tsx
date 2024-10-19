@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../../store/store';
@@ -16,6 +16,7 @@ const TeamStatisticsTabWrapper = styled.div`
   justify-content: center;
   height: 100%;
   width: 100%;
+  user-select: none;
 `;
 
 const TeamStatisticsTabContainer = styled.div`
@@ -79,12 +80,14 @@ const TeamStatisticsTab = () => {
           {awayInfo?.id && <TeamProfile teamInfo={awayInfo} isHome={false} />}
         </TeamProfileContainer>
         {homeStatistics?.passesAccuracyPercentage &&
-          awayStatistics?.passesAccuracyPercentage && (
-            <PassSuccessPieChart
-              homePassSuccess={homeStatistics.passesAccuracyPercentage}
-              awayPassSuccess={awayStatistics.passesAccuracyPercentage}
-            />
-          )}
+        awayStatistics?.passesAccuracyPercentage ? (
+          <PassSuccessPieChart
+            homePassSuccess={homeStatistics.passesAccuracyPercentage}
+            awayPassSuccess={awayStatistics.passesAccuracyPercentage}
+          />
+        ) : (
+          <></>
+        )}
         <TeamStatisticsContents
           homeInfo={homeInfo}
           awayInfo={awayInfo}

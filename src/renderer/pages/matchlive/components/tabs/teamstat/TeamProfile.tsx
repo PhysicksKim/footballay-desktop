@@ -39,6 +39,8 @@ const TeamProfileHeader = styled.div`
     margin-bottom: 3px;
     font-size: 1.2rem;
     font-weight: 500;
+
+    white-space: nowrap;
   }
 
   .team-name {
