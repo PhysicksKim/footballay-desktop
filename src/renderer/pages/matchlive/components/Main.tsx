@@ -8,6 +8,7 @@ import TeamStatisticsTab from './tabs/teamstat/TeamStatisticsTab';
 import styled from 'styled-components';
 import FootballFieldCanvas from './tabs/lineup/FootballFieldCanvas';
 import { CSSTransition } from 'react-transition-group';
+import TeamColorProcessor from './processor/TeamColorProcessor';
 
 export type ActiveTab = 'lineup' | 'teamStatistics';
 
@@ -121,6 +122,7 @@ const Main = () => {
   return (
     <div className="root-container">
       <>
+        <TeamColorProcessor />
         <FixtureIpc />
       </>
       <FootballFieldCanvas />

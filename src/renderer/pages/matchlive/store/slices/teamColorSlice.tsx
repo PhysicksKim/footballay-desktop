@@ -1,23 +1,36 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { getTeamColor } from '@src/renderer/pages/matchlive/utils/TeamColor';
 
-export interface TeamColorState {
-  home: string;
-  away: string;
+interface TeamColorState {
+  homeColor: string;
+  awayColor: string;
 }
 
+const initialState: TeamColorState = {
+  homeColor: '#c73636',
+  awayColor: '#282ab9',
+};
+
 const teamColorSlice = createSlice({
-  initialState: {
-    home: '',
-    away: '',
-  },
   name: 'teamColor',
+  initialState,
   reducers: {
-    setTeamColor(state, action) {
-      state.home = action.payload.home;
-      state.away = action.payload.away;
+    setTeamColors(
+      state,
+      action: PayloadAction<{ homeId: number; awayId: number }>,
+    ) {
+      const teamColor = getTeamColor(
+        action.payload.homeId,
+        action.payload.awayId,
+      );
+      state.homeColor = teamColor.homeColor;
+      state.awayColor = teamColor.awayColor;
+    },
+    resetTeamColors(state) {
+      state = initialState;
     },
   },
 });
 
-export const { setTeamColor } = teamColorSlice.actions;
+export const { setTeamColors, resetTeamColors } = teamColorSlice.actions;
 export default teamColorSlice.reducer;

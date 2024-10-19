@@ -1,5 +1,7 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components';
+import { RootState } from '../../../store/store';
 
 type StatBarProps = {
   homePercent: number;
@@ -94,21 +96,21 @@ type TeamStatItemProps = {
   title: string;
   homeStat: number;
   awayStat: number;
-  homeColor?: string;
-  awayColor?: string;
 };
 
 const TeamStatItem: React.FC<TeamStatItemProps> = ({
   title,
   homeStat,
   awayStat,
-  homeColor = '#1E90FF',
-  awayColor = '#FF4500',
 }) => {
   // 총합으로 비율 계산
   const total = homeStat + awayStat;
   const homePercent = total === 0 ? 50 : (homeStat / total) * 100;
   const awayPercent = total === 0 ? 50 : (awayStat / total) * 100;
+
+  const teamColor = useSelector((state: RootState) => state.teamColor);
+  const homeColor = teamColor.homeColor;
+  const awayColor = teamColor.awayColor;
 
   return (
     <TeamStatItemContainer>

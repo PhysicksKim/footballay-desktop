@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   PieChart,
   Pie,
@@ -8,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import styled from 'styled-components';
+import { RootState } from '../../../store/store';
 
 const PassSuccessPieChartStyle = styled.div`
   display: flex;
@@ -39,10 +41,7 @@ const ChartWrapper = styled.div`
   pointer-events: none;
 `;
 
-const HOME_COLORS = '#1E90FF';
-const AWAY_COLORS = '#FF4500';
-const PIE_BACKGROUND_FILL = '#414141';
-const TRANSPARENT_COLOR = 'transparent'; // 실패 부분 투명 색상
+const PIE_BACKGROUND_FILL = '#aaaaaa';
 
 interface PassSuccessPieChartProps {
   homePassSuccess: number;
@@ -53,6 +52,10 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
   homePassSuccess,
   awayPassSuccess,
 }) => {
+  const teamColors = useSelector((state: RootState) => state.teamColor);
+  const HOME_COLOR = teamColors.homeColor;
+  const AWAY_COLOR = teamColors.awayColor;
+
   const homeData = [
     { name: '성공', value: homePassSuccess },
     { name: '실패', value: 100 - homePassSuccess },
@@ -114,7 +117,7 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
       >
         {/* 홈 팀 파이 차트 */}
         <ChartWrapper>
-          <ResponsiveContainer width="100%" aspect={1}>
+          <ResponsiveContainer width="100%" maxHeight={150} aspect={1}>
             <PieChart>
               <Pie
                 data={homeData}
@@ -128,7 +131,7 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
                 fill={PIE_BACKGROUND_FILL}
                 dataKey="value"
               >
-                <Cell fill={HOME_COLORS} />
+                <Cell fill={HOME_COLOR} />
               </Pie>
             </PieChart>
           </ResponsiveContainer>
@@ -136,7 +139,7 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
 
         {/* 어웨이 팀 파이 차트 */}
         <ChartWrapper>
-          <ResponsiveContainer width="100%" aspect={1}>
+          <ResponsiveContainer width="100%" maxHeight={150} aspect={1}>
             <PieChart>
               <Pie
                 data={awayData}
@@ -150,7 +153,7 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
                 fill={PIE_BACKGROUND_FILL}
                 dataKey="value"
               >
-                <Cell fill={AWAY_COLORS} />
+                <Cell fill={AWAY_COLOR} />
               </Pie>
             </PieChart>
           </ResponsiveContainer>

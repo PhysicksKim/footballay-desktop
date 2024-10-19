@@ -70,13 +70,6 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       'ball-possession',
     );
     pushIfExist(
-      homeStats?.passesAccuracyPercentage,
-      awayStats?.passesAccuracyPercentage,
-      '패스 성공률',
-      items,
-      'passes',
-    );
-    pushIfExist(
       homeStats?.totalPasses,
       awayStats?.totalPasses,
       '패스 수',
@@ -97,7 +90,6 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       items,
       'corner-kicks',
     );
-    pushIfExist(homeStats?.fouls, awayStats?.fouls, '파울', items, 'fouls');
     pushIfExist(
       homeStats?.goalkeeperSaves,
       awayStats?.goalkeeperSaves,
@@ -105,6 +97,7 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       items,
       'saves',
     );
+    pushIfExist(homeStats?.fouls, awayStats?.fouls, '파울', items, 'fouls');
     pushIfExist(
       homeStats?.offsides,
       awayStats?.offsides,
