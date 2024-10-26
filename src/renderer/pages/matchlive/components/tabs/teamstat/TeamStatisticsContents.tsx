@@ -80,6 +80,13 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       'passes',
     );
     pushIfExist(
+      homeStats?.shotsOnGoal,
+      awayStats?.shotsOnGoal,
+      '유효슈팅',
+      items,
+      'shots-on-goal',
+    );
+    pushIfExist(
       homeStats?.totalShots,
       awayStats?.totalShots,
       '슈팅 수',

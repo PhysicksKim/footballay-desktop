@@ -168,6 +168,10 @@ const Main = () => {
         setActiveTab('lineup');
       }
 
+      if (prevShortStatus === '2H' && liveShortStatus === 'FT') {
+        setActiveTab('teamStatistics');
+      }
+
       setPrevShortStatus(liveShortStatus);
     }
   }, [liveShortStatus, prevShortStatus]);

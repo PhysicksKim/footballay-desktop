@@ -1,11 +1,7 @@
 import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
-import {
-  Goal,
-  PlayerStatisticsResponse,
-  ViewPlayer,
-} from '@src/types/FixtureIpc';
+import { Goal, ViewPlayer } from '@src/types/FixtureIpc';
 import React from 'react';
 import { PlayerStatisticsList, ProfileSection } from './PlayerStatisticsStyled';
 import getRatingColor from './RatingUtils';
@@ -439,7 +435,6 @@ const HomeMarkerInner = styled.div`
   text-align: center;
   font-weight: 900;
   border-radius: 5px;
-  /* font-family: 'GmarketSansBold'; */
   transform: translate(0, 2px);
   padding-top: 3px;
   padding-left: 4px;
