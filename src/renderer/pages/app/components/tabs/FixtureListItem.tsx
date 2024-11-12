@@ -39,8 +39,8 @@ export interface FixtureListItemProps {
     shortStatus: string;
     elapsed: number | null;
     score: {
-      home: number;
-      away: number;
+      home: number | null;
+      away: number | null;
     };
   };
   index: number;
@@ -109,9 +109,13 @@ const FixtureListItem = ({
             {teamALogo.koreanName || teamALogo.name}
           </div>
           <div className="match-score">
-            <div className="home-score">{status.score.home}</div>
+            <div className="home-score">
+              {status?.score?.home ? status.score.home : 0}
+            </div>
             <div className="score-division">:</div>
-            <div className="away-score">{status.score.away}</div>
+            <div className="away-score">
+              {status?.score?.away ? status.score.away : 0}
+            </div>
           </div>
           <div className="team-b-name">
             {teamBLogo.koreanName || teamBLogo.name}
