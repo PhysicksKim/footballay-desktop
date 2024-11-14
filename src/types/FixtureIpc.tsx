@@ -41,7 +41,7 @@ export interface FixtureEvent {
   elapsed: number;
   extraTime: number;
   team: EventTeam;
-  player: EventPlayer;
+  player: EventPlayer | null;
   assist: EventPlayer | null;
   type: EventType;
   detail: string;

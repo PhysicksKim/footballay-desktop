@@ -5,6 +5,7 @@ import Urls from '../../constants/Urls';
 import dateToYearMonthDay, {
   isoStringToYearMonthDay,
 } from '@app/common/DateUtils';
+import { decode } from 'html-entities';
 
 export interface FetchFixtureListParams {
   leagueId: number;
@@ -65,11 +66,18 @@ const fetchFixtureList = createAsyncThunk<
       }
 
       if (
+        !response?.data?.response ||
         response.data.response === null ||
         response.data.metaData?.responseCode !== 200
       ) {
-        return rejectWithValue(response.data.metaData);
+        if (response.data.metaData) {
+          return rejectWithValue(response.data.metaData);
+        }
+        return rejectWithValue('No response data');
       }
+
+      decodeHtmlEntities(response.data.response);
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -79,3 +87,10 @@ const fetchFixtureList = createAsyncThunk<
   },
 );
 export default fetchFixtureList;
+
+const decodeHtmlEntities = (response: FixtureListItemResponse[]) => {
+  response.forEach((fixture) => {
+    fixture.teamALogo.name = decode(fixture?.teamALogo?.name);
+    fixture.teamBLogo.name = decode(fixture?.teamBLogo?.name);
+  });
+};
