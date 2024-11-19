@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import fetchFixtureList, {
   FixtureListItemResponse,
-} from './fixtureListSliceThunk';
+} from '@app/store/slices/select/list/fixtureListSliceThunk';
 
 export interface FixtureListState {
   fixtures: FixtureListItemResponse[];

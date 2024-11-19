@@ -1,11 +1,12 @@
 import ContentsArea from './ContentsArea';
-import '@app/styles/Main.scss';
-import TopBar from './TopBar';
-import SideNavigation from './SideNavigation';
 import { HashRouter } from 'react-router-dom';
+
+import TopBar from '@app/components/TopBar';
+import SideNavigation from '@app/components/SideNavigation';
+import Processors from '@app/components/processing/Processors';
 import MatchliveIpc from '@app/components/processing/MatchliveIpc';
-import ViewLineupProcessor from './processing/ViewLineupProcessor';
-import Processors from './processing/Processors';
+
+import '@app/styles/Main.scss';
 
 const Main = () => {
   return (

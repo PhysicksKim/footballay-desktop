@@ -5,7 +5,7 @@ import {
   clearFixtureLive,
   resetInitTaskState,
   setMatchliveWindowReady,
-} from '../../store/slices/fixtureLiveSlice';
+} from '../../store/slices/live/fixtureLiveSlice';
 import {
   FixtureEvent,
   FixtureEventState,
@@ -82,7 +82,7 @@ export const getFilteredEvents = (
           event.elapsed === filterEvent.elapsed &&
           event.extraTime === filterEvent.extraTime &&
           event.team.teamId === filterEvent.team.teamId &&
-          event.player.playerId === filterEvent.player.playerId
+          event.player?.playerId === filterEvent.player?.playerId
         ) {
           return false;
         }

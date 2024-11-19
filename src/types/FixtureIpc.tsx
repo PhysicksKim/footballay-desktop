@@ -12,15 +12,6 @@ export interface Team {
   logo: string;
 }
 
-export interface FixtureInfo {
-  fixtureId: number;
-  referee: string;
-  date: string;
-  league: League;
-  home: Team;
-  away: Team;
-}
-
 export type EventType = 'GOAL' | 'CARD' | 'SUBST' | 'VAR' | string;
 
 export interface EventTeam {
@@ -34,6 +25,7 @@ export interface EventPlayer {
   name: string;
   koreanName: string;
   number: number;
+  tempId: string | null;
 }
 
 export interface FixtureEvent {
@@ -102,14 +94,14 @@ export interface FixtureInfo {
   away: Team;
 }
 
-export interface TeamLineups {
-  home: LineupTeam;
-  away: LineupTeam;
-}
-
 export interface FixtureLineup {
   fixtureId: number;
   lineup: TeamLineups;
+}
+
+export interface TeamLineups {
+  home: LineupTeam;
+  away: LineupTeam;
 }
 
 export interface LineupTeam {
@@ -130,6 +122,7 @@ export interface LineupPlayer {
   position: string;
   grid: string;
   substitute: boolean;
+  tempId: string | null;
 }
 
 export interface ViewPlayer {
@@ -140,6 +133,7 @@ export interface ViewPlayer {
   photo: string;
   position: string;
   grid: string | null;
+  tempId: string | null;
   events: ViewPlayerEvents;
   statistics: PlayerStatisticsResponse | null;
   /**
@@ -214,6 +208,7 @@ export interface PlayerBasicInfo {
   photo: string;
   number: number;
   position: string;
+  tempId: string | null;
 }
 
 export interface PlayerStatistics {

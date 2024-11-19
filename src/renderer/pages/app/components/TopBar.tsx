@@ -1,8 +1,8 @@
 import React from 'react';
-import '@app/styles/TopBar.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { electron } from 'process';
+
+import '@app/styles/TopBar.scss';
 
 const TopBar = () => {
   const handleMinimizeWindow = () => {
@@ -20,9 +20,6 @@ const TopBar = () => {
         <div className="minimize-window" onClick={handleMinimizeWindow}>
           <div className="minimize-icon"></div>
         </div>
-        {/* <div className="maximize-window">
-          <div className="maximize-icon"></div>
-        </div> */}
         <div className="close-window" onClick={handleQuitApp}>
           <FontAwesomeIcon icon={faXmark} />
         </div>

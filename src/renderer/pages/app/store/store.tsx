@@ -1,20 +1,24 @@
 import { configureStore } from '@reduxjs/toolkit';
-import fixtureListReducer from './slices/fixtureListSlice';
-import leagueReducer from './slices/leagueSlice';
-import footballSelectionReducer from './slices/footballSelectionSlice';
 import ipcStatusReducer from './slices/ipc/ipcStatusSlice';
-import fixtureLiveReducer from './slices/fixtureLiveSlice';
-import fixtureLiveOptionReducer from './slices/fixtureLiveOptionSlice';
-import fixtureLiveControlReducer from './slices/fixtureLiveControlSlice';
+import leagueReducer from './slices/select/league/leagueSlice';
+import fixtureListReducer from './slices/select/list/fixtureListSlice';
+import footballSelectionReducer from './slices/select/footballSelectionSlice';
+import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
+import fixtureLiveOptionReducer from './slices/live/option/fixtureLiveOptionSlice';
+import fixtureLiveControlReducer from './slices/live/control/fixtureLiveControlSlice';
 import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
 
 const store = configureStore({
   reducer: {
-    fixtureList: fixtureListReducer,
-    fixtureLive: fixtureLiveReducer,
-    league: leagueReducer,
-    selected: footballSelectionReducer,
     ipcStatus: ipcStatusReducer,
+    league: leagueReducer,
+    /**
+     * 선택된 리그와 날짜의 경기 리스트 정보를 담음. <br>
+     * 리그 선택 시,
+     */
+    fixtureList: fixtureListReducer,
+    selected: footballSelectionReducer,
+    fixtureLive: fixtureLiveReducer,
     fixtureLiveOption: fixtureLiveOptionReducer,
     fixtureLiveControl: fixtureLiveControlReducer,
     fixtureProcessedData: fixtureProcessedDataSlice,

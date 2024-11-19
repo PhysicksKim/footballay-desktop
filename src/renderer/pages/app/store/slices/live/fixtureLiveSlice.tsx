@@ -1,25 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-  FixtureEvent,
   FixtureInfo,
   FixtureLiveStatus,
   FixtureLineup,
   FixtureEventState,
-  EventPlayer,
   FixtureEventMeta,
-  SubstMeta,
-  SubstPlayer,
   FixtureStatistics,
 } from '@src/types/FixtureIpc';
 import {
-  fetchFixtureEvents,
   fetchFixtureInfo,
-  fetchFixtureLineup,
   fetchFixtureLiveStatus,
+  fetchFixtureLineup,
+  fetchFixtureEvents,
   fetchFixtureStatistics,
 } from './fixtureLiveSliceThunk';
-import { AppDispatch, RootState } from '../store';
-import { set } from 'lodash';
 
 export interface FixtureState {
   fixtureId: number | null;

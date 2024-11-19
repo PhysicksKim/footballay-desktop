@@ -7,14 +7,6 @@ import React from 'react';
 
 import '@app/styles/tabs/FixtureEventList.scss';
 
-interface Event {
-  elapsed: number;
-  extraTime?: number;
-  type: string;
-  player: { name: string };
-  team: { name: string };
-}
-
 interface EventListProps {
   events: FixtureEvent[] | undefined;
   meta: FixtureEventMeta[];
@@ -53,7 +45,11 @@ const substDetailSubInOut = (
     return 'ERROR';
   }
   if (!event || !meta || event.sequence !== meta.sequence) {
-    console.error('Event sequence does not match with meta sequence');
+    console.error(
+      'Event sequence does not match with meta sequence : event and meta',
+      event,
+      meta,
+    );
     return 'ERROR';
   }
 
@@ -126,7 +122,7 @@ const FixtureEventList: React.FC<EventListProps> = ({
                           event,
                           meta.find((m) => m.sequence === event.sequence)!,
                         )
-                      : event.player.koreanName || event.player.name}
+                      : event?.player?.koreanName || event?.player?.name || ''}
                   </td>
                 </tr>
               ))}

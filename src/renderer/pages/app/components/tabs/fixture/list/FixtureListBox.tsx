@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import '@app/styles/tabs/FixtureListBox.scss';
-import FixtureListItem from './FixtureListItem';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@app/store/store';
+import React, { useMemo } from 'react';
 import { cloneDeep } from 'lodash';
-import { parseDateTimeString } from '../../common/DateUtils';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '@app/store/store';
+import FixtureListItem from '@app/components/tabs/fixture/list/FixtureListItem';
+import { parseDateTimeString } from '@app/common/DateUtils';
+
+import '@app/styles/tabs/FixtureListBox.scss';
 
 const FixtureListBox = () => {
   const fixtures = useSelector(

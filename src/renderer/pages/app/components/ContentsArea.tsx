@@ -1,9 +1,11 @@
 import React from 'react';
-import { HashRouter, Route, Router, Routes } from 'react-router-dom';
-import SelectFixtureTab from './tabs/SelectFixtureTab';
-import DebugTab from './tabs/DebugTab';
+import { Route, Routes } from 'react-router-dom';
+
+import SelectFixtureTab from './tabs/fixture/SelectFixtureTab';
+import MatchliveControlTab from './tabs/control/MatchliveControlTab';
+import DebugTab from './tabs/debug/DebugTab';
+
 import '@app/styles/ContentsArea.scss';
-import MatchliveControlTab from './tabs/MatchliveControlTab';
 
 const ContentsArea = () => {
   return (

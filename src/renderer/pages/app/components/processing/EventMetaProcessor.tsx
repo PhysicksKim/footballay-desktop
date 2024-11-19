@@ -9,7 +9,7 @@ import {
   setEventMeta,
   SimpleLineup,
   SimpleLineupPlayer,
-} from '../../store/slices/fixtureLiveSlice';
+} from '../../store/slices/live/fixtureLiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { cloneDeep } from 'lodash';
@@ -119,7 +119,7 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
   const eventMetaList: FixtureEventMeta[] = [];
   sortedEvents.forEach((event) => {
     const nowTeamId = event.team.teamId;
-    const nowPlayerId = event.player.playerId;
+    const nowPlayerId = event.player?.playerId;
     const nowAssistId: number | null = event.assist
       ? event.assist.playerId
       : null;

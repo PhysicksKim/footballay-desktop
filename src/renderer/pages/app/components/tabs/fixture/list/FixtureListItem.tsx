@@ -1,21 +1,23 @@
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import {
   faArrowUpRightFromSquare,
   faBan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '@app/styles/tabs/FixtureListItem.scss';
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-import { setFixtureIdAndClearInterval } from '../../store/slices/fixtureLiveSlice';
-import { fetchFixtureInfo } from '../../store/slices/fixtureLiveSliceThunk';
+
+import { AppDispatch } from '@app/store/store';
+import { setFixtureIdAndClearInterval } from '@src/renderer/pages/app/store/slices/live/fixtureLiveSlice';
+import { fetchFixtureInfo } from '@src/renderer/pages/app/store/slices/live/fixtureLiveSliceThunk';
 import {
   startFetchEvents,
   startFetchLineup,
   startFetchLiveStatus,
   startFetchStatistics,
-} from '../../store/slices/fixtureLiveDataUpdater';
+} from '@src/renderer/pages/app/store/slices/live/fixtureLiveDataUpdater';
 import TeamLogo from './TeamLogo';
+
+import '@app/styles/tabs/FixtureListItem.scss';
 
 export interface FixtureListItemProps {
   leagueId: number | null;
@@ -58,9 +60,11 @@ const FixtureListItem = ({
   available,
 }: FixtureListItemProps) => {
   const dispatch = useDispatch<AppDispatch>();
+
   const convertKickoffTimeToHHMM = (kickoff: string) => {
     return kickoff.split(' ')[1];
   };
+
   const convertRoundText = (round: string) => {
     if (leagueId === 39) {
       const roundNumber = round.split(' ')[3];
@@ -77,6 +81,7 @@ const FixtureListItem = ({
     if (available) {
       dispatch(setFixtureIdAndClearInterval(fixtureId));
       dispatch(fetchFixtureInfo(fixtureId));
+
       openMatchlivePopup();
       dispatch(startFetchLineup(fixtureId));
       dispatch(startFetchLiveStatus(fixtureId));

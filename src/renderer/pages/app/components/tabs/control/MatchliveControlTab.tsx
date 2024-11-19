@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
-import '@app/styles/tabs/MatchliveControlTab.scss';
-import { setShowPhoto } from '../../store/slices/fixtureLiveOptionSlice';
+
+import { RootState } from '@app/store/store';
 import {
   addFilterEvent,
   removeFilterEvent,
   resetFilterEvents,
-} from '../../store/slices/fixtureLiveControlSlice';
+} from '@src/renderer/pages/app/store/slices/live/control/fixtureLiveControlSlice';
+import FixtureEventList from '@app/components/tabs/control/FixtureEventList';
+
 import { FixtureEvent } from '@src/types/FixtureIpc';
-import FixtureEventList from './FixtureEventList';
+import '@app/styles/tabs/MatchliveControlTab.scss';
 
 const MatchliveControlTab = () => {
   const dispatch = useDispatch();

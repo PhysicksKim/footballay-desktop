@@ -97,6 +97,7 @@ export const processTeamLineup = (
 
 const updatePlayerGoal = (event: FixtureEvent, players: ViewPlayer[][]) => {
   const { player } = event;
+  if (!player) return;
 
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < players[i].length; j++) {
@@ -122,6 +123,7 @@ const updatePlayerGoal = (event: FixtureEvent, players: ViewPlayer[][]) => {
 
 const updatePlayerCard = (event: FixtureEvent, players: ViewPlayer[][]) => {
   const { player, detail } = event;
+  if (!player || !detail) return;
   const cardType = detail;
 
   for (let i = 0; i < players.length; i++) {
@@ -250,6 +252,7 @@ export const applyEventsToLineup = (
           number: substitute.number,
           photo: substitute.photo,
           position: substitute.position,
+          tempId: substitute.tempId,
           grid: null,
           events: {
             subIn: true, // 교체되어 들어가는 선수이므로 true

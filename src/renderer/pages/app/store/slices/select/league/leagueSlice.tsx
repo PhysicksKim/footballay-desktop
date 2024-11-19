@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import fetchLeagueList from './leagueSliceThunk';
+import fetchLeagueList from '@app/store/slices/select/league/leagueSliceThunk';
 import { League } from '@app/types/football';
 
 interface LeagueState {

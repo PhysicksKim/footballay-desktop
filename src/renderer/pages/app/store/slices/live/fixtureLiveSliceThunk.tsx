@@ -1,4 +1,4 @@
-import { createAsyncThunk, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Urls from '@app/constants/Urls';
 import {
@@ -8,7 +8,6 @@ import {
   FixtureEventState,
   FixtureStatistics,
 } from '@src/types/FixtureIpc';
-import { AppDispatch, RootState } from '../store';
 import { decode } from 'html-entities';
 
 export const fetchFixtureInfo = createAsyncThunk<

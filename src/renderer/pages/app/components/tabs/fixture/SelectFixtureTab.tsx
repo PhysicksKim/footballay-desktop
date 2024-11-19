@@ -1,7 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
+
+import FixtureSlideBox from './list/FixtureSlideBox';
+import LeagueCardSlide from './league/LeagueCardSlide';
+
 import '@app/styles/tabs/SelectFixtureTab.scss';
-import FixtureSlideBox from './FixtureSlideBox';
-import LeagueCardSlide from './LeagueCardSlide';
 
 const SelectFixtureTab = () => {
   return (

@@ -30,9 +30,26 @@ const parseDateTimeString = (dateTimeString: string): Date => {
   return new Date(year, month - 1, day, hours, minutes);
 };
 
+const fixtureDateStrToDate = (fixtureDateStr: string) => {
+  const _YMD = fixtureDateStr.split(' ')[0];
+  const _year = parseInt(_YMD.split('-')[0]);
+  const _month = parseInt(_YMD.split('-')[1]) - 1;
+  const _day = parseInt(_YMD.split('-')[2]);
+  return new Date(_year, _month, _day);
+};
+
+const isNotSameDate = (date1: Date, date2: Date) =>
+  !(
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+
 export default dateToYearMonthDay;
 export {
   isoStringToLocalYearMonthDay as isoStringToYearMonthDay,
   isValidISOString,
   parseDateTimeString,
+  fixtureDateStrToDate,
+  isNotSameDate,
 };

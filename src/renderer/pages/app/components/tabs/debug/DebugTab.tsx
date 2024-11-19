@@ -1,10 +1,11 @@
-import Urls from '@app/constants/Urls';
-import axios from 'axios';
 import React from 'react';
-import '@app/styles/tabs/DebugTab.scss';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@app/store/store';
-import fetchLeagueList from '@app/store/slices/leagueSliceThunk';
+import fetchLeagueList from '@src/renderer/pages/app/store/slices/select/league/leagueSliceThunk';
+import Urls from '@app/constants/Urls';
+
+import '@app/styles/tabs/DebugTab.scss';
 
 type RequestStatus = 'idle' | 'loading' | 'success' | 'error';
 

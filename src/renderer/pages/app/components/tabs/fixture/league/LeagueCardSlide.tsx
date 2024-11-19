@@ -1,13 +1,15 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
-import '@app/styles/tabs/SelectFixtureTab.scss';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@app/store/store';
-import fetchLeagueList from '@app/store/slices/leagueSliceThunk';
-import fetchFixtureList, {
-  FetchFixtureListParams,
-} from '@app/store/slices/fixtureListSliceThunk';
-import { setDate, setLeagueId } from '@app/store/slices/footballSelectionSlice';
+import {
+  setSelectedDate,
+  setLeagueId,
+} from '@src/renderer/pages/app/store/slices/select/footballSelectionSlice';
+import fetchLeagueList from '@src/renderer/pages/app/store/slices/select/league/leagueSliceThunk';
+
+import '@app/styles/tabs/SelectFixtureTab.scss';
 
 const LeagueCardSlide = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -50,8 +52,7 @@ const LeagueCardSlide = () => {
   };
 
   const handleLeagueClick = (leagueId: number) => {
-    dispatch(setDate(new Date().toISOString()));
-    dispatch(fetchFixtureList({ leagueId, date: '' }));
+    dispatch(setSelectedDate(new Date().toISOString()));
     dispatch(setLeagueId(leagueId));
   };
 

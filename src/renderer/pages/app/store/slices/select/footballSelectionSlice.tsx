@@ -22,7 +22,7 @@ const selectedSlice = createSlice({
     setLeagueId(state, action: PayloadAction<number | null>) {
       state.leagueId = action.payload;
     },
-    setDate(state, action: PayloadAction<string>) {
+    setSelectedDate(state, action: PayloadAction<string>) {
       state.date = action.payload;
     },
     resetSelected(state) {
@@ -32,5 +32,6 @@ const selectedSlice = createSlice({
   },
 });
 
-export const { setLeagueId, setDate, resetSelected } = selectedSlice.actions;
+export const { setLeagueId, setSelectedDate, resetSelected } =
+  selectedSlice.actions;
 export default selectedSlice.reducer;

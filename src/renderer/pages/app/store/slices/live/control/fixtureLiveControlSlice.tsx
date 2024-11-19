@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@app/store/store';
 import { FixtureEvent } from '@src/types/FixtureIpc';
 
 interface FixtureLiveControlState {
@@ -16,7 +16,6 @@ const fixtureLiveControlSlice = createSlice({
   reducers: {
     addFilterEvent: (state, action: PayloadAction<FixtureEvent>) => {
       state.filterEvents.push(action.payload);
-      // SORT by filterEvents sequence
       state.filterEvents.sort((a, b) => a.sequence - b.sequence);
     },
     removeFilterEvent: (state, action: PayloadAction<FixtureEvent>) => {
@@ -28,7 +27,7 @@ const fixtureLiveControlSlice = createSlice({
             event.elapsed === action.payload.elapsed &&
             event.extraTime === action.payload.extraTime &&
             event.team.teamId === action.payload.team.teamId &&
-            event.player.playerId === action.payload.player.playerId
+            event.player?.playerId === action.payload.player?.playerId
           ),
       );
     },

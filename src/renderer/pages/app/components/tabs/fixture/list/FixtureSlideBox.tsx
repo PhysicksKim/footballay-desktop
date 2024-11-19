@@ -1,12 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import '@app/styles/tabs/FixtureSlideBox.scss';
-import FixtureListBox from './FixtureListBox';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { startOfDay, addDays, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+
 import { AppDispatch, RootState } from '@app/store/store';
-import fetchFixtureList from '@app/store/slices/fixtureListSliceThunk';
-import { setDate } from '@app/store/slices/footballSelectionSlice';
+import fetchFixtureList, {
+  FixtureListItemResponse,
+} from '@src/renderer/pages/app/store/slices/select/list/fixtureListSliceThunk';
+import { setSelectedDate } from '@src/renderer/pages/app/store/slices/select/footballSelectionSlice';
+import FixtureListBox from './FixtureListBox';
+
+import '@app/styles/tabs/FixtureSlideBox.scss';
+import {
+  fixtureDateStrToDate,
+  isNotSameDate,
+} from '@src/renderer/pages/app/common/DateUtils';
 
 const FixtureSlideBox = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,41 +33,51 @@ const FixtureSlideBox = () => {
   );
   const [dates, setDates] = useState<Date[]>([]);
 
+  /**
+   * 경기 목록이 변경된 경우, 선택된 날짜 redux state 를 변경합니다.
+   */
   useEffect(() => {
     const firstFixture = fixtures[0];
-    const fixtureDate = firstFixture?.matchSchedule?.kickoff;
-    if (fixtureDate) {
-      const _YMD = fixtureDate.split(' ')[0];
-      const _year = parseInt(_YMD.split('-')[0]);
-      const _month = parseInt(_YMD.split('-')[1]) - 1;
-      const _day = parseInt(_YMD.split('-')[2]);
-      const _date = new Date(_year, _month, _day);
-      const selectedDate = new Date(selectedDateStr);
-
-      const isSameDate =
-        _date.getFullYear() === selectedDate.getFullYear() &&
-        _date.getMonth() === selectedDate.getMonth() &&
-        _date.getDate() === selectedDate.getDate();
-
-      if (!isSameDate) {
-        dispatch(setDate(_date.toISOString()));
-      }
-    }
+    setSelectedDateIfFixtureDateChanged(firstFixture, selectedDateStr);
   }, [fixtures]);
 
+  /**
+   * 선택된 날짜가 변경된 경우, 날짜 목록을 갱신합니다.
+   */
   useEffect(() => {
     if (selectedDateStr) {
       const _today = startOfDay(selectedDateStr);
       setToday(_today);
-      const _dates = Array.from({ length: 7 }, (_, i) =>
-        addDays(_today, i - 3),
-      );
+
+      const _dates = createDateArrayWithPrevAndNext3Days(_today);
       setDates(_dates);
     }
   }, [selectedDateStr]);
 
-  const formatDate = useCallback((date: Date) => format(date, 'yyyy.MM'), []);
-  const formatDay = useCallback(
+  const setSelectedDateIfFixtureDateChanged = useCallback(
+    (fixture: FixtureListItemResponse | undefined, selectedDateStr: string) => {
+      const fixtureDateStr = fixture?.matchSchedule?.kickoff;
+      if (fixtureDateStr) {
+        const fixtureDate: Date = fixtureDateStrToDate(fixtureDateStr);
+        const selectedDate: Date = new Date(selectedDateStr);
+
+        if (isNotSameDate(fixtureDate, selectedDate)) {
+          dispatch(setSelectedDate(fixtureDate.toISOString()));
+        }
+      }
+    },
+    [],
+  );
+
+  const createDateArrayWithPrevAndNext3Days = useCallback((today: Date) => {
+    return Array.from({ length: 7 }, (_, i) => addDays(today, i - 3));
+  }, []);
+
+  const formatYearMonth = useCallback(
+    (date: Date) => format(date, 'yyyy.MM'),
+    [],
+  );
+  const formatDayOfWeek = useCallback(
     (date: Date) => format(date, 'EEE dd', { locale: ko }),
     [],
   );
@@ -72,10 +90,10 @@ const FixtureSlideBox = () => {
         date: date.toISOString(),
       }),
     );
-    dispatch(setDate(date.toISOString()));
+    dispatch(setSelectedDate(date.toISOString()));
   };
 
-  const dateList = dates.map((date, index) => {
+  const renderedDateItems = dates.map((date, index) => {
     const dayOfWeek = format(date, 'EEE', { locale: ko });
     const isToday = format(date, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
     const isSat = dayOfWeek === '토';
@@ -89,7 +107,7 @@ const FixtureSlideBox = () => {
         } ${isToday ? 'date_today' : ''}`}
         onClick={() => fetchDateFixtureList(date)}
       >
-        {formatDay(date)}
+        {formatDayOfWeek(date)}
       </div>
     );
   });
@@ -97,9 +115,9 @@ const FixtureSlideBox = () => {
   return (
     <div className="fixture-box-container">
       <div className="fixture-box">
-        <div className="fixture-year-month">{formatDate(today)}</div>
+        <div className="fixture-year-month">{formatYearMonth(today)}</div>
         <div className="fixture-date-slide-bar">
-          {dateList}
+          {renderedDateItems}
           <div className="date-slide-prev-btn">{'<'}</div>
           <div className="date-slide-next-btn">{'>'}</div>
         </div>

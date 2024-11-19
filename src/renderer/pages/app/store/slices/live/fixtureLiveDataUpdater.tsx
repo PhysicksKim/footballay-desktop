@@ -1,11 +1,10 @@
-import { useDispatch } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
+import { AppDispatch, RootState } from '../../store';
 import {
   fetchFixtureLineup,
   fetchFixtureEvents,
   fetchFixtureLiveStatus,
   fetchFixtureStatistics,
-} from './fixtureLiveSliceThunk';
+} from '@app/store/slices/live/fixtureLiveSliceThunk';
 import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
 
 const intervalTime = 13000;
