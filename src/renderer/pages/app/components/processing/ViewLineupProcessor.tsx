@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+
+import { RootState } from '@app/store/store';
+import { setProcessedLineup } from '@app/store/slices/fixtureProcessedDataSlice';
+
 import { FixtureEvent } from '@src/types/FixtureIpc';
 import { processLineupToView } from './ViewLineupLogic';
-import { setProcessedLineup } from '../../store/slices/fixtureProcessedDataSlice';
 import { getFilteredEvents } from './MatchliveIpc';
 
 const ViewLineupProcessor = () => {

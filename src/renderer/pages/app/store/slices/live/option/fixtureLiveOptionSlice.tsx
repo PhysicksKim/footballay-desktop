@@ -5,6 +5,9 @@ export interface FixtureLiveOptionState {
 }
 
 const initialState: FixtureLiveOptionState = {
+  /**
+   * @deprecated 항상 선수 사진을 보여주도록 합니다. 삭제될 옵션입니다.
+   */
   showPhoto: true,
 };
 

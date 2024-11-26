@@ -10,6 +10,7 @@ import {
   ViewPlayerEvents,
   Goal,
 } from '@src/types/FixtureIpc';
+import { ca } from 'date-fns/locale';
 
 export const isSubOutPlayer = (
   checkId: number,
@@ -46,26 +47,33 @@ export const processTeamLineup = (
    * ViewPlayer[라인넘버][해당라인에서위치]
    */
   teamLineup.players.forEach((player) => {
-    const gridLine = parseInt(player.grid.split(':')[0], 10) - 1;
-    if (!playersByGrid[gridLine]) {
-      playersByGrid[gridLine] = [];
+    try {
+      if (!player || !player?.grid) {
+        return;
+      }
+      const gridLine = parseInt(player.grid.split(':')[0], 10) - 1;
+      if (!playersByGrid[gridLine]) {
+        playersByGrid[gridLine] = [];
+      }
+      const events: ViewPlayerEvents = {
+        subIn: false,
+        yellow: false,
+        red: false,
+        goal: [],
+      };
+      const subInPlayer = null;
+
+      const statistics = statisticsMap.get(player.id) || null;
+
+      playersByGrid[gridLine].push({
+        ...player,
+        events,
+        statistics,
+        subInPlayer,
+      });
+    } catch (e) {
+      console.log('error while processing team lineup', e);
     }
-    const events: ViewPlayerEvents = {
-      subIn: false,
-      yellow: false,
-      red: false,
-      goal: [],
-    };
-    const subInPlayer = null;
-
-    const statistics = statisticsMap.get(player.id) || null;
-
-    playersByGrid[gridLine].push({
-      ...player,
-      events,
-      statistics,
-      subInPlayer,
-    });
   });
 
   const substituteViewLineup = teamLineup.substitutes.map((sub) => {

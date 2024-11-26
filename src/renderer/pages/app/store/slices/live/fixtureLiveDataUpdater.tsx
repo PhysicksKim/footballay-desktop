@@ -1,4 +1,4 @@
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch, RootState } from '@app/store/store';
 import {
   fetchFixtureLineup,
   fetchFixtureEvents,
@@ -6,22 +6,29 @@ import {
   fetchFixtureStatistics,
 } from '@app/store/slices/live/fixtureLiveSliceThunk';
 import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
+import { isCompleteLineupData } from './LineupValidator';
 
-const intervalTime = 13000;
-
+const LINEUP_INTERVAL_TIME = 30000;
+const LIVE_DATA_INTERVAL_TIME = 13000;
 const END_STATUS = ['FT', 'AET', 'PEN', 'CANC', 'ABD', 'AWD', 'WO'];
+const _DEBUG_CONSOLE_PRINT = false;
+
 const shouldStopFetch = (status: string) => {
   return END_STATUS.includes(status);
 };
-
-const _DEBUG_CONSOLE_PRINT = false;
 
 export const startFetchLineup = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchLineup = async () => {
       try {
-        const response = await dispatch(fetchFixtureLineup(fixtureId)).unwrap();
-        if (response && response.lineup !== null) {
+        const response = await dispatch(
+          fetchFixtureLineup(fixtureId),
+        )?.unwrap();
+        if (
+          response &&
+          response.lineup !== null &&
+          isCompleteLineupData(response)
+        ) {
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }
@@ -29,7 +36,10 @@ export const startFetchLineup = (fixtureId: number) => {
         console.error('Failed to fetch lineup:', error);
       }
     };
-    const intervalId: NodeJS.Timeout = setInterval(fetchLineup, intervalTime);
+    const intervalId: NodeJS.Timeout = setInterval(
+      fetchLineup,
+      LINEUP_INTERVAL_TIME,
+    );
     dispatch(addIntervalId(intervalId));
     fetchLineup();
   };
@@ -50,7 +60,7 @@ export const startFetchLiveStatus = (fixtureId: number) => {
         console.error('Failed to fetch live status:', error);
       }
     };
-    const intervalId = setInterval(fetchLiveStatus, intervalTime);
+    const intervalId = setInterval(fetchLiveStatus, LIVE_DATA_INTERVAL_TIME);
     dispatch(addIntervalId(intervalId));
     fetchLiveStatus();
   };
@@ -71,7 +81,7 @@ export const startFetchEvents = (fixtureId: number) => {
         console.error('Failed to fetch events:', error);
       }
     };
-    const intervalId = setInterval(fetchEvents, intervalTime);
+    const intervalId = setInterval(fetchEvents, LIVE_DATA_INTERVAL_TIME);
     dispatch(addIntervalId(intervalId));
     fetchEvents();
   };
@@ -82,7 +92,6 @@ export const startFetchStatistics = (fixtureId: number) => {
     const fetchStatistics = async () => {
       try {
         await dispatch(fetchFixtureStatistics(fixtureId)).unwrap();
-        console.log('fetchStatistics interval function');
         const nowStatus =
           getState().fixtureLive?.liveStatus?.liveStatus?.shortStatus;
         if (nowStatus && shouldStopFetch(nowStatus)) {
@@ -93,10 +102,8 @@ export const startFetchStatistics = (fixtureId: number) => {
         console.error('Failed to fetch statistics:', error);
       }
     };
-    const intervalId = setInterval(fetchStatistics, intervalTime);
-    console.log('start fetch statistics');
+    const intervalId = setInterval(fetchStatistics, LIVE_DATA_INTERVAL_TIME);
     dispatch(addIntervalId(intervalId));
-    console.log('after dispatch');
     fetchStatistics();
   };
 };
