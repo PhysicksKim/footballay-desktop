@@ -2,6 +2,7 @@ import {
   FixtureEvent,
   FixtureEventMeta,
   FixtureLineup,
+  LineupPlayer,
   SubstMeta,
 } from '@src/types/FixtureIpc';
 import React, { useEffect } from 'react';
@@ -12,7 +13,7 @@ import {
 } from '../../store/slices/live/fixtureLiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, get } from 'lodash';
 
 export const isSubOutPlayer = (checkId: number, simpleLineup: SimpleLineup) => {
   const players = simpleLineup.lineup;
@@ -32,29 +33,69 @@ export const isSubOutPlayer = (checkId: number, simpleLineup: SimpleLineup) => {
   return false;
 };
 
+export const isSubOutUnregisteredPlayer = (
+  checkTempId: string,
+  simpleLineup: SimpleLineup,
+) => {
+  const players = simpleLineup.lineup;
+  for (let i = 0; i < players.length; i++) {
+    let currentPlayer = players[i];
+    if (!currentPlayer) {
+      continue;
+    }
+
+    while (currentPlayer.subInPlayer) {
+      currentPlayer = currentPlayer.subInPlayer;
+    }
+    if (currentPlayer.tempId === checkTempId) {
+      console.log('tempId', currentPlayer.tempId, checkTempId);
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * WindowControlTab 의 Fixture Event List 에 사용할 Lineup 정보를 생성합니다. <br>
+ * @param lineup
+ * @returns
+ */
 const createSimpleLineup = (lineup: FixtureLineup) => {
   const homeId = lineup.lineup.home.teamId;
   const awayId = lineup.lineup.away.teamId;
+
+  const createSimpleLineupPlayer = (player: LineupPlayer) => {
+    if (!player.id) {
+      return {
+        id: player.id,
+        subInPlayer: null,
+        tempId: player.tempId,
+      };
+    } else {
+      return {
+        id: player.id,
+        subInPlayer: null,
+        tempId: null,
+      };
+    }
+  };
+
   const homeSimpleLineupPlayers: SimpleLineupPlayer[] =
-    lineup.lineup.home.players.map((player) => ({
-      id: player.id,
-      subInPlayer: null,
-    }));
+    lineup.lineup.home.players.map((player) =>
+      createSimpleLineupPlayer(player),
+    );
   const awaySimpleLineupPlayers: SimpleLineupPlayer[] =
-    lineup.lineup.away.players.map((player) => ({
-      id: player.id,
-      subInPlayer: null,
-    }));
+    lineup.lineup.away.players.map((player) =>
+      createSimpleLineupPlayer(player),
+    );
   const homeSubstitutes: SimpleLineupPlayer[] =
-    lineup.lineup.home.substitutes.map((player) => ({
-      id: player.id,
-      subInPlayer: null,
-    }));
+    lineup.lineup.home.substitutes.map((player) =>
+      createSimpleLineupPlayer(player),
+    );
   const awaySubstitutes: SimpleLineupPlayer[] =
-    lineup.lineup.away.substitutes.map((player) => ({
-      id: player.id,
-      subInPlayer: null,
-    }));
+    lineup.lineup.away.substitutes.map((player) =>
+      createSimpleLineupPlayer(player),
+    );
 
   const home: SimpleLineup = {
     teamId: homeId,
@@ -71,8 +112,10 @@ const createSimpleLineup = (lineup: FixtureLineup) => {
 
 const updateSimpleLineup = (
   simpleLineup: SimpleLineup,
-  inPlayerId: number,
-  outPlayerId: number,
+  inPlayerId: number | null,
+  inPlayerTempId: string | null,
+  outPlayerId: number | null,
+  outPlayerTempId: string | null,
 ) => {
   const { lineup } = simpleLineup;
 
@@ -83,15 +126,41 @@ const updateSimpleLineup = (
       nowPlayer = nowPlayer.subInPlayer;
     }
 
-    if (nowPlayer.id === outPlayerId) {
+    if (
+      matchRegisteredPlayer(nowPlayer.id, outPlayerId) ||
+      matchUnregisteredPlayer(nowPlayer.tempId, outPlayerTempId)
+    ) {
       const subInPlayer = {
         id: inPlayerId,
         subInPlayer: null,
+        tempId: inPlayerTempId,
       };
       nowPlayer.subInPlayer = subInPlayer;
       break;
     }
   }
+};
+
+const matchRegisteredPlayer = (id1: number | any, id2: number | any) => {
+  if (!id1 && !id2 && typeof id1 === 'number' && typeof id2 === 'number') {
+    return id1 === id2;
+  }
+  return false;
+};
+
+const matchUnregisteredPlayer = (
+  tempId1: string | any,
+  tempId2: string | any,
+) => {
+  if (
+    !tempId1 &&
+    !tempId2 &&
+    typeof tempId1 === 'string' &&
+    typeof tempId2 === 'string'
+  ) {
+    return tempId1 === tempId2;
+  }
+  return false;
 };
 
 /**
@@ -113,40 +182,79 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
   const { home: homeSimpleLineup, away: awaySimpleLineup } =
     createSimpleLineup(lineup);
   const homeId = lineup.lineup.home.teamId;
-  const awayId = lineup.lineup.away.teamId;
 
-  // sortedEvents 를 순회하면서 EventMeta 를 추가하는 로직
   const eventMetaList: FixtureEventMeta[] = [];
+
   sortedEvents.forEach((event) => {
     const nowTeamId = event.team.teamId;
     const nowPlayerId = event.player?.playerId;
+    const nowPlayerTempId = event.player?.tempId;
     const nowAssistId: number | null = event.assist
       ? event.assist.playerId
+      : null;
+    const nowAssistTempId: string | null = event.assist
+      ? event.assist.tempId
       : null;
     const nowEventType = event.type.toUpperCase();
     const nowSequence = event.sequence;
 
+    if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124') {
+      console.log('jackson event', event);
+    }
+
     switch (nowEventType) {
       case 'SUBST':
-        if (!nowPlayerId || !nowAssistId) {
+        // filter no id event
+        if (!nowPlayerId && !nowPlayerTempId) {
           break;
         }
-        const isPlayerSubOut = isSubOutPlayer(
-          nowPlayerId,
-          nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup,
-        );
+        if (!nowAssistId && !nowAssistTempId) {
+          break;
+        }
+
+        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124') {
+          console.log('jackson subst', event);
+        }
+
+        const isPlayerSubOut = nowPlayerTempId
+          ? isSubOutUnregisteredPlayer(
+              nowPlayerTempId,
+              nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup,
+            )
+          : nowPlayerId
+            ? isSubOutPlayer(
+                nowPlayerId,
+                nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup,
+              )
+            : false;
+
+        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124')
+          console.log('isPlayerSubOut', isPlayerSubOut);
 
         const { inPlayer, outPlayer } = isPlayerSubOut
           ? { inPlayer: 'assist', outPlayer: 'player' }
           : { inPlayer: 'player', outPlayer: 'assist' };
-        const { subInId, subOutId } = isPlayerSubOut
-          ? { subInId: nowAssistId, subOutId: nowPlayerId }
-          : { subInId: nowPlayerId, subOutId: nowAssistId };
+        const { subInId, subInTempId, subOutId, subOutTempId } = isPlayerSubOut
+          ? {
+              subInId: nowAssistId,
+              subInTempId: nowAssistTempId,
+              subOutId: nowPlayerId,
+              subOutTempId: nowPlayerTempId,
+            }
+          : {
+              subInId: nowPlayerId,
+              subInTempId: nowPlayerTempId,
+              subOutId: nowAssistId,
+              subOutTempId: nowAssistTempId,
+            };
         const substMeta = {
           inPlayer,
           outPlayer,
           teamId: nowTeamId,
         } as SubstMeta;
+
+        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124')
+          console.log('substMeta', substMeta);
 
         eventMetaList.push({
           sequence: nowSequence,
@@ -155,7 +263,13 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
 
         const targetSimpleLineup =
           nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup;
-        updateSimpleLineup(targetSimpleLineup, subInId, subOutId);
+        updateSimpleLineup(
+          targetSimpleLineup,
+          subInId ? subInId : null,
+          subInTempId ? subInTempId : null,
+          subOutId ? subOutId : null,
+          subOutTempId ? subOutTempId : null,
+        );
         break;
       default:
         eventMetaList.push({
@@ -167,7 +281,7 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
 
   // sort eventMetaList by sequence
   eventMetaList.sort((a, b) => a.sequence - b.sequence);
-
+  console.log('eventMetaList', eventMetaList);
   return eventMetaList;
 };
 

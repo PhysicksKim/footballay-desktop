@@ -75,9 +75,13 @@ const updateLastFetchedAt = (state: FixtureState) => {
   state.lastFetchedAt = new Date().toISOString();
 };
 
+/**
+ * 이벤트 정보를 담는 객체
+ */
 export interface SimpleLineupPlayer {
-  id: number;
+  id: number | null;
   subInPlayer: SimpleLineupPlayer | null;
+  tempId: string | null;
 }
 
 export interface SimpleLineup {
