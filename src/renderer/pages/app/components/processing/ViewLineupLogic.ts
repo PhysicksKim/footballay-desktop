@@ -1,7 +1,6 @@
 import {
   LineupTeam,
   FixtureEvent,
-  FixtureStatistics,
   PlayerStatisticsResponse,
 } from '@src/types/FixtureIpc';
 import {
@@ -10,9 +9,8 @@ import {
   ViewPlayerEvents,
   Goal,
 } from '@src/types/FixtureIpc';
-import { ca } from 'date-fns/locale';
 
-export const isSubOutPlayer = (
+export const givenIdSubOut = (
   checkId: number,
   lineup: ViewPlayer[][],
 ): boolean => {
@@ -28,6 +26,29 @@ export const isSubOutPlayer = (
       }
 
       if (currentPlayer?.id === checkId) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const givenTempIdSubOut = (
+  checkTempId: string,
+  lineup: ViewPlayer[][],
+): boolean => {
+  for (let i = 0; i < lineup.length; i++) {
+    for (let j = 0; j < lineup[i].length; j++) {
+      let currentPlayer = lineup[i][j];
+      if (!currentPlayer) {
+        continue;
+      }
+
+      while (currentPlayer?.subInPlayer) {
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+
+      if (currentPlayer?.tempId === checkTempId) {
         return true;
       }
     }
@@ -191,26 +212,44 @@ const updateSubInPlayer = (
       const player = players[i][j];
       const grid = player.grid;
 
-      if (player.id === subOutId) {
-        // 교체 되어 나가는 선수를 찾았을 경우, subInPlayer 업데이트
-        subInViewPlayer.grid = grid;
-        player.subInPlayer = subInViewPlayer;
-        return;
+      let currentPlayer = player;
+      while (currentPlayer.subInPlayer) {
+        currentPlayer = currentPlayer.subInPlayer;
       }
 
-      // 교체된 선수가 다시 교체되었는지 재귀적으로 확인
-      let currentPlayer = player.subInPlayer;
-      while (currentPlayer) {
-        if (currentPlayer.id === subOutId) {
-          subInViewPlayer.grid = grid;
-          currentPlayer.subInPlayer = subInViewPlayer;
-          return;
-        }
-        currentPlayer = currentPlayer.subInPlayer;
+      if (currentPlayer.id === subOutId) {
+        subInViewPlayer.grid = grid;
+        currentPlayer.subInPlayer = subInViewPlayer;
+        return;
       }
     }
   }
 };
+
+const updateSubInPlayerByTempId = (
+  subInViewPlayer: ViewPlayer,
+  subOutTempId: string,
+  players: ViewPlayer[][],
+) => {
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < players[i].length; j++) {
+      const player = players[i][j];
+      const grid = player.grid;
+
+      let currentPlayer = player;
+      while (currentPlayer.subInPlayer) {
+        currentPlayer = currentPlayer.subInPlayer;
+      }
+
+      if (currentPlayer.tempId === subOutTempId) {
+        subInViewPlayer.grid = grid;
+        currentPlayer.subInPlayer = subInViewPlayer;
+        return;
+      }
+    }
+  }
+};
+
 /*
   퇴장 있는 경기 : k리그(292) 대구vs포항 (1163025)
   자책골 : epl(39) 시즌2024 맨시티vs웨햄 (1208050)
@@ -228,26 +267,49 @@ export const applyEventsToLineup = (
   events: FixtureEvent[],
 ): ViewLineup => {
   events.forEach((event, index) => {
+    if (lineup.teamId !== event.team.teamId) {
+      return;
+    }
+
     switch (event.type) {
       case 'SUBST': {
         const { player, assist } = event;
 
         if (!player || !assist) break;
 
+        const IS_JACKSON_DEBUG =
+          event.team.teamId === 49 &&
+          player.tempId === 'eeb438cd-47fb-406d-957c-e3120be65124';
+
+        if (IS_JACKSON_DEBUG) {
+          console.log('jackson subst', event);
+        }
+
+        const playerIsUnregisteredPlayer = !player.playerId && player.tempId;
+
         let _out, _in;
-        if (isSubOutPlayer(player.playerId, lineup.players)) {
+        let playerIsSubOut;
+        if (playerIsUnregisteredPlayer && player.tempId) {
+          playerIsSubOut = givenTempIdSubOut(player.tempId, lineup.players);
+        } else if (!playerIsUnregisteredPlayer) {
+          playerIsSubOut = givenIdSubOut(player.playerId, lineup.players);
+        } else {
+          return;
+        }
+
+        if (playerIsSubOut) {
           _out = player;
           _in = assist;
         } else {
           _out = assist;
           _in = player;
         }
-        const outPlayer = _out;
-        const inPlayer = _in;
+        const outEventPlayer = _out;
+        const inEventPlayer = _in;
 
         // lineup.substitutes에서 교체 들어오는 선수 정보를 찾아서 photo와 position 값을 설정
         const substitute = lineup.substitutes.find(
-          (sub) => sub.id === inPlayer.playerId,
+          (sub) => sub.id === inEventPlayer.playerId,
         );
         if (!substitute) {
           break;
@@ -272,10 +334,18 @@ export const applyEventsToLineup = (
           subInPlayer: null,
         };
 
-        const subOutId = outPlayer.playerId;
+        const subOutId = outEventPlayer.playerId;
 
         // 홈팀과 원정팀의 players를 순회하며 업데이트
-        updateSubInPlayer(subInViewPlayer, subOutId, lineup.players);
+        if (outEventPlayer.tempId) {
+          updateSubInPlayerByTempId(
+            subInViewPlayer,
+            outEventPlayer.tempId,
+            lineup.players,
+          );
+        } else {
+          updateSubInPlayer(subInViewPlayer, subOutId, lineup.players);
+        }
         break;
       }
       case 'CARD': {
@@ -290,6 +360,8 @@ export const applyEventsToLineup = (
         break;
     }
   });
+
+  console.log('applied events to lineup', lineup);
 
   return lineup;
 };

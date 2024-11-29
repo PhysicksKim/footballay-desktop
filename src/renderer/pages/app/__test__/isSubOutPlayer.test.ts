@@ -1,4 +1,4 @@
-import { isSubOutPlayer } from '@app/components/processing/ViewLineupLogic';
+import { givenIdSubOut } from '@app/components/processing/ViewLineupLogic';
 import { ViewPlayer } from '@src/types/FixtureIpc';
 
 describe('isSubOutPlayer', () => {
@@ -39,8 +39,8 @@ describe('isSubOutPlayer', () => {
       ],
     ];
 
-    expect(isSubOutPlayer(1, players)).toBe(false); // 1번 플레이어는 현재 on field에 없음
-    expect(isSubOutPlayer(2, players)).toBe(true); // 2번 플레이어는 현재 on field에 있음
+    expect(givenIdSubOut(1, players)).toBe(false); // 1번 플레이어는 현재 on field에 없음
+    expect(givenIdSubOut(2, players)).toBe(true); // 2번 플레이어는 현재 on field에 있음
   });
 
   it('should return false when the player is not on the field', () => {
@@ -65,6 +65,6 @@ describe('isSubOutPlayer', () => {
       ],
     ];
 
-    expect(isSubOutPlayer(2, players)).toBe(false); // 2번 플레이어는 현재 on field에 없음
+    expect(givenIdSubOut(2, players)).toBe(false); // 2번 플레이어는 현재 on field에 없음
   });
 });
