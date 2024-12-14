@@ -1,3 +1,4 @@
+import { he } from 'date-fns/locale';
 import React, { useEffect, useState } from 'react';
 
 interface RetryableImageProps {
@@ -5,6 +6,8 @@ interface RetryableImageProps {
   alt: string;
   className?: string;
   maxRetries?: number;
+  height?: number;
+  width?: number;
 }
 
 const RetryableImage: React.FC<RetryableImageProps> = ({
@@ -12,6 +15,8 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
   alt,
   className = '',
   maxRetries = 5,
+  height = -1,
+  width = -1,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [retryCount, setRetryCount] = useState<number>(0);
@@ -36,6 +41,8 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
       src={currentSrc}
       alt={alt}
       onError={handleError}
+      height={height > 0 ? `${height}px` : '100%'}
+      width={width > 0 ? `${width}px` : '100%'}
     />
   );
 };

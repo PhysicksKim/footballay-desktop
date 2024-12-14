@@ -1,6 +1,6 @@
 import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { Goal, ViewPlayer } from '@src/types/FixtureIpc';
 import React from 'react';
 import { PlayerStatisticsList, ProfileSection } from './PlayerStatisticsStyled';
@@ -75,6 +75,15 @@ const textShadowStyle = css`
 `;
 const isTextShadow = true;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 const GridPlayer = styled.div<{
   $top: number;
   $left: number;
@@ -93,6 +102,10 @@ const GridPlayer = styled.div<{
   height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
   /* -webkit-app-region: drag; */
+
+  opacity: 0;
+  /* transition: opacity 0.8s ease-in-out; */
+  animation: ${fadeIn} 0.5s ease-in-out forwards;
 
   // 자식들은 클릭이 가능하도록 no-drag 설정
   & > * {
@@ -156,9 +169,6 @@ const GridPlayer = styled.div<{
 
   span {
     display: inline-block;
-    font-size: 16px;
-    font-weight: 700;
-    /* overflow-y: hidden; */
     white-space: nowrap;
     margin-top: 3px;
     color: white;
@@ -416,18 +426,22 @@ const PlayerNumber: React.FC<{ number: number }> = ({ number }) => {
   );
 };
 
-const PlayerNameSpan = styled.span`
+const PlayerNameSpan = styled.span<{ $fontsize: number }>`
   position: relative;
   overflow: visible;
   transform: translate(0, -3px);
   background-color: #0a4192c1;
   padding: 0 2px;
   border-radius: 5px;
-  font-size: 20px;
+  font-size: ${({ $fontsize }) => $fontsize}px;
+  font-weight: 700;
 `;
 
-const PlayerName: React.FC<{ name: string }> = ({ name }) => {
-  return <PlayerNameSpan>{name}</PlayerNameSpan>;
+const PlayerName: React.FC<{ name: string; fontSize: number }> = ({
+  name,
+  fontSize,
+}) => {
+  return <PlayerNameSpan $fontsize={fontSize}>{name}</PlayerNameSpan>;
 };
 
 const HomeMarkerInner = styled.div`

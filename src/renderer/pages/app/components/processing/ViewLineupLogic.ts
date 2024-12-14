@@ -65,7 +65,7 @@ export const processTeamLineup = (
   /**
    * player 에서 해당 선수가 속한 grid 를 추출해서, <br>
    * ViewPlayer[][] 에서 들어갈 그리드 위치를 정해줌 <br>
-   * ViewPlayer[라인넘버][해당라인에서위치]
+   * ViewPlayer[후방~전방][해당라인에서위치]
    */
   teamLineup.players.forEach((player) => {
     try {
@@ -277,14 +277,6 @@ export const applyEventsToLineup = (
 
         if (!player || !assist) break;
 
-        const IS_JACKSON_DEBUG =
-          event.team.teamId === 49 &&
-          player.tempId === 'eeb438cd-47fb-406d-957c-e3120be65124';
-
-        if (IS_JACKSON_DEBUG) {
-          console.log('jackson subst', event);
-        }
-
         const playerIsUnregisteredPlayer = !player.playerId && player.tempId;
 
         let _out, _in;
@@ -360,8 +352,6 @@ export const applyEventsToLineup = (
         break;
     }
   });
-
-  console.log('applied events to lineup', lineup);
 
   return lineup;
 };

@@ -48,7 +48,6 @@ export const isSubOutUnregisteredPlayer = (
       currentPlayer = currentPlayer.subInPlayer;
     }
     if (currentPlayer.tempId === checkTempId) {
-      console.log('tempId', currentPlayer.tempId, checkTempId);
       return true;
     }
   }
@@ -281,7 +280,6 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
 
   // sort eventMetaList by sequence
   eventMetaList.sort((a, b) => a.sequence - b.sequence);
-  console.log('eventMetaList', eventMetaList);
   return eventMetaList;
 };
 
@@ -292,7 +290,12 @@ const EventMetaProcessor = () => {
   const events = useSelector((state: RootState) => state.fixtureLive.events);
 
   useEffect(() => {
-    if (!lineup || !events || !events.events || events.meta) {
+    if (
+      !lineup ||
+      !events ||
+      !events.events ||
+      events.meta?.length === events.events.length
+    ) {
       return;
     }
     const sortedEvents = cloneDeep(events.events).sort(

@@ -128,72 +128,81 @@ const LineupView: React.FC<{
             // 최종적으로 표시할 선수를 결정 (재귀적으로 subInPlayer를 탐색)
             const finalPlayer = getFinalPlayer(player);
             const photoExistAndShowPhoto = !!finalPlayer.photo && showPhoto;
-            const photoSize = lineHeight - 20;
+            const photoSize = Math.max(lineHeight - 20, 0);
+            const nameFontSize = 16;
+            const isRenderable = photoSize > 0;
 
             return (
-              <GridPlayer
-                key={finalPlayer.id}
-                $top={0}
-                $left={leftPosition}
-                $width={100 / linePlayers.length}
-                $playerSize={playerSize}
-                $lineHeight={lineHeight}
-              >
-                <div
-                  className="player-number-photo-box"
-                  onClick={() => handlePlayerClick(finalPlayer)}
-                  style={{ cursor: 'pointer', pointerEvents: 'all' }}
+              isRenderable && (
+                <GridPlayer
+                  key={finalPlayer.id}
+                  $top={0}
+                  $left={leftPosition}
+                  $width={100 / linePlayers.length}
+                  $playerSize={playerSize}
+                  $lineHeight={lineHeight}
                 >
-                  {showPhoto && finalPlayer.photo ? (
-                    <RetryableImage
-                      src={finalPlayer.photo}
-                      alt={finalPlayer.name}
-                    />
-                  ) : (
-                    <div className="player-number">
-                      <UniformIcon color={color} />
-                      <div className="player-number_val">
-                        {finalPlayer.number}
+                  <div
+                    className="player-number-photo-box"
+                    onClick={() => handlePlayerClick(finalPlayer)}
+                    style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                  >
+                    {showPhoto && finalPlayer.photo ? (
+                      <RetryableImage
+                        src={finalPlayer.photo}
+                        alt={finalPlayer.name}
+                        height={photoSize}
+                        width={photoSize}
+                      />
+                    ) : (
+                      <div className="player-number">
+                        <UniformIcon color={color} />
+                        <div className="player-number_val">
+                          {finalPlayer.number}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {finalPlayer.events.subIn && (
-                    <SubInMark
-                      showPhoto={photoExistAndShowPhoto}
-                      photoSize={photoSize}
-                    />
-                  )}
-                  {finalPlayer.events.yellow && !finalPlayer.events.red && (
-                    <CardYellow
-                      showPhoto={photoExistAndShowPhoto}
-                      photoSize={photoSize}
-                    />
-                  )}
-                  {finalPlayer.events.red && (
-                    <CardRed
-                      showPhoto={photoExistAndShowPhoto}
-                      photoSize={photoSize}
-                    />
-                  )}
-                  {finalPlayer.events.goal.length > 0 && (
-                    <GoalMark
-                      key={`${finalPlayer.id}_goal_${index}`}
-                      goal={finalPlayer.events.goal}
-                      showPhoto={photoExistAndShowPhoto}
-                      photoSize={photoSize}
-                    />
-                  )}
-                  {finalPlayer.number && (
-                    <PlayerNumber number={finalPlayer.number} />
-                  )}
-                  {finalPlayer.statistics?.statistics.rating && (
-                    <RatingBox
-                      rating={finalPlayer.statistics.statistics.rating}
-                    />
-                  )}
-                </div>
-                <PlayerName name={finalPlayer.koreanName || finalPlayer.name} />
-              </GridPlayer>
+                    )}
+                    {finalPlayer.events.subIn && (
+                      <SubInMark
+                        showPhoto={photoExistAndShowPhoto}
+                        photoSize={photoSize}
+                      />
+                    )}
+                    {finalPlayer.events.yellow && !finalPlayer.events.red && (
+                      <CardYellow
+                        showPhoto={photoExistAndShowPhoto}
+                        photoSize={photoSize}
+                      />
+                    )}
+                    {finalPlayer.events.red && (
+                      <CardRed
+                        showPhoto={photoExistAndShowPhoto}
+                        photoSize={photoSize}
+                      />
+                    )}
+                    {finalPlayer.events.goal.length > 0 && (
+                      <GoalMark
+                        key={`${finalPlayer.id}_goal_${index}`}
+                        goal={finalPlayer.events.goal}
+                        showPhoto={photoExistAndShowPhoto}
+                        photoSize={photoSize}
+                      />
+                    )}
+                    {finalPlayer.number && (
+                      <PlayerNumber number={finalPlayer.number} />
+                    )}
+                    {finalPlayer.statistics?.statistics.rating && (
+                      <RatingBox
+                        rating={finalPlayer.statistics.statistics.rating}
+                      />
+                    )}
+                  </div>
+                  <PlayerName
+                    name={finalPlayer.koreanName || finalPlayer.name}
+                    fontSize={nameFontSize}
+                  />
+                </GridPlayer>
+              )
             );
           })}
         </GridLine>

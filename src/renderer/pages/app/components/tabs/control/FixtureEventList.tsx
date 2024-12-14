@@ -3,7 +3,7 @@ import {
   FixtureEventMeta,
   SubstMeta,
 } from '@src/types/FixtureIpc';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import '@app/styles/tabs/FixtureEventList.scss';
 
