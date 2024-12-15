@@ -30,10 +30,6 @@ const MatchliveControlTab = () => {
   ); // 필터된 이벤트 가져오기
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    dispatch(resetFilterEvents());
-  }, [fixtureLive.fixtureId]);
-
   const parseKickoffTime = (dateString: string) => {
     const kickoffTime = new Date(dateString);
     const month = String(kickoffTime.getMonth() + 1).padStart(2, '0');

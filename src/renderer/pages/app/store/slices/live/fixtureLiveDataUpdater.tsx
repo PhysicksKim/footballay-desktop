@@ -5,7 +5,11 @@ import {
   fetchFixtureLiveStatus,
   fetchFixtureStatistics,
 } from '@app/store/slices/live/fixtureLiveSliceThunk';
-import { addIntervalId, removeIntervalId } from './fixtureLiveSlice';
+import {
+  addIntervalId,
+  removeEvents,
+  removeIntervalId,
+} from './fixtureLiveSlice';
 import { isCompleteLineupData } from './LineupValidator';
 
 const LINEUP_INTERVAL_TIME = 30000;
@@ -83,6 +87,7 @@ export const startFetchEvents = (fixtureId: number) => {
     };
     const intervalId = setInterval(fetchEvents, LIVE_DATA_INTERVAL_TIME);
     dispatch(addIntervalId(intervalId));
+    dispatch(removeEvents());
     fetchEvents();
   };
 };

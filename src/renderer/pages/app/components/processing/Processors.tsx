@@ -2,6 +2,7 @@ import React from 'react';
 import ViewLineupProcessor from './ViewLineupProcessor';
 import EventMetaProcessor from './EventMetaProcessor';
 import LeagueFixtureAutoFetch from './LeagueFixtureAutoFetch';
+import FixtureControlProcessor from './FixtureControlProcessor';
 
 const Processors = () => {
   return (
@@ -9,6 +10,7 @@ const Processors = () => {
       <LeagueFixtureAutoFetch />
       <ViewLineupProcessor />
       <EventMetaProcessor />
+      <FixtureControlProcessor />
     </>
   );
 };

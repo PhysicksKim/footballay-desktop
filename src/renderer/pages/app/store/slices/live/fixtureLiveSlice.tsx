@@ -131,6 +131,9 @@ const fixtureLiveSlice = createSlice({
       resetFixtureLiveState(state);
       removeAllIntervals(state);
     },
+    removeEvents(state) {
+      state.events = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -189,5 +192,6 @@ export const {
   resetInitTaskState,
   clearFixtureLive,
   setEventMeta,
+  removeEvents,
 } = fixtureLiveSlice.actions;
 export default fixtureLiveSlice.reducer;

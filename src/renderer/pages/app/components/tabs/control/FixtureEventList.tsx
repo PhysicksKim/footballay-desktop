@@ -42,7 +42,7 @@ const substDetailSubInOut = (
 ): string => {
   if (event.type.toLowerCase() !== 'subst') {
     console.error('Event type is not subst');
-    return 'ERROR';
+    return '';
   }
   if (!event || !meta || event.sequence !== meta.sequence) {
     console.error(
@@ -50,18 +50,22 @@ const substDetailSubInOut = (
       event,
       meta,
     );
-    return 'ERROR';
+    return '';
   }
 
-  const substMeta = meta.data as SubstMeta;
-  const { inPlayer, outPlayer } =
-    substMeta.inPlayer === 'player'
-      ? { inPlayer: event.player, outPlayer: event.assist }
-      : { inPlayer: event.assist, outPlayer: event.player };
+  try {
+    const substMeta = meta.data as SubstMeta;
+    const { inPlayer, outPlayer } =
+      substMeta.inPlayer === 'player'
+        ? { inPlayer: event.player, outPlayer: event.assist }
+        : { inPlayer: event.assist, outPlayer: event.player };
 
-  const outName = outPlayer?.koreanName || outPlayer?.name || 'ERROR';
-  const inName = inPlayer?.koreanName || inPlayer?.name || 'ERROR';
-  return `${outName} → ${inName}`;
+    const outName = outPlayer?.koreanName || outPlayer?.name || 'ERROR';
+    const inName = inPlayer?.koreanName || inPlayer?.name || 'ERROR';
+    return `${outName} → ${inName}`;
+  } catch (error) {
+    return '';
+  }
 };
 
 const FixtureEventList: React.FC<EventListProps> = ({
