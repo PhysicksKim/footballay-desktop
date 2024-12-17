@@ -1,190 +1,166 @@
-import { BrowserWindow, Event, Menu } from 'electron';
+import { BrowserWindow, Menu, app } from 'electron';
 import path from 'path';
-import { app } from 'electron';
 import { resolveHtmlPath } from './util';
-import { setupMatchliveIpcMainHandlers } from './ipcManager';
 import { AppState } from './AppState';
-import { getMatchliveWindowSize } from './store/DefaultSettingData';
 import log from 'electron-log';
+import { getMatchliveWindowSize } from './store/DefaultSettingData';
 
-let mainWindow: BrowserWindow | null = null;
-let matchliveWindow: BrowserWindow | null = null;
-let updatecheckerWindow: BrowserWindow | null = null;
+type AppWindow = BrowserWindow | null;
 
-const RESOURCES_PATH = app.isPackaged
-  ? path.join(process.resourcesPath, 'assets')
-  : path.join(__dirname, '../../assets');
+class WindowManager {
+  static instance: WindowManager;
 
-const getAssetPath = (...paths: string[]): string => {
-  return path.join(RESOURCES_PATH, ...paths);
-};
+  mainWindow: AppWindow = null;
+  matchliveWindow: AppWindow = null;
+  updatecheckerWindow: AppWindow = null;
 
-const isDev = process.env.NODE_ENV === 'development';
-
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
-
-if (isDebug) {
-  require('electron-debug')();
-  app.commandLine.appendSwitch('ignore-certificate-errors');
-}
-
-export const createMainWindow = async () => {
-  if (mainWindow) {
-    mainWindow.focus();
-    return;
+  static getInstance() {
+    if (!WindowManager.instance) {
+      WindowManager.instance = new WindowManager();
+    }
+    return WindowManager.instance;
   }
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 800,
-    height: 600,
-    minWidth: 800,
-    minHeight: 600,
-    icon: getAssetPath('icon.png'),
-    frame: false,
-    webPreferences: {
-      // webSecurity: false, // CORS 비활성화
-      contextIsolation: true,
-      backgroundThrottling: false,
-      preload:
-        app.isPackaged && !isDev
+
+  async createMainWindow() {
+    if (this.mainWindow) {
+      this.mainWindow.focus();
+      return this.mainWindow;
+    }
+
+    this.mainWindow = new BrowserWindow({
+      show: false,
+      width: 800,
+      height: 600,
+      minWidth: 800,
+      minHeight: 600,
+      icon: this.getAssetPath('icon.png'),
+      frame: false,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
           ? path.join(__dirname, 'preload.js')
           : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-    movable: true,
-  });
+      },
+      movable: true,
+    });
 
-  // hide menu and only show title bar
-  mainWindow.menuBarVisible = false;
-  Menu.setApplicationMenu(null);
+    this.mainWindow.menuBarVisible = false;
+    Menu.setApplicationMenu(null);
+    this.mainWindow.loadURL(resolveHtmlPath('index.html'));
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+    this.mainWindow.on('ready-to-show', () => {
+      if (process.env.START_MINIMIZED === 'false') {
+        this.mainWindow?.minimize();
+      } else {
+        this.mainWindow?.show();
+      }
+    });
 
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) throw new Error('"mainWindow" is not defined');
-    if (process.env.START_MINIMIZED === 'false') {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
+    this.mainWindow.on('closed', () => {
+      if (AppState.isUpdateInProgress) {
+        AppState.isQuitInitiated = true;
+        this.mainWindow?.webContents.send('to-app', {
+          type: 'UPDATE_IN_PROGRESS',
+        });
+      } else {
+        app.quit();
+      }
+      this.mainWindow = null;
+    });
+
+    return this.mainWindow;
+  }
+
+  async createMatchliveWindow() {
+    if (this.matchliveWindow) {
+      this.matchliveWindow.focus();
+      return this.matchliveWindow;
     }
-  });
 
-  mainWindow.on('closed', (e: Electron.Event) => {
-    if (AppState.isUpdateInProgress) {
-      e.preventDefault();
-      AppState.isQuitInitiated = true;
-      mainWindow?.webContents.send('to-app', {
-        type: 'UPDATE_IN_PROGRESS',
+    const { height, width } = await getMatchliveWindowSize();
+    this.matchliveWindow = new BrowserWindow({
+      width,
+      height,
+      resizable: true,
+      transparent: true,
+      frame: false,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+      movable: true,
+    });
+
+    this.matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
+
+    this.matchliveWindow.on('ready-to-show', () => {
+      this.matchliveWindow?.show();
+    });
+
+    this.matchliveWindow.on('closed', () => {
+      this.matchliveWindow = null;
+      this.mainWindow?.webContents.send('to-app', {
+        type: 'MATCHLIVE_WINDOW_CLOSED',
       });
-    }
-  });
+    });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-    if (!AppState.isUpdateInProgress) {
-      app.quit(); // 업데이트가 진행 중이 아니면 앱 종료
-    }
-  });
-
-  return mainWindow;
-};
-
-export const createUpdatecheckerWindow = async () => {
-  if (!mainWindow) {
-    return;
+    return this.matchliveWindow;
   }
 
-  updatecheckerWindow = new BrowserWindow({
-    width: 300,
-    height: 200,
-    resizable: false,
-    parent: mainWindow,
-    frame: false,
-    transparent: true,
-    webPreferences: {
-      // webSecurity: false, // CORS 비활성화
-      contextIsolation: true,
-      nodeIntegration: false,
-      backgroundThrottling: false,
-      preload:
-        app.isPackaged && !isDev
+  async createUpdatecheckerWindow() {
+    if (this.updatecheckerWindow) {
+      this.updatecheckerWindow.focus();
+      return this.updatecheckerWindow;
+    }
+
+    if (!this.mainWindow) {
+      log.error('Main window is required for update checker window');
+      throw new Error('Main window is required for update checker window');
+    }
+
+    this.updatecheckerWindow = new BrowserWindow({
+      width: 300,
+      height: 200,
+      resizable: false,
+      parent: this.mainWindow,
+      frame: false,
+      transparent: true,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
           ? path.join(__dirname, 'preload.js')
           : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-    movable: true,
-  });
+      },
+      movable: true,
+    });
 
-  updatecheckerWindow.loadURL(resolveHtmlPath('updatechecker.html'));
+    this.updatecheckerWindow.loadURL(resolveHtmlPath('updatechecker.html'));
 
-  updatecheckerWindow?.on('ready-to-show', () => {
-    if (updatecheckerWindow === null) {
-      return;
-    }
-    updatecheckerWindow.show();
-  });
+    this.updatecheckerWindow.on('ready-to-show', () => {
+      this.updatecheckerWindow?.show();
+    });
 
-  updatecheckerWindow?.on('closed', () => {
-    try {
-      mainWindow?.webContents?.send('to-app', {
+    this.updatecheckerWindow.on('closed', () => {
+      this.updatecheckerWindow = null;
+      this.mainWindow?.webContents.send('to-app', {
         type: 'AUTO_UPDATER_WINDOW_CLOSED',
       });
-    } catch (e) {
-      console.error(e);
-      log.error(e);
-    }
-  });
-
-  return updatecheckerWindow;
-};
-
-export const createMatchliveWindow = async () => {
-  if (!mainWindow) {
-    return;
-  }
-
-  if (matchliveWindow) {
-    matchliveWindow.focus();
-    return;
-  }
-
-  /*
-  작게 : 330 x 680
-  */
-  const { height, width } = await getMatchliveWindowSize();
-  matchliveWindow = new BrowserWindow({
-    width: width,
-    height: height,
-    resizable: true,
-    transparent: true,
-    frame: false,
-    webPreferences: {
-      // webSecurity: false, // CORS 비활성화
-      contextIsolation: true,
-      nodeIntegration: false,
-      backgroundThrottling: false,
-      preload:
-        app.isPackaged && !isDev
-          ? path.join(__dirname, 'preload.js')
-          : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-    movable: true,
-  });
-
-  matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
-
-  matchliveWindow.on('ready-to-show', () => {
-    if (matchliveWindow === null) return;
-    matchliveWindow.show();
-  });
-
-  matchliveWindow.on('closed', () => {
-    matchliveWindow = null;
-    mainWindow?.webContents.send('to-app', {
-      type: 'MATCHLIVE_WINDOW_CLOSED',
     });
-  });
 
-  setupMatchliveIpcMainHandlers(matchliveWindow);
+    return this.updatecheckerWindow;
+  }
 
-  return matchliveWindow;
-};
+  getAssetPath(...paths: string[]) {
+    const RESOURCES_PATH = app.isPackaged
+      ? path.join(process.resourcesPath, 'assets')
+      : path.join(__dirname, '../../assets');
+    return path.join(RESOURCES_PATH, ...paths);
+  }
+}
+
+export default WindowManager;

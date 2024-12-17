@@ -1,5 +1,4 @@
 import { ipcMain, BrowserWindow } from 'electron';
-import { AppUpdater } from './AppUpdater';
 
 export function setupIpcMainHandlers(
   mainWindow: BrowserWindow | null,
