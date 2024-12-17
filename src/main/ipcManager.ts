@@ -1,6 +1,5 @@
 import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
-import { getMatchliveWindowSize } from './store/DefaultSettingData';
 import matchliveWindowService from './matchliveWindowService';
 
 export const setupMainWindowIpcMainHandlers = (
