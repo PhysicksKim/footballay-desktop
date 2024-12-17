@@ -4,6 +4,7 @@ import { resolveHtmlPath } from './util';
 import { AppState } from './AppState';
 import log from 'electron-log';
 import { getMatchliveWindowSize } from './store/DefaultSettingData';
+import { setupMatchliveIpcMainHandlers } from './ipcManager';
 
 type AppWindow = BrowserWindow | null;
 
@@ -108,6 +109,7 @@ class WindowManager {
       });
     });
 
+    setupMatchliveIpcMainHandlers(this.matchliveWindow);
     return this.matchliveWindow;
   }
 

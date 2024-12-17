@@ -100,10 +100,7 @@ app
     updateManager.checkForUpdates();
 
     // Set up IPC handlers
-    setupMainWindowIpcMainHandlers(
-      mainWindow,
-      windowManager.createMatchliveWindow.bind(windowManager),
-    );
+    setupMainWindowIpcMainHandlers(mainWindow);
 
     // Close update checker window in development mode
     if (isDev && !isTestAutoUpdate) {

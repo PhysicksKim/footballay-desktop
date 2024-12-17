@@ -88,10 +88,10 @@
 import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
 import matchliveWindowService from './matchliveWindowService';
+import WindowManager from './windowManager';
 
 export const setupMainWindowIpcMainHandlers = (
   mainWindow: BrowserWindow | undefined,
-  createMatchliveWindow: () => Promise<BrowserWindow | undefined>,
 ) => {
   if (!mainWindow) {
     console.error('mainWindow is undefined. IPC handlers not registered.');
@@ -99,7 +99,8 @@ export const setupMainWindowIpcMainHandlers = (
   }
 
   ipcMain.on('open-matchlive-window', async () => {
-    const matchliveWindow = await createMatchliveWindow();
+    const matchliveWindow =
+      await WindowManager.getInstance().createMatchliveWindow();
     if (!matchliveWindow) {
       console.error('Failed to create matchliveWindow.');
     }
