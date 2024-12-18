@@ -1,13 +1,21 @@
 import { BrowserWindow, Menu, app } from 'electron';
 import path from 'path';
-import { resolveHtmlPath } from './util';
-import { AppState } from './AppState';
 import log from 'electron-log';
+
+import { AppState } from './AppState';
+import {
+  setupMainWindowIpcMainHandlers,
+  setupMatchliveIpcMainHandlers,
+} from './ipcManager';
+import { resolveHtmlPath } from './util';
 import { getMatchliveWindowSize } from './store/DefaultSettingData';
-import { setupMatchliveIpcMainHandlers } from './ipcManager';
 
 type AppWindow = BrowserWindow | null;
 
+/**
+ * 각 윈도우는 싱글톤으로 관리합니다.
+ * create___Window 메서드를 통해 윈도우를 생성하거나 이전에 생성된 윈도우를 focus 합니다.
+ */
 class WindowManager {
   static instance: WindowManager;
 
@@ -22,6 +30,10 @@ class WindowManager {
     return WindowManager.instance;
   }
 
+  /**
+   * App window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
   async createMainWindow() {
     if (this.mainWindow) {
       this.mainWindow.focus();
@@ -70,9 +82,14 @@ class WindowManager {
       this.mainWindow = null;
     });
 
+    setupMainWindowIpcMainHandlers(this.mainWindow);
     return this.mainWindow;
   }
 
+  /**
+   * Matchlive window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
   async createMatchliveWindow() {
     if (this.matchliveWindow) {
       this.matchliveWindow.focus();
@@ -113,6 +130,10 @@ class WindowManager {
     return this.matchliveWindow;
   }
 
+  /**
+   * Update checker window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
   async createUpdatecheckerWindow() {
     if (this.updatecheckerWindow) {
       this.updatecheckerWindow.focus();
@@ -157,7 +178,12 @@ class WindowManager {
     return this.updatecheckerWindow;
   }
 
-  getAssetPath(...paths: string[]) {
+  /**
+   * Asset 폴더 내의 파일 경로를 반환합니다. dev 환경과 packaged 환경에 따라 적절한 경로를 반환합니다.
+   * @param paths 얻고자 하는 파일의 경로 (예: 'icon.png')
+   * @returns 파일의 절대 경로.
+   */
+  private getAssetPath(...paths: string[]) {
     const RESOURCES_PATH = app.isPackaged
       ? path.join(process.resourcesPath, 'assets')
       : path.join(__dirname, '../../assets');
