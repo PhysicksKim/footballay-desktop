@@ -1,6 +1,5 @@
 import { app } from 'electron';
 import log from 'electron-log';
-import { setupMainWindowIpcMainHandlers } from './ipcManager';
 import CustomElectronStoreIpc from './store/CustomElectronStoreIpc';
 import WindowManager from './windowManager';
 import UpdateManager from './UpdateManager';

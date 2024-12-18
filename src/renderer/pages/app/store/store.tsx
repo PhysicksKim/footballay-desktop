@@ -13,8 +13,7 @@ const store = configureStore({
     ipcStatus: ipcStatusReducer,
     league: leagueReducer,
     /**
-     * 선택된 리그와 날짜의 경기 리스트 정보를 담음. <br>
-     * 리그 선택 시,
+     * 선택된 리그와 날짜의 경기 리스트 정보를 담음.
      */
     fixtureList: fixtureListReducer,
     selected: footballSelectionReducer,
