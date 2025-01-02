@@ -269,9 +269,8 @@
       "./assets/**"
     ],
     "publish": {
-      "provider": "github",
-      "owner": "PhysicksKim",
-      "repo": "chun-city"
+      "provider": "generic",
+      "url": "https://static.gyechunsik.site/chuncity/releases/latest"
     }
   },
   "engines": {
