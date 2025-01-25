@@ -57,10 +57,18 @@ class UpdateManager {
       });
     });
 
-    autoUpdater.on('update-available', () => {
+    autoUpdater.on('update-available', (info) => {
       this._isUpdateChecked = true;
       log.info('Update available.');
       AppState.isUpdateInProgress = true;
+
+      const currentVersion = autoUpdater.currentVersion?.version || 'unknown';
+      const latestVersion = info.version || 'unknown';
+
+      log.info(
+        `Now version: ${currentVersion}, Latest version: ${latestVersion}`,
+      );
+
       this.updatecheckerWindow?.webContents.send('to-updatechecker', {
         type: 'UPDATE_AVAILABLE',
         data: {},
