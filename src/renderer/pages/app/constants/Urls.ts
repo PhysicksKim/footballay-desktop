@@ -11,6 +11,7 @@ const Urls = {
     fixtureEvents: '/api/football/fixtures/events',
     fixtureStatistics: '/api/football/fixtures/statistics',
     availableFixtures: '/api/football/stream/fixtures/available',
+    preferenceKeyCheck: () => '/api/football/preferences/validate',
   },
 };
 

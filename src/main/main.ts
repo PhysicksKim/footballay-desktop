@@ -45,7 +45,11 @@ app
     );
     updateManager.checkForUpdates();
 
-    // Close update checker window in development mode
+    // if (isDev) {
+    //   mainWindow.webContents.openDevTools();
+    // }
+
+    /* Close update checker window in development mode */
     if (isDev && !isTestAutoUpdate) {
       setTimeout(() => {
         updatecheckerWindow?.close();
@@ -53,6 +57,5 @@ app
     }
   })
   .catch((e) => {
-    console.log(e);
     log.error(e);
   });

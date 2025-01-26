@@ -35,7 +35,7 @@ export const setupMainWindowIpcMainHandlers = (
           app.quit();
           break;
         default:
-          console.log(`Unknown action: ${action}`);
+          log.error(`Unknown main-window-control action: ${action}`);
       }
     },
   );
@@ -45,7 +45,6 @@ export const setupMainWindowIpcMainHandlers = (
       console.error('mainWindow is undefined.');
       return;
     }
-    console.log(`to-app event received with data:`, data);
     mainWindow.webContents.send('to-app', data);
   });
 
@@ -68,7 +67,9 @@ export const setupMatchliveIpcMainHandlers = (
 
   ipcMain.on('control-to-matchlive', (event, action: string) => {
     if (!matchliveWindow || matchliveWindow.isDestroyed()) {
-      console.error('matchliveWindow is not ready.');
+      console.error(
+        'matchliveWindow is not ready. control-to-matchlive ignored.',
+      );
       return;
     }
 
@@ -87,18 +88,19 @@ export const setupMatchliveIpcMainHandlers = (
         matchliveWindow.close();
         break;
       default:
-        console.log(`Unknown action: ${action}`);
+        log.error(`Unknown control-to-matchlive action: ${action}`);
     }
   });
 
   ipcMain.on('to-matchlive', (event, data) => {
     if (!matchliveWindow || matchliveWindow.isDestroyed()) {
-      console.error('matchliveWindow is not ready.');
+      console.error(
+        'matchliveWindow is not ready. to-matchlive message ignored.',
+      );
       return;
     }
 
     try {
-      console.log(`to-matchlive event received with data:`, data);
       matchliveWindow.webContents.send('to-matchlive', data);
     } catch (e) {
       log.error('to-matchlive ipc error message', e);

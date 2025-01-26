@@ -1,3 +1,3 @@
-import { MatchliveStoreKey } from '@src/types/MatchliveStoreKey';
+import { ElectronStoreKeys } from '@src/types/ElectronStoreKeys';
 
-export type StoreKey = MatchliveStoreKey;
+export type StoreKey = ElectronStoreKeys;

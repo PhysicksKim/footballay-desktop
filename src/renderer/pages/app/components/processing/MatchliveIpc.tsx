@@ -219,7 +219,7 @@ const MatchliveIpc = () => {
         setGetFixtureStatisticsFlag(true);
         break;
       default:
-        console.log('unexpected IPC message type :', type);
+        console.error('unexpected IPC message type  :', type);
     }
   };
 

@@ -18,18 +18,18 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
   height = -1,
   width = -1,
 }) => {
-  const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [retryCount, setRetryCount] = useState<number>(0);
 
+  // 새로운 이미지로 변경될 때 retryCount 초기화
   useEffect(() => {
-    setCurrentSrc(src);
-    setRetryCount(0); // 새로운 이미지로 변경될 때 retryCount 초기화
+    setRetryCount(0);
   }, [src]);
 
   const handleError = () => {
     if (retryCount < maxRetries) {
-      setRetryCount(retryCount + 1);
-      setCurrentSrc(`${src}?retry=${retryCount + 1}`); // 쿼리 파라미터로 캐시 우회를 시도
+      setTimeout(() => {
+        setRetryCount(retryCount + 1);
+      }, 500);
     } else {
       console.log('이미지 로딩에 실패했습니다. src:', src);
     }
@@ -38,7 +38,7 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
   return (
     <img
       className={className}
-      src={currentSrc}
+      src={src + '?retry=' + retryCount}
       alt={alt}
       onError={handleError}
       height={height > 0 ? `${height}px` : '100%'}

@@ -21,12 +21,12 @@ const shouldStopFetch = (status: string) => {
   return END_STATUS.includes(status);
 };
 
-export const startFetchLineup = (fixtureId: number) => {
+export const startFetchLineup = (fixtureId: number, preferenceKey: string) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchLineup = async () => {
       try {
         const response = await dispatch(
-          fetchFixtureLineup(fixtureId),
+          fetchFixtureLineup({ fixtureId, preferenceKey }),
         )?.unwrap();
         if (
           response &&

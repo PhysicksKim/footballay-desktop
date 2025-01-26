@@ -7,6 +7,8 @@ import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
 import fixtureLiveOptionReducer from './slices/live/option/fixtureLiveOptionSlice';
 import fixtureLiveControlReducer from './slices/live/control/fixtureLiveControlSlice';
 import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
+import { useDispatch } from 'react-redux';
+import { loadPreferenceKey } from './slices/live/option/preferenceKeyIO';
 
 const store = configureStore({
   reducer: {
@@ -24,7 +26,16 @@ const store = configureStore({
   },
 });
 
+/**
+ * 초기에 로드 해야할 것들을 여기서 처리합니다.
+ */
+const initDispatchActions = () => {
+  store.dispatch(loadPreferenceKey());
+};
+initDispatchActions();
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch: () => AppDispatch = useDispatch;
 
 export default store;

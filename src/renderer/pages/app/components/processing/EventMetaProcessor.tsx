@@ -197,10 +197,6 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
     const nowEventType = event.type.toUpperCase();
     const nowSequence = event.sequence;
 
-    if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124') {
-      console.log('jackson event', event);
-    }
-
     switch (nowEventType) {
       case 'SUBST':
         // filter no id event
@@ -209,10 +205,6 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
         }
         if (!nowAssistId && !nowAssistTempId) {
           break;
-        }
-
-        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124') {
-          console.log('jackson subst', event);
         }
 
         const isPlayerSubOut = nowPlayerTempId
@@ -226,9 +218,6 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
                 nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup,
               )
             : false;
-
-        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124')
-          console.log('isPlayerSubOut', isPlayerSubOut);
 
         const { inPlayer, outPlayer } = isPlayerSubOut
           ? { inPlayer: 'assist', outPlayer: 'player' }
@@ -251,9 +240,6 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
           outPlayer,
           teamId: nowTeamId,
         } as SubstMeta;
-
-        if (nowPlayerTempId === 'eeb438cd-47fb-406d-957c-e3120be65124')
-          console.log('substMeta', substMeta);
 
         eventMetaList.push({
           sequence: nowSequence,

@@ -6,6 +6,7 @@ import MatchliveControlTab from './tabs/control/MatchliveControlTab';
 import DebugTab from './tabs/debug/DebugTab';
 
 import '@app/styles/ContentsArea.scss';
+import SettingsTab from './tabs/settings/SettingsTab';
 
 const ContentsArea = () => {
   return (
@@ -14,6 +15,7 @@ const ContentsArea = () => {
         <Route path="/" element={<SelectFixtureTab />} />
         <Route path="/debug-tool" element={<DebugTab />} />
         <Route path="/matchlive-control" element={<MatchliveControlTab />} />
+        <Route path="/settings" element={<SettingsTab />} />
       </Routes>
     </div>
   );

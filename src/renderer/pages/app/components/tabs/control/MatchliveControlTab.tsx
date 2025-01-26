@@ -11,6 +11,7 @@ import FixtureEventList from '@app/components/tabs/control/FixtureEventList';
 
 import { FixtureEvent } from '@src/types/FixtureIpc';
 import '@app/styles/tabs/MatchliveControlTab.scss';
+import { startFixtureLiveFetch } from '../../processing/StartMatchlive';
 
 const MatchliveControlTab = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,13 @@ const MatchliveControlTab = () => {
   const filterEvents = useSelector(
     (state: RootState) => state.fixtureLiveControl.filterEvents,
   ); // 필터된 이벤트 가져오기
+  const selectedFixtureId = useSelector(
+    (state: RootState) => state.fixtureLive.fixtureId,
+  );
+  const preferenceKey = useSelector(
+    (state: RootState) => state.fixtureLiveOption.preference.key,
+  );
+
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
   const parseKickoffTime = (dateString: string) => {
@@ -65,6 +73,9 @@ const MatchliveControlTab = () => {
 
   const reloadMatchlive = () => {
     window.electron.ipcRenderer.send('control-to-matchlive', 'refresh');
+    if (selectedFixtureId) {
+      startFixtureLiveFetch(selectedFixtureId, dispatch, preferenceKey);
+    }
   };
 
   const minimizeMatchlive = () => {

@@ -83,6 +83,7 @@ class WindowManager {
     });
 
     setupMainWindowIpcMainHandlers(this.mainWindow);
+    // this.mainWindow.webContents.openDevTools();
     return this.mainWindow;
   }
 

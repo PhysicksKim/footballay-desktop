@@ -52,6 +52,11 @@ export const fetchFixtureLiveStatus = createAsyncThunk<
   }
 });
 
+export type FetchFixtureLineupParams = {
+  fixtureId: number;
+  preferenceKey: string;
+};
+
 /**
  * "playerId": 307123,
  * "name": "N. O&apos;Reilly",
@@ -63,24 +68,34 @@ export const fetchFixtureLiveStatus = createAsyncThunk<
  */
 export const fetchFixtureLineup = createAsyncThunk<
   FixtureLineup,
-  number,
+  FetchFixtureLineupParams,
   { rejectValue: string }
->('fixture/fetchLineup', async (fixtureId: number, { rejectWithValue }) => {
-  try {
-    const axiosResponse = await axios.get<{ response: FixtureLineup[] }>(
-      `${Urls.apiUrl}${Urls.football.fixtureLineup}`,
-      { params: { fixtureId } },
-    );
+>(
+  'fixture/fetchLineup',
+  async (lineupParams: FetchFixtureLineupParams, { rejectWithValue }) => {
+    try {
+      console.log('fetchFixtureLineup parameters', lineupParams);
 
-    const respData = axiosResponse.data.response[0];
-    decodeLineupHtmlEntities(respData);
-    return respData;
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response ? error.response.data : error.message,
-    );
-  }
-});
+      const axiosResponse = await axios.get<{ response: FixtureLineup[] }>(
+        `${Urls.apiUrl}${Urls.football.fixtureLineup}`,
+        {
+          params: {
+            fixtureId: lineupParams.fixtureId,
+            preferenceKey: lineupParams.preferenceKey,
+          },
+        },
+      );
+
+      const respData = axiosResponse.data.response[0];
+      decodeLineupHtmlEntities(respData);
+      return respData;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
 export const fetchFixtureEvents = createAsyncThunk<
   FixtureEventState,

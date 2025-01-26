@@ -24,7 +24,6 @@ class UpdateManager {
 
     this.setupAutoUpdaterListeners();
 
-    console.log('UpdateManager constructor');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
   }
@@ -135,7 +134,6 @@ class UpdateManager {
   }
 
   checkForUpdates() {
-    console.log('checkForUpdates');
     autoUpdater.checkForUpdates();
   }
 }

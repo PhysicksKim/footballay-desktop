@@ -1,12 +1,12 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   faArrowUpRightFromSquare,
   faBan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { AppDispatch } from '@app/store/store';
+import { AppDispatch, RootState } from '@app/store/store';
 import { setFixtureIdAndClearInterval } from '@src/renderer/pages/app/store/slices/live/fixtureLiveSlice';
 import { fetchFixtureInfo } from '@src/renderer/pages/app/store/slices/live/fixtureLiveSliceThunk';
 import {
@@ -18,6 +18,7 @@ import {
 import TeamLogo from './TeamLogo';
 
 import '@app/styles/tabs/FixtureListItem.scss';
+import { startFixtureLiveFetch } from '../../../processing/StartMatchlive';
 
 export interface FixtureListItemProps {
   leagueId: number | null;
@@ -60,6 +61,9 @@ const FixtureListItem = ({
   available,
 }: FixtureListItemProps) => {
   const dispatch = useDispatch<AppDispatch>();
+  const preferenceKey = useSelector(
+    (state: RootState) => state.fixtureLiveOption.preference.key,
+  );
 
   const convertKickoffTimeToHHMM = (kickoff: string) => {
     return kickoff.split(' ')[1];
@@ -79,14 +83,8 @@ const FixtureListItem = ({
 
   const handleSelectMatchLiveClick = () => {
     if (available) {
-      dispatch(setFixtureIdAndClearInterval(fixtureId));
-      dispatch(fetchFixtureInfo(fixtureId));
-
+      startFixtureLiveFetch(fixtureId, dispatch, preferenceKey);
       openMatchlivePopup();
-      dispatch(startFetchLineup(fixtureId));
-      dispatch(startFetchLiveStatus(fixtureId));
-      dispatch(startFetchEvents(fixtureId));
-      dispatch(startFetchStatistics(fixtureId));
     }
   };
 

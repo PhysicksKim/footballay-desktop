@@ -22,8 +22,6 @@ export type Channels =
   | 'to-matchlive'
   | 'to-updatechecker';
 
-console.log('preload.ts: contextBridge.exposeInMainWorld');
-
 const PRINT_IPC_MESSAGES = false;
 
 const electronHandler = {
