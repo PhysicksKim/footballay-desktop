@@ -8,6 +8,8 @@ import MatchliveIpc from '@app/components/processing/MatchliveIpc';
 
 import '@app/styles/Main.scss';
 
+window.electron.ipcRenderer.send('loginfo', 'app window started');
+
 const Main = () => {
   return (
     <div className="main-container">

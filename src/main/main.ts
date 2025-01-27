@@ -12,11 +12,12 @@ protocol.registerSchemesAsPrivileged([
   {
     scheme: CUSTOM_PROTOCOL_NAME,
     privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-      stream: true,
+      standard: true, // 표준 프로토콜처럼 동작
+      secure: true, // 보안 프로토콜로 간주 (https와 유사)
+      supportFetchAPI: true, // Fetch API 지원
+      corsEnabled: true, // CORS 요청 허용
+      stream: true, // 스트림 지원
+      bypassCSP: true, // Content Security Policy 우회 불가
     },
   },
 ]);
@@ -52,27 +53,18 @@ if (isDev && isTestAutoUpdate) {
 app
   .whenReady()
   .then(async () => {
-    protocol.handle(CUSTOM_PROTOCOL_NAME, async (request) => {
+    protocol.handle(CUSTOM_PROTOCOL_NAME, async (req) => {
+      log.info(`CUSTOM Request URL: ${req.url}`);
+      const parsedUrl = new URL(req.url);
       try {
-        log.info(`Request URL: ${request.url}`);
-        const parsedUrl = new URL(request.url);
-        log.info(`Parsed URL: ${parsedUrl}`);
-        log.info(`Parsed URL protocol: ${parsedUrl.protocol}`);
-        log.info(`Parsed URL host: ${parsedUrl.host}`);
-        log.info(`Parsed URL pathname: ${parsedUrl.pathname}`);
-
         let relativePath = decodeURIComponent(parsedUrl.pathname);
 
         // Windows에서 경로가 '/'로 시작하므로 제거
         if (process.platform === 'win32') {
           relativePath = relativePath.replace(/^\/+/, '');
         }
-        log.info(`Relative path: ${relativePath}`);
 
-        // 프로덕션 환경: {projectRoot}/release/app/dist/renderer
-        // 개발 환경: {projectRoot}/release/app/dist/renderer (동일하게 설정)
         const basePath = path.join(__dirname, '..', 'renderer');
-        log.info(`Base path: ${basePath}`);
 
         const normalizedPath = path.normalize(
           path.join(basePath, relativePath),
@@ -86,14 +78,11 @@ app
             statusText: 'Not Found',
           });
         }
-        log.info(`Normalized path: ${normalizedPath}`);
 
         // 파일 존재 여부 확인 및 반환
         try {
           const fileURL = pathToFileURL(normalizedPath).toString();
-          log.info(`Fetching file: ${fileURL}`);
           const response = await net.fetch(fileURL);
-          log.info(`Fetched file response: ${fileURL}`);
           if (!response.ok) {
             log.warn(`File not found or inaccessible: ${fileURL}`);
             return new Response('Not Found', {

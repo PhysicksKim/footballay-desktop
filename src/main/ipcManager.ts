@@ -2,7 +2,6 @@ import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
 import matchliveWindowService from './matchliveWindowService';
 import WindowManager from './windowManager';
-import { ca } from 'date-fns/locale';
 
 export const setupMainWindowIpcMainHandlers = (
   mainWindow: BrowserWindow | undefined,
@@ -11,6 +10,10 @@ export const setupMainWindowIpcMainHandlers = (
     console.error('mainWindow is undefined. IPC handlers not registered.');
     return;
   }
+
+  ipcMain.on('loginfo', (event, data) => {
+    log.info(data);
+  });
 
   ipcMain.on('open-matchlive-window', async () => {
     const matchliveWindow =
@@ -127,6 +130,7 @@ export const setupMatchliveIpcMainHandlers = (
 };
 
 export const removeAllMainWindowIpcMainHandlers = () => {
+  ipcMain.removeAllListeners('loginfo');
   ipcMain.removeAllListeners('open-matchlive-window');
   ipcMain.removeAllListeners('main-window-control');
   ipcMain.removeAllListeners('to-app');

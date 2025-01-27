@@ -5,6 +5,7 @@ import electronStore from './store/ipcElectronStore';
 import { __APP_VERSION__ } from './Constants';
 
 export type Channels =
+  | 'loginfo'
   | 'main-window-control'
   | 'control-to-matchlive'
   // App Channels
