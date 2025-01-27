@@ -2,7 +2,7 @@
 
 ### 1. package.json 수정
 
-[/release/app/package.json](/Users/gimhongchan/toyproject/score-board/football-stream/football-stream/release/app/package.json) 에서 version 변경
+`/release/app/package.json` 에서 version 변경
 
 `package.json` 은 production version 으로 packaging 과정에서 버전 정보 제공에 관여함.
 
