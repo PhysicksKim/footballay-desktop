@@ -11,5 +11,5 @@ export function resolveHtmlPath(htmlFileName: string) {
     return url.href;
   }
   // return `${CUSTOM_PROTOCOL_NAME}://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
-  return `${CUSTOM_PROTOCOL_NAME}://${htmlFileName}`;
+  return `${CUSTOM_PROTOCOL_NAME}://chuncity.app/${htmlFileName}`;
 }
