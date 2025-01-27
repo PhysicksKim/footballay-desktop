@@ -26,7 +26,11 @@ const isCompleteLineupData = (fixtureLineup: FixtureLineup) => {
   const lineups = [homeStartXI, awayStartXI, homeSubs, awaySubs];
 
   for (const lineup of lineups) {
-    if (!allPlayersAreRegistered(lineup) || !allPlayersHaveKoreanName(lineup)) {
+    if (
+      !(lineup.length > 0) ||
+      !allPlayersAreRegistered(lineup) ||
+      !allPlayersHaveKoreanName(lineup)
+    ) {
       return false;
     }
   }

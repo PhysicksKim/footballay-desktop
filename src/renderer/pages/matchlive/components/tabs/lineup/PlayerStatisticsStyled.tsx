@@ -5,8 +5,119 @@ import getRatingColor from './RatingUtils';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RetryableImage from '../../common/RetryableImage';
-import { RatingBox } from './LineupStyled';
-import { format } from 'path';
+
+interface ProfileSectionProps {
+  name: string;
+  koreanName: string | null;
+  photo: string;
+  goals: number;
+  assists: number;
+  rating: string;
+}
+
+const ProfileSection: React.FC<ProfileSectionProps> = ({
+  name,
+  koreanName,
+  photo,
+  goals,
+  assists,
+  rating,
+}) => {
+  return (
+    <ProfileSectionContainer>
+      <div className="photo">
+        <RetryableImage src={photo} alt={`${name} Profile`} />
+      </div>
+      <div className="player-infos">
+        <div className="player-name">{name}</div>
+        <div className="player-name-korean">{koreanName ? koreanName : ''}</div>
+        <div className="player-rating-box">
+          <div className="rating-title">평점</div>
+          <PlayerStatisticsRatingBox rating={rating} />
+        </div>
+        <div className="player-goal-assist-box">
+          <div className="player-stat stat-goals">
+            <div className="stat-title stat-title-goals">Goals</div>
+            <div className="stat-value stat-value-goals">{goals}</div>
+            <GoalMark goal={goals} />
+          </div>
+          <div className="player-stat stat-assists">
+            <div className="stat-title stat-title-assists">Assists</div>
+            <div className="stat-value stat-value-goals">{assists}</div>
+          </div>
+        </div>
+      </div>
+    </ProfileSectionContainer>
+  );
+};
+
+type PositionString = string | 'G' | 'D' | 'M' | 'F';
+
+const PlayerStatisticsList = ({
+  stats,
+  position,
+}: {
+  stats: PlayerStatistics;
+  position: PositionString;
+}) => {
+  const statisticsToDisplay = statisticsArray(stats, position);
+  return (
+    <PlayerStatisticsListWrapper>
+      {statisticsToDisplay.map((statItem, index) => (
+        <CommonStatisticItem key={`${index}_${statItem.data}`}>
+          <StatisticName>{statItem.name}</StatisticName>
+          <StatisticValue>{statItem.data}</StatisticValue>
+        </CommonStatisticItem>
+      ))}
+    </PlayerStatisticsListWrapper>
+  );
+};
+
+export { PlayerStatisticsList, ProfileSection };
+
+const calculatePassesAccuracyPercentString = (
+  total: number,
+  success: number,
+) => {
+  if (total === 0) {
+    return '0%';
+  }
+  return `${((success / total) * 100).toFixed(1)}%`;
+};
+
+const statisticsArray = (stats: PlayerStatistics, position: PositionString) => {
+  const passesAccuracyPercent = calculatePassesAccuracyPercentString(
+    stats.passesTotal,
+    stats.passesAccuracy,
+  );
+
+  if (position === 'G') {
+    return [
+      { data: stats.saves, name: '세이브' },
+      { data: stats.goalsConceded, name: '실점' },
+      { data: stats.passesTotal, name: '패스 횟수' },
+      { data: stats.passesAccuracy, name: '패스성공' },
+      { data: passesAccuracyPercent, name: '패스성공률' },
+    ];
+  }
+
+  return [
+    { data: stats.passesTotal, name: '패스 횟수' },
+    { data: stats.passesAccuracy, name: '패스성공' },
+    { data: passesAccuracyPercent, name: '패스성공률' },
+    { data: stats.passesKey, name: '키패스' },
+    { data: stats.shotsTotal, name: '슈팅' },
+    { data: stats.shotsOn, name: '유효슈팅' },
+    { data: stats.dribblesAttempts, name: '드리블 시도' },
+    { data: stats.dribblesSuccess, name: '드리블 성공' },
+    { data: stats.foulsCommitted, name: '파울' },
+    { data: stats.foulsDrawn, name: '파울 유도' },
+    { data: stats.interceptions, name: '인터셉트' },
+    { data: stats.tacklesTotal, name: '태클' },
+    { data: stats.duelsTotal, name: '볼경합 횟수' },
+    { data: stats.duelsWon, name: '볼경합 승리' },
+  ];
+};
 
 const SCROLLBAR_WIDTH = 7;
 
@@ -90,50 +201,6 @@ const StatisticValue = styled.div`
   font-weight: 500;
   font-size: 1.2rem;
 `;
-
-const calculatePassesAccuracyPercentString = (
-  total: number,
-  success: number,
-) => {
-  if (total === 0) {
-    return '0%';
-  }
-  return `${((success / total) * 100).toFixed(1)}%`;
-};
-
-const statisticsArray = (stats: PlayerStatistics, position: PositionString) => {
-  const passesAccuracyPercent = calculatePassesAccuracyPercentString(
-    stats.passesTotal,
-    stats.passesAccuracy,
-  );
-
-  if (position === 'G') {
-    return [
-      { data: stats.saves, name: '세이브' },
-      { data: stats.goalsConceded, name: '실점' },
-      { data: stats.passesTotal, name: '패스 횟수' },
-      { data: stats.passesAccuracy, name: '패스성공' },
-      { data: passesAccuracyPercent, name: '패스성공률' },
-    ];
-  }
-
-  return [
-    { data: stats.passesTotal, name: '패스 횟수' },
-    { data: stats.passesAccuracy, name: '패스성공' },
-    { data: passesAccuracyPercent, name: '패스성공률' },
-    { data: stats.passesKey, name: '키패스' },
-    { data: stats.shotsTotal, name: '슈팅' },
-    { data: stats.shotsOn, name: '유효슈팅' },
-    { data: stats.dribblesAttempts, name: '드리블 시도' },
-    { data: stats.dribblesSuccess, name: '드리블 성공' },
-    { data: stats.foulsCommitted, name: '파울' },
-    { data: stats.foulsDrawn, name: '파울 유도' },
-    { data: stats.interceptions, name: '인터셉트' },
-    { data: stats.tacklesTotal, name: '태클' },
-    { data: stats.duelsTotal, name: '볼경합 횟수' },
-    { data: stats.duelsWon, name: '볼경합 승리' },
-  ];
-};
 
 const ProfileSectionContainer = styled.div`
   display: flex;
@@ -222,6 +289,8 @@ const ProfileSectionContainer = styled.div`
   }
 `;
 
+// Player Event Markers
+
 const GoalFontAwesomeMark = faFutbolBall;
 
 const GoalMarkTranslateDiv = styled.div<{ index: number }>`
@@ -284,72 +353,3 @@ const PlayerStatisticsRatingBox: React.FC<{ rating: string }> = ({
     </RatingBoxStyle>
   );
 };
-
-interface ProfileSectionProps {
-  name: string;
-  koreanName: string | null;
-  photo: string;
-  goals: number;
-  assists: number;
-  rating: string;
-}
-
-const ProfileSection: React.FC<ProfileSectionProps> = ({
-  name,
-  koreanName,
-  photo,
-  goals,
-  assists,
-  rating,
-}) => {
-  return (
-    <ProfileSectionContainer>
-      <div className="photo">
-        <RetryableImage src={photo} alt={`${name} Profile`} />
-      </div>
-      <div className="player-infos">
-        <div className="player-name">{name}</div>
-        <div className="player-name-korean">{koreanName ? koreanName : ''}</div>
-        <div className="player-rating-box">
-          <div className="rating-title">평점</div>
-          <PlayerStatisticsRatingBox rating={rating} />
-        </div>
-        <div className="player-goal-assist-box">
-          <div className="player-stat stat-goals">
-            <div className="stat-title stat-title-goals">Goals</div>
-            <div className="stat-value stat-value-goals">{goals}</div>
-            <GoalMark goal={goals} />
-          </div>
-          <div className="player-stat stat-assists">
-            <div className="stat-title stat-title-assists">Assists</div>
-            <div className="stat-value stat-value-goals">{assists}</div>
-          </div>
-        </div>
-      </div>
-    </ProfileSectionContainer>
-  );
-};
-
-type PositionString = string | 'G' | 'D' | 'M' | 'F';
-
-const PlayerStatisticsList = ({
-  stats,
-  position,
-}: {
-  stats: PlayerStatistics;
-  position: PositionString;
-}) => {
-  const statisticsToDisplay = statisticsArray(stats, position);
-  return (
-    <PlayerStatisticsListWrapper>
-      {statisticsToDisplay.map((statItem, index) => (
-        <CommonStatisticItem key={`${index}_${statItem.data}`}>
-          <StatisticName>{statItem.name}</StatisticName>
-          <StatisticValue>{statItem.data}</StatisticValue>
-        </CommonStatisticItem>
-      ))}
-    </PlayerStatisticsListWrapper>
-  );
-};
-
-export { PlayerStatisticsList, ProfileSection };

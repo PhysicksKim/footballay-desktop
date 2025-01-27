@@ -6,8 +6,59 @@ import { GlobalBorderRadiusPx } from '../lineup/consts';
 import TeamProfile from './TeamProfile';
 import TeamStatisticsContents from './TeamStatisticsContents';
 import MatchStatisticsHeader from './MatchStatisticsHeader';
-import { MatchStatsColor, ThemeColors } from '../../common/Colors';
+import { ThemeColors } from '../../common/Colors';
 import PassSuccessPieChart from './PassSuccessPieChart';
+
+const TeamStatisticsTab = () => {
+  const info = useSelector((state: RootState) => state.fixture.info);
+  const liveStatus = useSelector(
+    (state: RootState) => state.fixture.liveStatus,
+  );
+  const homeInfo = useSelector((state: RootState) => state.fixture.info?.home);
+  const awayInfo = useSelector((state: RootState) => state.fixture.info?.away);
+  const homeStatistics = useSelector(
+    (state: RootState) => state.fixture.statistics?.home.teamStatistics,
+  );
+  const awayStatistics = useSelector(
+    (state: RootState) => state.fixture.statistics?.away.teamStatistics,
+  );
+
+  const score = liveStatus?.liveStatus.score;
+
+  return (
+    <TeamStatisticsTabWrapper>
+      <TeamStatisticsTabContainer>
+        <TeamProfileContainer>
+          {homeInfo?.id && <TeamProfile teamInfo={homeInfo} isHome={true} />}
+          <MatchStatisticsHeader
+            homeScore={score?.home ? score.home : 0}
+            awayScore={score?.away ? score.away : 0}
+            status={liveStatus?.liveStatus}
+          />
+          {awayInfo?.id && <TeamProfile teamInfo={awayInfo} isHome={false} />}
+        </TeamProfileContainer>
+        {homeStatistics?.passesAccuracyPercentage &&
+        awayStatistics?.passesAccuracyPercentage ? (
+          <PassSuccessPieChart
+            key={`pass-pie-chart_${info?.fixtureId}`}
+            homePassSuccess={homeStatistics.passesAccuracyPercentage}
+            awayPassSuccess={awayStatistics.passesAccuracyPercentage}
+          />
+        ) : (
+          <></>
+        )}
+        <TeamStatisticsContents
+          homeInfo={homeInfo}
+          awayInfo={awayInfo}
+          homeStatistics={homeStatistics}
+          awayStatistics={awayStatistics}
+        />
+      </TeamStatisticsTabContainer>
+    </TeamStatisticsTabWrapper>
+  );
+};
+
+export default TeamStatisticsTab;
 
 const TeamStatisticsTabWrapper = styled.div`
   display: flex;
@@ -52,53 +103,3 @@ const TeamProfileContainer = styled.div`
   margin-bottom: 1rem;
   width: 100%;
 `;
-
-const TeamStatisticsTab = () => {
-  const info = useSelector((state: RootState) => state.fixture.info);
-  const liveStatus = useSelector(
-    (state: RootState) => state.fixture.liveStatus,
-  );
-  const homeInfo = useSelector((state: RootState) => state.fixture.info?.home);
-  const awayInfo = useSelector((state: RootState) => state.fixture.info?.away);
-  const homeStatistics = useSelector(
-    (state: RootState) => state.fixture.statistics?.home.teamStatistics,
-  );
-  const awayStatistics = useSelector(
-    (state: RootState) => state.fixture.statistics?.away.teamStatistics,
-  );
-
-  const score = liveStatus?.liveStatus.score;
-
-  return (
-    <TeamStatisticsTabWrapper>
-      <TeamStatisticsTabContainer>
-        <TeamProfileContainer>
-          {homeInfo?.id && <TeamProfile teamInfo={homeInfo} isHome={true} />}
-          <MatchStatisticsHeader
-            homeScore={score?.home ? score.home : 0}
-            awayScore={score?.away ? score.away : 0}
-            status={liveStatus?.liveStatus}
-          />
-          {awayInfo?.id && <TeamProfile teamInfo={awayInfo} isHome={false} />}
-        </TeamProfileContainer>
-        {homeStatistics?.passesAccuracyPercentage &&
-        awayStatistics?.passesAccuracyPercentage ? (
-          <PassSuccessPieChart
-            homePassSuccess={homeStatistics.passesAccuracyPercentage}
-            awayPassSuccess={awayStatistics.passesAccuracyPercentage}
-          />
-        ) : (
-          <></>
-        )}
-        <TeamStatisticsContents
-          homeInfo={homeInfo}
-          awayInfo={awayInfo}
-          homeStatistics={homeStatistics}
-          awayStatistics={awayStatistics}
-        />
-      </TeamStatisticsTabContainer>
-    </TeamStatisticsTabWrapper>
-  );
-};
-
-export default TeamStatisticsTab;

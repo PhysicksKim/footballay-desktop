@@ -11,38 +11,6 @@ import {
 import styled from 'styled-components';
 import { RootState } from '../../../store/store';
 
-const PassSuccessPieChartStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  align-items: center;
-  width: 95%;
-  overflow: visible;
-  box-sizing: content-box;
-  margin: 0;
-  padding: 0;
-  padding-bottom: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-`;
-
-const PassSuccessTitle = styled.div`
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-bottom: 10px;
-`;
-
-// 스타일드 컴포넌트로 파이차트에 그림자와 입체감을 추가
-const ChartWrapper = styled.div`
-  margin: 0 1rem;
-  width: 30%;
-  user-select: none;
-  pointer-events: none;
-`;
-
-const PIE_BACKGROUND_FILL = '#aaaaaa';
-
 interface PassSuccessPieChartProps {
   homePassSuccess: number;
   awayPassSuccess: number;
@@ -106,7 +74,6 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
 
   return (
     <PassSuccessPieChartStyle>
-      {/* <div className="pass-success-title">패스 성공률</div> */}
       <PassSuccessTitle>패스 성공률</PassSuccessTitle>
       <div
         style={{
@@ -168,3 +135,35 @@ const PassSuccessPieChart: React.FC<PassSuccessPieChartProps> = ({
 };
 
 export default PassSuccessPieChart;
+
+const PIE_BACKGROUND_FILL = '#aaaaaa';
+
+const PassSuccessPieChartStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+  width: 95%;
+  overflow: visible;
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+`;
+
+const PassSuccessTitle = styled.div`
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+`;
+
+// 스타일드 컴포넌트로 파이차트에 그림자와 입체감을 추가
+const ChartWrapper = styled.div`
+  margin: 0 1rem;
+  width: 30%;
+  user-select: none;
+  pointer-events: none;
+`;

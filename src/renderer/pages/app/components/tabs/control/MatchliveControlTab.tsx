@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@app/store/store';
@@ -20,9 +20,6 @@ const MatchliveControlTab = () => {
     (state: RootState) => state.fixtureLive.lastFetchedAt,
   );
   const fixtureLive = useSelector((state: RootState) => state.fixtureLive);
-  const showPhoto = useSelector(
-    (state: RootState) => state.fixtureLiveOption.showPhoto,
-  );
   const fixtureEvents = useSelector(
     (state: RootState) => state.fixtureLive.events,
   );
@@ -35,6 +32,8 @@ const MatchliveControlTab = () => {
   const preferenceKey = useSelector(
     (state: RootState) => state.fixtureLiveOption.preference.key,
   );
+
+  const [isAlwaysOnTop, setIsAlwaysOnTop] = useState<boolean>(false);
 
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +83,11 @@ const MatchliveControlTab = () => {
 
   const closeMatchlive = () => {
     window.electron.ipcRenderer.send('control-to-matchlive', 'close');
+  };
+
+  const alwaysOnTopMatchlive = () => {
+    window.electron.ipcRenderer.send('control-to-matchlive', 'always-on-top');
+    setIsAlwaysOnTop(!isAlwaysOnTop);
   };
 
   const handleAddFilter = (event: FixtureEvent) => {
@@ -196,30 +200,17 @@ const MatchliveControlTab = () => {
         >
           크기 초기화
         </button>
+        <button
+          className="always-on-top-btn win-con-btn"
+          onClick={alwaysOnTopMatchlive}
+        >
+          {isAlwaysOnTop ? '항상 위' : '항상 위 해제'}
+        </button>
         <button className="close-btn win-con-btn" onClick={closeMatchlive}>
           닫기
         </button>
       </div>
 
-      {/* <div className="additional-options-section">
-        <input
-          type="checkbox"
-          id="show-profile"
-          className="show-profile-checkbox"
-          checked={showPhoto}
-          onChange={(e) => {
-            const isChecked = e.target.checked;
-            window.electron.ipcRenderer.send('to-matchlive', {
-              type: 'SET_SHOW_PHOTO',
-              data: isChecked,
-            });
-            dispatch(setShowPhoto(isChecked));
-          }}
-        />
-        <label htmlFor="show-profile" className="show-profile-box-label">
-          프로필 사진 표시
-        </label>
-      </div> */}
       <div className="last-fetch-title-box">
         <span>데이터 갱신 시각</span>
       </div>

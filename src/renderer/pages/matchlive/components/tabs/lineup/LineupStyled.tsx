@@ -127,6 +127,7 @@ const GridPlayer = styled.div<{
       border-radius: 50%;
       object-fit: cover;
       object-position: top;
+      background-color: white;
       /**
       이미지를 드래그할 때 브라우저의 기본 동작으로 인해
       이미지가 마우스 커서를 따라 이동하는 현상이 발생합니다.

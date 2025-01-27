@@ -2,6 +2,7 @@ import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
 import matchliveWindowService from './matchliveWindowService';
 import WindowManager from './windowManager';
+import { ca } from 'date-fns/locale';
 
 export const setupMainWindowIpcMainHandlers = (
   mainWindow: BrowserWindow | undefined,
@@ -87,6 +88,9 @@ export const setupMatchliveIpcMainHandlers = (
       case 'close':
         matchliveWindow.close();
         break;
+      case 'always-on-top':
+        matchliveWindow.setAlwaysOnTop(!matchliveWindow.isAlwaysOnTop());
+        break;
       default:
         log.error(`Unknown control-to-matchlive action: ${action}`);
     }
@@ -120,4 +124,17 @@ export const setupMatchliveIpcMainHandlers = (
     matchliveWindow.center();
     matchliveWindow.focus();
   });
+};
+
+export const removeAllMainWindowIpcMainHandlers = () => {
+  ipcMain.removeAllListeners('open-matchlive-window');
+  ipcMain.removeAllListeners('main-window-control');
+  ipcMain.removeAllListeners('to-app');
+  ipcMain.removeAllListeners('matchlive-react-ready');
+};
+
+export const removeAllMatchliveIpcMainHandlers = () => {
+  ipcMain.removeAllListeners('control-to-matchlive');
+  ipcMain.removeAllListeners('to-matchlive');
+  ipcMain.removeAllListeners('reset-matchlive-window');
 };

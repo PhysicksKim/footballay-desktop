@@ -4,6 +4,8 @@ import log from 'electron-log';
 
 import { AppState } from './AppState';
 import {
+  removeAllMainWindowIpcMainHandlers,
+  removeAllMatchliveIpcMainHandlers,
   setupMainWindowIpcMainHandlers,
   setupMatchliveIpcMainHandlers,
 } from './ipcManager';
@@ -79,11 +81,13 @@ class WindowManager {
       } else {
         app.quit();
       }
+
+      removeAllMainWindowIpcMainHandlers();
+
       this.mainWindow = null;
     });
 
     setupMainWindowIpcMainHandlers(this.mainWindow);
-    // this.mainWindow.webContents.openDevTools();
     return this.mainWindow;
   }
 
@@ -121,10 +125,13 @@ class WindowManager {
     });
 
     this.matchliveWindow.on('closed', () => {
-      this.matchliveWindow = null;
       this.mainWindow?.webContents.send('to-app', {
         type: 'MATCHLIVE_WINDOW_CLOSED',
       });
+
+      removeAllMatchliveIpcMainHandlers();
+
+      this.matchliveWindow = null;
     });
 
     setupMatchliveIpcMainHandlers(this.matchliveWindow);

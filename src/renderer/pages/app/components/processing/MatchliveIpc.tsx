@@ -24,7 +24,9 @@ export type ReceiveIpcType =
   | 'GET_FIXTURE_LINEUP'
   | 'GET_FIXTURE_EVENTS'
   | 'GET_PROCESSED_LINEUP'
-  | 'GET_FIXTURE_STATISTICS';
+  | 'GET_FIXTURE_STATISTICS'
+  | 'AUTO_UPDATER_WINDOW_CLOSED'
+  | 'MATCHLIVE_REACT_READY';
 
 export interface IpcMessage {
   type: ReceiveIpcType;
@@ -218,8 +220,12 @@ const MatchliveIpc = () => {
       case 'GET_FIXTURE_STATISTICS':
         setGetFixtureStatisticsFlag(true);
         break;
+      case 'AUTO_UPDATER_WINDOW_CLOSED':
+        break;
+      case 'MATCHLIVE_REACT_READY':
+        break;
       default:
-        console.error('unexpected IPC message type  :', type);
+        console.error('unexpected IPC message type :', type);
     }
   };
 
