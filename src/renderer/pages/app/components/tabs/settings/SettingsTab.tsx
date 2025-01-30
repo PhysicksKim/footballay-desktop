@@ -1,11 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { RootState, useAppDispatch } from '@app/store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { debounce, set } from 'lodash';
-import { isValidKeyFormat } from '../../../common/PreferKeyUtils';
+import { faEye, faEyeSlash, faSave } from '@fortawesome/free-solid-svg-icons';
+import { renderToStaticMarkup } from 'react-dom/server';
+import {
+  isValidKeyFormat,
+  PREFERENCE_KEY_VALID_CONDITION_MESSAGE,
+} from '../../../common/PreferKeyUtils';
 import { validatePreferenceKey } from '../../../store/slices/live/option/fixtureLiveOptionThunk';
 import { persistPreferenceKey } from '../../../store/slices/live/option/preferenceKeyIO';
 import {
@@ -13,8 +16,11 @@ import {
   IdleMark,
   LoadingMark,
   SuccessMark,
+  ThumbsUpMark,
   WarnMark,
 } from '@src/renderer/global/style/StatusIcon';
+import { Tooltip } from 'react-tooltip';
+import { RequestStatus } from '../../../store/slices/live/option/fixtureLiveOptionSlice';
 
 type InputKeyType = 'password' | 'text';
 
@@ -32,31 +38,21 @@ const SettingsTab = () => {
   const [inputKey, setInputKey] = useState(preferenceKey);
   const [inputKeyType, seyInputKeyType] = useState<InputKeyType>('password');
   const [NotValidPrefKeyInput, setNotValidPrefKeyInput] = useState(false);
+  const [diffInputAndSavedKey, setDiffInputAndSavedKey] = useState(false);
 
   useEffect(() => {
     setInputKey(preferenceKey);
   }, [preferenceKey]);
 
-  const debouncedPersistKey = useCallback(
-    debounce((key: string) => {
-      dispatch(persistPreferenceKey(key));
-    }, 300),
-    [dispatch],
-  );
-
   useEffect(() => {
-    return () => {
-      debouncedPersistKey.cancel();
-    };
-  }, [debouncedPersistKey]);
+    setDiffInputAndSavedKey(preferenceKey !== inputKey);
+  }, [preferenceKey, inputKey]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const key = e.target.value;
     setInputKey(key);
-    debouncedPersistKey(key);
 
     if (isValidKeyFormat(key)) {
-      dispatch(validatePreferenceKey(key));
       setNotValidPrefKeyInput(false);
     } else {
       setNotValidPrefKeyInput(true);
@@ -67,59 +63,150 @@ const SettingsTab = () => {
     seyInputKeyType((prev) => (prev === 'password' ? 'text' : 'password'));
   };
 
-  const handleInputBlur = () => {
+  const onClickValidateAndSave = useCallback(() => {
     if (!isValidKeyFormat(inputKey)) {
-      setNotValidPrefKeyInput(true);
-    } else {
-      setNotValidPrefKeyInput(false);
-    }
-  };
-
-  const validateIcon = () => {
-    if (NotValidPrefKeyInput) {
-      return WarnMark();
+      return;
     }
 
-    if (validateStatus === 'idle') {
-      if (isValidKey) {
-        return SuccessMark();
-      } else {
-        return IdleMark();
-      }
-    } else if (validateStatus === 'loading') {
-      return LoadingMark();
-    } else if (validateStatus === 'success') {
-      return SuccessMark();
-    }
-    return FailMark();
-  };
+    dispatch(persistPreferenceKey(inputKey));
+    dispatch(validatePreferenceKey(inputKey));
+  }, [dispatch, inputKey]);
 
   return (
-    <Container>
-      <PreferenceGroup>
-        <Title>속성키</Title>
-        <KeyBox>
-          <KeyInputWrapper>
-            <KeyInput
-              onBlur={handleInputBlur}
-              value={inputKey}
-              onChange={handleInputChange}
-              type={inputKeyType}
-            />
-            <KeyInputTypeToggle onClick={toggleKeyInputType}>
-              <FontAwesomeIcon
-                icon={inputKeyType === 'password' ? faEyeSlash : faEye}
+    <>
+      <Container>
+        <PreferenceGroup>
+          <Title>속성키</Title>
+          <KeyBox>
+            <KeyInputWrapper>
+              <KeyInput
+                value={inputKey}
+                onChange={handleInputChange}
+                type={inputKeyType}
               />
-            </KeyInputTypeToggle>
-          </KeyInputWrapper>
-          <KeyValidateStatusWrapper>{validateIcon()}</KeyValidateStatusWrapper>
-        </KeyBox>
-      </PreferenceGroup>
-    </Container>
+              <KeyInputTypeToggle onClick={toggleKeyInputType}>
+                <FontAwesomeIcon
+                  icon={inputKeyType === 'password' ? faEyeSlash : faEye}
+                />
+              </KeyInputTypeToggle>
+            </KeyInputWrapper>
+            {inputValidateIcon(NotValidPrefKeyInput)}
+          </KeyBox>
+          <SubBox>
+            <SubBoxTitle data-tooltip-content={'hello'}>
+              검증 및 저장
+            </SubBoxTitle>
+            <ValidateAndSaveButton onClick={onClickValidateAndSave}>
+              <FontAwesomeIcon icon={faSave} />
+            </ValidateAndSaveButton>
+            <KeyValidateStatusWrapper>
+              {validateIcon(validateStatus, isValidKey, diffInputAndSavedKey)}
+            </KeyValidateStatusWrapper>
+          </SubBox>
+        </PreferenceGroup>
+      </Container>
+
+      <Tooltip id="input-validate-tooltip" place="right" />
+      <Tooltip id="status-tooltip" place="right" />
+    </>
   );
 };
 
 export default SettingsTab;
+
+const inputValidateIcon = (NotValidPrefKeyInput: boolean) => {
+  const COMMON_MARGIN = { style: { marginTop: '5px' } };
+  if (NotValidPrefKeyInput) {
+    return (
+      <WarnMark
+        {...COMMON_MARGIN}
+        data-tooltip-id="input-validate-tooltip"
+        data-tooltip-html={renderToStaticMarkup(
+          <div>
+            속성키 형식이 올바르지 않습니다. <br />
+            {PREFERENCE_KEY_VALID_CONDITION_MESSAGE}
+          </div>,
+        )}
+      />
+    );
+  } else {
+    return (
+      <ThumbsUpMark
+        {...COMMON_MARGIN}
+        data-tooltip-id="input-validate-tooltip"
+        data-tooltip-content="속성키 형식이 올바릅니다"
+      />
+    );
+  }
+};
+
+const DEBUG = false;
+const validateIcon = (
+  validateStatus: RequestStatus,
+  isValidKey: boolean | null,
+  diffInputAndSavedKey: boolean,
+) => {
+  if (DEBUG) {
+    return (
+      <LoadingMark
+        data-tooltip-id="status-tooltip"
+        data-tooltip-content="응답 대기중"
+      />
+    );
+  }
+  if (diffInputAndSavedKey) {
+    return (
+      <WarnMark
+        key={'diffInputAndSavedKey'}
+        data-tooltip-id="status-tooltip"
+        data-tooltip-content="변경된 속성키가 저장되지 않았습니다"
+      />
+    );
+  }
+
+  if (validateStatus === 'idle') {
+    if (isValidKey) {
+      return (
+        <SuccessMark
+          key={'validateStatusSuccess'}
+          data-tooltip-id="status-tooltip"
+          data-tooltip-content="유효한 속성키 입니다"
+        />
+      );
+    } else {
+      return (
+        <IdleMark
+          key={'validateStatusIdle'}
+          data-tooltip-id="status-tooltip"
+          data-tooltip-content="대기중"
+        />
+      );
+    }
+  } else if (validateStatus === 'loading') {
+    return (
+      <LoadingMark
+        key={'validateStatusLoading'}
+        data-tooltip-id="status-tooltip"
+        data-tooltip-content="응답 대기중"
+      />
+    );
+  } else if (validateStatus === 'success') {
+    return (
+      <SuccessMark
+        key={'validateStatusSuccess'}
+        data-tooltip-id="status-tooltip"
+        data-tooltip-content="유효한 속성키 입니다"
+      />
+    );
+  }
+  return (
+    <FailMark
+      key={'validateStatusFailed'}
+      data-tooltip-id="status-tooltip"
+      data-tooltip-content="유효하지 않은 속성키 입니다"
+    />
+  );
+};
 
 const Container = styled.div`
   display: flex;
@@ -195,16 +282,49 @@ const KeyInputTypeToggle = styled.button`
   }
 `;
 
-const KeyButton = styled.button`
+const SubBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 10px;
+`;
+
+const SubBoxTitle = styled.div`
+  font-size: 14px;
+  font-weight: 400;
+  margin-right: 10px;
   box-sizing: border-box;
-  width: 100px;
-  height: 30px;
-  background-color: black;
-  color: white;
 `;
 
 const KeyValidateStatusWrapper = styled.div`
   margin-top: 5px;
   height: 20px;
   box-sizing: border-box;
+`;
+
+const CommonButtonCss = css`
+  padding: 0;
+
+  width: 40px;
+  height: 30px;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: #5934e0;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #5e35f1;
+    color: #ffffff;
+    transform: none;
+  }
+`;
+
+const ValidateAndSaveButton = styled.button`
+  ${CommonButtonCss}
+`;
+
+const SaveButton = styled.button`
+  ${CommonButtonCss}
 `;

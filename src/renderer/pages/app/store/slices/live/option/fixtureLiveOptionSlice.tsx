@@ -9,10 +9,12 @@ export interface FixtureLiveOptionState {
    */
   preference: {
     key: string;
-    isValid: boolean;
-    status: 'idle' | 'loading' | 'success' | 'failed';
+    isValid: boolean | null;
+    status: RequestStatus;
   };
 }
+
+export type RequestStatus = 'idle' | 'loading' | 'success' | 'failed';
 
 const initialState: FixtureLiveOptionState = {
   /**
@@ -21,7 +23,7 @@ const initialState: FixtureLiveOptionState = {
   showPhoto: true,
   preference: {
     key: '',
-    isValid: false,
+    isValid: null,
     status: 'idle',
   },
 };
@@ -38,7 +40,7 @@ const optionSlice = createSlice({
     builder
       .addCase(validatePreferenceKey.pending, (state) => {
         state.preference.status = 'loading';
-        state.preference.isValid = false;
+        state.preference.isValid = null;
       })
       .addCase(
         validatePreferenceKey.fulfilled,

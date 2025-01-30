@@ -1,54 +1,59 @@
 import {
   faCheck,
+  faCheckCircle,
+  faCircle,
+  faO,
   faSpinner,
+  faThumbsUp,
   faWarning,
-  faXmark,
+  faXmarkCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
-const IdleMark = () => {
-  return <StatusMarkBox />;
-};
+interface MarkProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const LoadingMark = () => {
-  return (
-    <StatusMarkBox>
-      <FontAwesomeIcon
-        icon={faSpinner}
-        className="fa-spin"
-        style={{ color: '#429be4' }}
-      />
-    </StatusMarkBox>
-  );
-};
+const IdleMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}></StatusMarkBox>
+);
 
-const SuccessMark = () => {
-  return (
-    <StatusMarkBox>
-      <FontAwesomeIcon icon={faCheck} style={{ color: '#10c027' }} />
-    </StatusMarkBox>
-  );
-};
-
-const FailMark = () => {
-  return (
-    <StatusMarkBox>
-      <FontAwesomeIcon
-        icon={faXmark}
-        style={{ color: '#c91010', fontSize: '18px' }}
-      />
-    </StatusMarkBox>
-  );
-};
-
-const WarnMark = () => {
-  return (
-    <StatusMarkBox>
-      <FontAwesomeIcon icon={faWarning} style={{ color: '#f0ad4e' }} />
-    </StatusMarkBox>
-  );
-};
+const LoadingMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon
+      icon={faSpinner}
+      className="fa-spin"
+      style={{ color: '#429be4' }}
+    />
+  </StatusMarkBox>
+);
+const OkMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon icon={faO} style={{ color: '#10c027' }} />
+  </StatusMarkBox>
+);
+const ThumbsUpMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon icon={faThumbsUp} style={{ color: '#10c027' }} />
+  </StatusMarkBox>
+);
+const SuccessMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#10c027' }} />
+  </StatusMarkBox>
+);
+const FailMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon
+      icon={faXmarkCircle}
+      style={{ color: '#c91010', fontSize: '18px' }}
+    />
+  </StatusMarkBox>
+);
+const WarnMark = (props?: MarkProps): JSX.Element => (
+  <StatusMarkBox {...props}>
+    <FontAwesomeIcon icon={faWarning} style={{ color: '#f0ad4e' }} />
+  </StatusMarkBox>
+);
 
 const StatusMarkBox = styled.div`
   margin-left: 10px;
@@ -57,4 +62,12 @@ const StatusMarkBox = styled.div`
   box-sizing: border-box;
 `;
 
-export { IdleMark, LoadingMark, SuccessMark, FailMark, WarnMark };
+export {
+  IdleMark,
+  LoadingMark,
+  SuccessMark,
+  FailMark,
+  WarnMark,
+  OkMark,
+  ThumbsUpMark,
+};
