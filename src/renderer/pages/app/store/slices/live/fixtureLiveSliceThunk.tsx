@@ -74,8 +74,6 @@ export const fetchFixtureLineup = createAsyncThunk<
   'fixture/fetchLineup',
   async (lineupParams: FetchFixtureLineupParams, { rejectWithValue }) => {
     try {
-      console.log('fetchFixtureLineup parameters', lineupParams);
-
       const axiosResponse = await axios.get<{ response: FixtureLineup[] }>(
         `${Urls.apiUrl}${Urls.football.fixtureLineup}`,
         {

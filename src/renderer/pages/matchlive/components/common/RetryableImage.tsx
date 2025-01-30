@@ -8,6 +8,7 @@ interface RetryableImageProps {
   maxRetries?: number;
   height?: number;
   width?: number;
+  style?: React.CSSProperties;
 }
 
 const RetryableImage: React.FC<RetryableImageProps> = ({
@@ -17,6 +18,7 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
   maxRetries = 5,
   height = -1,
   width = -1,
+  style = undefined,
 }) => {
   const [retryCount, setRetryCount] = useState<number>(0);
 
@@ -43,6 +45,7 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
       onError={handleError}
       height={height > 0 ? `${height}px` : '100%'}
       width={width > 0 ? `${width}px` : '100%'}
+      style={style}
     />
   );
 };

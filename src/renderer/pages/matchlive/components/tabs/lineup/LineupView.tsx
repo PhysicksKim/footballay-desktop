@@ -147,20 +147,13 @@ const LineupView: React.FC<{
                     onClick={() => handlePlayerClick(finalPlayer)}
                     style={{ cursor: 'pointer', pointerEvents: 'all' }}
                   >
-                    {showPhoto && finalPlayer.photo ? (
+                    {finalPlayer.photo && (
                       <RetryableImage
                         src={finalPlayer.photo}
                         alt={finalPlayer.name}
                         height={photoSize}
                         width={photoSize}
                       />
-                    ) : (
-                      <div className="player-number">
-                        <UniformIcon color={color} />
-                        <div className="player-number_val">
-                          {finalPlayer.number}
-                        </div>
-                      </div>
                     )}
                     {finalPlayer.events.subIn && (
                       <SubInMark

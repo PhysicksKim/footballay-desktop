@@ -52,6 +52,7 @@ const LeagueCardSlide = () => {
   };
 
   const handleLeagueClick = (leagueId: number) => {
+    if (selectedLeagueId === leagueId) return;
     dispatch(setSelectedDate(new Date().toISOString()));
     dispatch(setLeagueId(leagueId));
   };

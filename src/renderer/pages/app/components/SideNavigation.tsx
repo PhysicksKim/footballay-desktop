@@ -25,9 +25,7 @@ const SideNavigation = () => {
         </div>
       </Link>
       <div className="version-text-box">
-        <div className="version-text">
-          v {version} <br></br>/ protocol : {window.location.protocol}
-        </div>
+        <div className="version-text">v {version}</div>
       </div>
     </div>
   );

@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState, useAppDispatch } from '@app/store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
 import { isValidKeyFormat } from '../../../common/PreferKeyUtils';
 import { validatePreferenceKey } from '../../../store/slices/live/option/fixtureLiveOptionThunk';
 import { persistPreferenceKey } from '../../../store/slices/live/option/preferenceKeyIO';
+import {
+  FailMark,
+  IdleMark,
+  LoadingMark,
+  SuccessMark,
+  WarnMark,
+} from '@src/renderer/global/style/StatusIcon';
 
 type InputKeyType = 'password' | 'text';
 
@@ -24,75 +31,89 @@ const SettingsTab = () => {
   );
   const [inputKey, setInputKey] = useState(preferenceKey);
   const [inputKeyType, seyInputKeyType] = useState<InputKeyType>('password');
-  const [localError, setLocalError] = useState<string | null>(null);
+  const [NotValidPrefKeyInput, setNotValidPrefKeyInput] = useState(false);
 
   useEffect(() => {
     setInputKey(preferenceKey);
   }, [preferenceKey]);
 
-  const toggleKeyInputType = () => {
-    seyInputKeyType((prev) => (prev === 'password' ? 'text' : 'password'));
-  };
-
-  const debouncedValidate = React.useCallback(
+  const debouncedPersistKey = useCallback(
     debounce((key: string) => {
-      console.log('debouncedValidate', key);
-      if (isValidKeyFormat(key)) {
-        console.log('key is valid');
-        dispatch(persistPreferenceKey(key));
-        dispatch(validatePreferenceKey(key));
-      } else {
-        console.log('key is invalid');
-        setLocalError('키는 32자이며, 대소문자와 숫자만 포함해야 합니다.');
-      }
-    }, 500), // 500ms 지연
+      dispatch(persistPreferenceKey(key));
+    }, 300),
     [dispatch],
   );
+
+  useEffect(() => {
+    return () => {
+      debouncedPersistKey.cancel();
+    };
+  }, [debouncedPersistKey]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const key = e.target.value;
     setInputKey(key);
-    setLocalError(null);
+    debouncedPersistKey(key);
 
     if (isValidKeyFormat(key)) {
-      debouncedValidate(key);
+      dispatch(validatePreferenceKey(key));
+      setNotValidPrefKeyInput(false);
     } else {
-      setLocalError('키는 32자이며, 대소문자와 숫자만 포함해야 합니다.');
+      setNotValidPrefKeyInput(true);
     }
   };
 
-  useEffect(() => {
-    // 컴포넌트 언마운트 시 디바운스된 함수 취소
-    return () => {
-      debouncedValidate.cancel();
-    };
-  }, [debouncedValidate]);
+  const toggleKeyInputType = () => {
+    seyInputKeyType((prev) => (prev === 'password' ? 'text' : 'password'));
+  };
+
+  const handleInputBlur = () => {
+    if (!isValidKeyFormat(inputKey)) {
+      setNotValidPrefKeyInput(true);
+    } else {
+      setNotValidPrefKeyInput(false);
+    }
+  };
+
+  const validateIcon = () => {
+    if (NotValidPrefKeyInput) {
+      return WarnMark();
+    }
+
+    if (validateStatus === 'idle') {
+      if (isValidKey) {
+        return SuccessMark();
+      } else {
+        return IdleMark();
+      }
+    } else if (validateStatus === 'loading') {
+      return LoadingMark();
+    } else if (validateStatus === 'success') {
+      return SuccessMark();
+    }
+    return FailMark();
+  };
 
   return (
     <Container>
       <PreferenceGroup>
         <Title>속성키</Title>
-        <KeyInputWrapper>
-          <KeyInput
-            value={inputKey}
-            onChange={handleInputChange}
-            type={inputKeyType}
-          />
-          <KeyInputTypeToggle onClick={toggleKeyInputType}>
-            <FontAwesomeIcon
-              icon={inputKeyType === 'password' ? faEyeSlash : faEye}
+        <KeyBox>
+          <KeyInputWrapper>
+            <KeyInput
+              onBlur={handleInputBlur}
+              value={inputKey}
+              onChange={handleInputChange}
+              type={inputKeyType}
             />
-          </KeyInputTypeToggle>
-        </KeyInputWrapper>
-        <div>
-          {localError && <div>{localError}</div>}
-          {validateStatus === 'loading' && <div>검증 중...</div>}
-          {validateStatus === 'success' && isValidKey && <div>검증 완료</div>}
-          {validateStatus === 'failed' && !isValidKey && (
-            <div>키 검증 실패</div>
-          )}
-        </div>
-        <div>{`isValid? : ${isValidKey}`}</div>
+            <KeyInputTypeToggle onClick={toggleKeyInputType}>
+              <FontAwesomeIcon
+                icon={inputKeyType === 'password' ? faEyeSlash : faEye}
+              />
+            </KeyInputTypeToggle>
+          </KeyInputWrapper>
+          <KeyValidateStatusWrapper>{validateIcon()}</KeyValidateStatusWrapper>
+        </KeyBox>
       </PreferenceGroup>
     </Container>
   );
@@ -120,6 +141,14 @@ const Title = styled.div`
   font-size: 16px;
   font-weight: 400;
   margin-bottom: 5px;
+  box-sizing: border-box;
+`;
+
+const KeyBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   box-sizing: border-box;
 `;
 
@@ -172,4 +201,10 @@ const KeyButton = styled.button`
   height: 30px;
   background-color: black;
   color: white;
+`;
+
+const KeyValidateStatusWrapper = styled.div`
+  margin-top: 5px;
+  height: 20px;
+  box-sizing: border-box;
 `;

@@ -185,7 +185,7 @@ const updatePlayerCard = (event: FixtureEvent, players: ViewPlayer[][]) => {
 };
 
 /**
- * 자책골인 경우 event 에서 detail: "Own Goal" 로 표기됨.
+ * 자책골인 경우 event 에서 detail: "Own Goal" 를 통해 처리
  * @param player
  * @param event
  */
@@ -267,7 +267,7 @@ export const applyEventsToLineup = (
   events: FixtureEvent[],
 ): ViewLineup => {
   events.forEach((event, index) => {
-    if (lineup.teamId !== event.team.teamId) {
+    if (event.type !== 'GOAL' && lineup.teamId !== event.team.teamId) {
       return;
     }
 

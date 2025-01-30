@@ -10,7 +10,6 @@ export const validatePreferenceKey = createAsyncThunk<
   'options/validatePreferenceKey',
   async (preferencekey, { rejectWithValue }) => {
     try {
-      console.log('validatePreferenceKey thunk key : ', preferencekey);
       const response = await axios.post(
         `${Urls.apiUrl}${Urls.football.preferenceKeyCheck()}`,
         {

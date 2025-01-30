@@ -38,6 +38,7 @@ const optionSlice = createSlice({
     builder
       .addCase(validatePreferenceKey.pending, (state) => {
         state.preference.status = 'loading';
+        state.preference.isValid = false;
       })
       .addCase(
         validatePreferenceKey.fulfilled,

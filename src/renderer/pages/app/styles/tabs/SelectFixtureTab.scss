@@ -52,6 +52,8 @@
         cursor: pointer;
         transition-duration: 0.13s;
 
+        overflow: hidden;
+
         &.selected {
           background-color: $card-background-selected;
         }

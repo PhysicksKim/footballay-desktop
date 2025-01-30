@@ -88,6 +88,7 @@ class WindowManager {
     });
 
     setupMainWindowIpcMainHandlers(this.mainWindow);
+    this.mainWindow.focus();
     return this.mainWindow;
   }
 

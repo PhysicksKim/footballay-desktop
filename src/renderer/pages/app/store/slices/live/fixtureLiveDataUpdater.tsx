@@ -25,7 +25,6 @@ export const startFetchLineup = (fixtureId: number, preferenceKey: string) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchLineup = async () => {
       try {
-        console.log(`lineup fetch start ${new Date().toLocaleTimeString()}`);
         const response = await dispatch(
           fetchFixtureLineup({ fixtureId, preferenceKey }),
         )?.unwrap();
@@ -34,14 +33,7 @@ export const startFetchLineup = (fixtureId: number, preferenceKey: string) => {
           response.lineup !== null &&
           isCompleteLineupData(response)
         ) {
-          console.log(`response : `, response);
-          console.log(
-            `isCompleteLineupData(response) : ${isCompleteLineupData(response)}`,
-          );
           clearInterval(intervalId);
-          console.log(
-            `lineup clear interval ${new Date().toLocaleTimeString()}`,
-          );
           dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
@@ -61,17 +53,11 @@ export const startFetchLiveStatus = (fixtureId: number) => {
   return (dispatch: AppDispatch) => {
     const fetchLiveStatus = async () => {
       try {
-        console.log(
-          `liveStatus fetch start ${new Date().toLocaleTimeString()}`,
-        );
         const response = await dispatch(
           fetchFixtureLiveStatus(fixtureId),
         ).unwrap();
         if (isFetchStopStatus(response.liveStatus.shortStatus)) {
           clearInterval(intervalId);
-          console.log(
-            `live status clear interval ${new Date().toLocaleTimeString()}`,
-          );
           dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
@@ -88,15 +74,11 @@ export const startFetchEvents = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchEvents = async () => {
       try {
-        console.log(`event fetch start ${new Date().toLocaleTimeString()}`);
         await dispatch(fetchFixtureEvents(fixtureId)).unwrap();
         const nowStatus =
           getState().fixtureLive.liveStatus?.liveStatus.shortStatus;
         if (nowStatus && isFetchStopStatus(nowStatus)) {
           clearInterval(intervalId);
-          console.log(
-            `events clear interval ${new Date().toLocaleTimeString()}`,
-          );
           dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
@@ -114,17 +96,11 @@ export const startFetchStatistics = (fixtureId: number) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchStatistics = async () => {
       try {
-        console.log(
-          `statistics fetch start ${new Date().toLocaleTimeString()}`,
-        );
         await dispatch(fetchFixtureStatistics(fixtureId)).unwrap();
         const nowStatus =
           getState().fixtureLive?.liveStatus?.liveStatus?.shortStatus;
         if (nowStatus && isFetchStopStatus(nowStatus)) {
           clearInterval(intervalId);
-          console.log(
-            `statistics clear interval ${new Date().toLocaleTimeString()}`,
-          );
           dispatch(removeIntervalId(intervalId));
         }
       } catch (error) {
