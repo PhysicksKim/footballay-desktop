@@ -5,6 +5,11 @@ import WindowManager from './windowManager';
 import UpdateManager from './UpdateManager';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {
+  setupappWindowIpcMainHandlers,
+  setupCommonWindowIpcHandlers,
+  setupMatchliveIpcMainHandlers,
+} from './ipcManager';
 
 export const CUSTOM_PROTOCOL_NAME = 'chuncity';
 
@@ -108,17 +113,20 @@ app
     });
 
     new CustomElectronStoreIpc();
+    setupCommonWindowIpcHandlers();
+    setupappWindowIpcMainHandlers();
+    setupMatchliveIpcMainHandlers();
     const windowManager = WindowManager.getInstance();
-    const mainWindow = await windowManager.createMainWindow();
+    const appWindow = await windowManager.createappWindow();
     const updatecheckerWindow = await windowManager.createUpdatecheckerWindow();
     const updateManager = UpdateManager.getInstance(
-      mainWindow,
+      appWindow,
       updatecheckerWindow,
     );
     updateManager.checkForUpdates();
 
     // if (isDev) {
-    //   mainWindow.webContents.openDevTools();
+    //   appWindow.webContents.openDevTools();
     // }
 
     /* Close update checker window in development mode */

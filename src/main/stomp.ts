@@ -15,17 +15,17 @@ const stompConfig: StompConfig = {
   },
 };
 
-export function setupStompHandlers(mainWindow: BrowserWindow | null) {
+export function setupStompHandlers(appWindow: BrowserWindow | null) {
   ipcMain.handle('init-stomp-client', async (_) => {
     stompClient = new Client({
       ...stompConfig,
       webSocketFactory: () => new WebSocket(brokerURL),
     });
     stompClient.onConnect = () => {
-      mainWindow?.webContents.send('ws-status', 'connected');
+      appWindow?.webContents.send('ws-status', 'connected');
     };
     stompClient.onDisconnect = () => {
-      mainWindow?.webContents.send('ws-status', 'disconnected');
+      appWindow?.webContents.send('ws-status', 'disconnected');
     };
     stompClient.activate();
   });
@@ -45,7 +45,7 @@ export function setupStompHandlers(mainWindow: BrowserWindow | null) {
   ipcMain.handle('stomp-subscribe', async (_, destination: string) => {
     if (stompClient) {
       stompClient.subscribe(destination, (message: IMessage) => {
-        mainWindow?.webContents.send('stomp-message', message.body);
+        appWindow?.webContents.send('stomp-message', message.body);
       });
     }
   });

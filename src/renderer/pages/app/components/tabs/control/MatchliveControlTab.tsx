@@ -71,22 +71,34 @@ const MatchliveControlTab = () => {
     fixtureLive;
 
   const reloadMatchlive = () => {
-    window.electron.ipcRenderer.send('control-to-matchlive', 'refresh');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'matchlive',
+      action: 'reload',
+    });
     if (selectedFixtureId) {
       startFixtureLiveFetch(selectedFixtureId, dispatch, preferenceKey);
     }
   };
 
   const minimizeMatchlive = () => {
-    window.electron.ipcRenderer.send('control-to-matchlive', 'minimize');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'matchlive',
+      action: 'minimize',
+    });
   };
 
   const closeMatchlive = () => {
-    window.electron.ipcRenderer.send('control-to-matchlive', 'close');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'matchlive',
+      action: 'close',
+    });
   };
 
   const alwaysOnTopMatchlive = () => {
-    window.electron.ipcRenderer.send('control-to-matchlive', 'always-on-top');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'matchlive',
+      action: 'always-on-top',
+    });
     setIsAlwaysOnTop(!isAlwaysOnTop);
   };
 

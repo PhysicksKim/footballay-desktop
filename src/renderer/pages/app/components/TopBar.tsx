@@ -6,10 +6,16 @@ import '@app/styles/TopBar.scss';
 
 const TopBar = () => {
   const handleMinimizeWindow = () => {
-    window.electron.ipcRenderer.send('main-window-control', 'minimize');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'app',
+      action: 'minimize',
+    });
   };
   const handleQuitApp = () => {
-    window.electron.ipcRenderer.send('main-window-control', 'quit-app');
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'app',
+      action: 'quit',
+    });
   };
   return (
     <div className="dragable topbar-dragable-area">

@@ -3,12 +3,6 @@ import path from 'path';
 import log from 'electron-log';
 
 import { AppState } from './AppState';
-import {
-  removeAllMainWindowIpcMainHandlers,
-  removeAllMatchliveIpcMainHandlers,
-  setupMainWindowIpcMainHandlers,
-  setupMatchliveIpcMainHandlers,
-} from './ipcManager';
 import { resolveHtmlPath } from './util';
 import { getMatchliveWindowSize } from './store/DefaultSettingData';
 
@@ -21,7 +15,7 @@ type AppWindow = BrowserWindow | null;
 class WindowManager {
   static instance: WindowManager;
 
-  mainWindow: AppWindow = null;
+  appWindow: AppWindow = null;
   matchliveWindow: AppWindow = null;
   updatecheckerWindow: AppWindow = null;
 
@@ -36,13 +30,13 @@ class WindowManager {
    * App window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
    * @returns BrowserWindow 객체
    */
-  async createMainWindow() {
-    if (this.mainWindow) {
-      this.mainWindow.focus();
-      return this.mainWindow;
+  async createappWindow() {
+    if (this.appWindow) {
+      this.appWindow.focus();
+      return this.appWindow;
     }
 
-    this.mainWindow = new BrowserWindow({
+    this.appWindow = new BrowserWindow({
       show: false,
       width: 800,
       height: 600,
@@ -60,36 +54,33 @@ class WindowManager {
       movable: true,
     });
 
-    this.mainWindow.menuBarVisible = false;
+    this.appWindow.menuBarVisible = false;
     Menu.setApplicationMenu(null);
-    this.mainWindow.loadURL(resolveHtmlPath('index.html'));
+    this.appWindow.loadURL(resolveHtmlPath('index.html'));
 
-    this.mainWindow.on('ready-to-show', () => {
+    this.appWindow.on('ready-to-show', () => {
       if (process.env.START_MINIMIZED === 'false') {
-        this.mainWindow?.minimize();
+        this.appWindow?.minimize();
       } else {
-        this.mainWindow?.show();
+        this.appWindow?.show();
       }
     });
 
-    this.mainWindow.on('closed', () => {
+    this.appWindow.on('closed', () => {
       if (AppState.isUpdateInProgress) {
         AppState.isQuitInitiated = true;
-        this.mainWindow?.webContents.send('to-app', {
+        this.appWindow?.webContents.send('to-app', {
           type: 'UPDATE_IN_PROGRESS',
         });
       } else {
         app.quit();
       }
 
-      removeAllMainWindowIpcMainHandlers();
-
-      this.mainWindow = null;
+      this.appWindow = null;
     });
 
-    setupMainWindowIpcMainHandlers(this.mainWindow);
-    this.mainWindow.focus();
-    return this.mainWindow;
+    this.appWindow.focus();
+    return this.appWindow;
   }
 
   /**
@@ -126,16 +117,13 @@ class WindowManager {
     });
 
     this.matchliveWindow.on('closed', () => {
-      this.mainWindow?.webContents.send('to-app', {
+      this.appWindow?.webContents.send('to-app', {
         type: 'MATCHLIVE_WINDOW_CLOSED',
       });
-
-      removeAllMatchliveIpcMainHandlers();
 
       this.matchliveWindow = null;
     });
 
-    setupMatchliveIpcMainHandlers(this.matchliveWindow);
     return this.matchliveWindow;
   }
 
@@ -149,7 +137,7 @@ class WindowManager {
       return this.updatecheckerWindow;
     }
 
-    if (!this.mainWindow) {
+    if (!this.appWindow) {
       log.error('Main window is required for update checker window');
       throw new Error('Main window is required for update checker window');
     }
@@ -158,7 +146,7 @@ class WindowManager {
       width: 300,
       height: 200,
       resizable: false,
-      parent: this.mainWindow,
+      parent: this.appWindow,
       frame: false,
       transparent: true,
       webPreferences: {
@@ -179,7 +167,7 @@ class WindowManager {
 
     this.updatecheckerWindow.on('closed', () => {
       this.updatecheckerWindow = null;
-      this.mainWindow?.webContents.send('to-app', {
+      this.appWindow?.webContents.send('to-app', {
         type: 'AUTO_UPDATER_WINDOW_CLOSED',
       });
     });

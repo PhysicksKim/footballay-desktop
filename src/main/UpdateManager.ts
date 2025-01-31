@@ -8,14 +8,14 @@ class UpdateManager {
   private static instance: UpdateManager;
   private _isUpdateChecked: boolean = false;
 
-  private mainWindow: BrowserWindow;
+  private appWindow: BrowserWindow;
   private updatecheckerWindow: BrowserWindow;
 
   private constructor(
-    mainWindow: BrowserWindow,
+    appWindow: BrowserWindow,
     updatecheckerWindow: BrowserWindow,
   ) {
-    this.mainWindow = mainWindow;
+    this.appWindow = appWindow;
     this.updatecheckerWindow = updatecheckerWindow;
 
     if (process.env.NODE_ENV === 'development') {
@@ -29,12 +29,12 @@ class UpdateManager {
   }
 
   static getInstance(
-    mainWindow: BrowserWindow,
+    appWindow: BrowserWindow,
     updatecheckerWindow: BrowserWindow,
   ): UpdateManager {
     if (!UpdateManager.instance) {
       UpdateManager.instance = new UpdateManager(
-        mainWindow,
+        appWindow,
         updatecheckerWindow,
       );
     }
@@ -85,7 +85,7 @@ class UpdateManager {
 
       setTimeout(() => {
         this.updatecheckerWindow?.close();
-        this.mainWindow?.show();
+        this.appWindow?.show();
       }, 200);
     });
 
@@ -100,7 +100,7 @@ class UpdateManager {
 
       setTimeout(() => {
         this.updatecheckerWindow?.close();
-        this.mainWindow?.show();
+        this.appWindow?.show();
       }, 200);
     });
 
