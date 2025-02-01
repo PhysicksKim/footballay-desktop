@@ -7,6 +7,7 @@ import { __APP_VERSION__ } from './Constants';
 export type Channels =
   | 'loginfo'
   | 'window-control'
+  | 'window-control-response'
   // App Channels
   | 'react-ready'
   | 'matchlive-react-ready'

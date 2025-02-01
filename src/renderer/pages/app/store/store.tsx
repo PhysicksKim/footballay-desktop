@@ -7,6 +7,7 @@ import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
 import fixtureLiveOptionReducer from './slices/live/option/fixtureLiveOptionSlice';
 import fixtureLiveControlReducer from './slices/live/control/fixtureLiveControlSlice';
 import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
+import WindowInfoSlice from './slices/states/WindowInfoSlice';
 import { useDispatch } from 'react-redux';
 import { loadPreferenceKey } from './slices/live/option/preferenceKeyIO';
 
@@ -23,6 +24,7 @@ const store = configureStore({
     fixtureLiveOption: fixtureLiveOptionReducer,
     fixtureLiveControl: fixtureLiveControlReducer,
     fixtureProcessedData: fixtureProcessedDataSlice,
+    windowInfo: WindowInfoSlice,
   },
 });
 

@@ -14,6 +14,7 @@ import {
   FixtureLiveStatus,
   FixtureStatistics,
 } from '@src/types/FixtureIpc';
+import { setMatchliveAlwaysOnTop } from '../../store/slices/states/WindowInfoSlice';
 
 export type ReceiveIpcType =
   | 'SEND_SHOW_PHOTO'
@@ -26,7 +27,8 @@ export type ReceiveIpcType =
   | 'GET_PROCESSED_LINEUP'
   | 'GET_FIXTURE_STATISTICS'
   | 'AUTO_UPDATER_WINDOW_CLOSED'
-  | 'MATCHLIVE_REACT_READY';
+  | 'MATCHLIVE_REACT_READY'
+  | 'get:always-on-top';
 
 export interface IpcMessage {
   type: ReceiveIpcType;
@@ -118,13 +120,6 @@ const sendEvents = (
   });
 };
 
-const sendShowPhoto = (_showPhoto: boolean) => {
-  window.electron.ipcRenderer.send('to-matchlive', {
-    type: 'SET_SHOW_PHOTO',
-    data: _showPhoto,
-  });
-};
-
 const sendProcessedLineup = (processedLineup: any) => {
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_PROCESSED_LINEUP',
@@ -189,12 +184,9 @@ const MatchliveIpc = () => {
   const [getFixtureStatisticsFlag, setGetFixtureStatisticsFlag] =
     useState(false);
 
-  const handleMessage = (...args: IpcMessage[]) => {
+  const handleToAppMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
     switch (type) {
-      case 'SEND_SHOW_PHOTO':
-        sendShowPhoto(showPhotoRef.current);
-        break;
       case 'MATCHLIVE_WINDOW_READY':
         dispatch(setMatchliveWindowReady(true));
         break;
@@ -229,8 +221,24 @@ const MatchliveIpc = () => {
     }
   };
 
+  const handleWindowControlResponseMessage = (...args: IpcMessage[]) => {
+    const { type, data } = args[0];
+    switch (type) {
+      case 'get:always-on-top':
+        const isAlwaysOnTop = data;
+        dispatch(setMatchliveAlwaysOnTop(isAlwaysOnTop));
+        break;
+      default:
+        console.error('unexpected IPC message type :', type);
+    }
+  };
+
   useEffect(() => {
-    window.electron.ipcRenderer.on('to-app', handleMessage);
+    window.electron.ipcRenderer.on('to-app', handleToAppMessage);
+    window.electron.ipcRenderer.on(
+      'window-control-response',
+      handleWindowControlResponseMessage,
+    );
   }, []);
 
   useEffect(() => {
@@ -310,11 +318,6 @@ const MatchliveIpc = () => {
   useEffect(() => {
     sendEvents(fixtureEvents, filterEvents);
   }, [fixtureEvents, filterEvents]);
-
-  useEffect(() => {
-    showPhotoRef.current = showPhoto;
-    sendShowPhoto(showPhoto);
-  }, [showPhoto]);
 
   return <></>;
 };

@@ -1,41 +1,46 @@
 import log from 'electron-log';
 import { ipcMain, BrowserWindow, app } from 'electron';
 import matchliveWindowService from './matchliveWindowService';
-import WindowManager from './windowManager';
 import { WindowControlMsg } from '@src/types/WindowControl';
+import WindowManager from './WindowManager';
 
 export const setupCommonWindowIpcHandlers = () => {
-  ipcMain.on('window-control', (event, msg: WindowControlMsg) => {
+  ipcMain.on('window-control', async (event, msg: WindowControlMsg) => {
     if (msg.window === 'matchlive') {
       const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow;
       if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
-        console.error('matchliveWindow is not ready. window control ignored.');
+        sendMatchliveAlwaysOnTopFalseToAppWindow();
         return;
       }
       switch (msg.action) {
         case 'reload':
-          nowMatchliveWindow.reload();
+          await nowMatchliveWindow.reload();
           break;
         case 'minimize':
           if (nowMatchliveWindow.isMinimized()) {
-            nowMatchliveWindow.restore();
+            await nowMatchliveWindow.restore();
           } else {
-            nowMatchliveWindow.minimize();
+            await nowMatchliveWindow.minimize();
           }
           break;
         case 'close':
-          nowMatchliveWindow.close();
+          await nowMatchliveWindow.close();
+          sendMatchliveAlwaysOnTopFalseToAppWindow();
           break;
-        case 'always-on-top':
-          nowMatchliveWindow.setAlwaysOnTop(
+        case 'toggle:always-on-top':
+          await nowMatchliveWindow.setAlwaysOnTop(
             !nowMatchliveWindow.isAlwaysOnTop(),
           );
+          sendMatchliveAlwaysOnTopToAppWindow();
+          break;
+        case 'get:always-on-top':
+          sendMatchliveAlwaysOnTopToAppWindow();
           break;
         default:
           log.error(`Unknown msg: ${JSON.stringify(msg)}`);
       }
       return;
-    } else if (msg.window !== 'app') {
+    } else if (msg.window === 'app') {
       const appWindow = WindowManager.getInstance().appWindow;
       if (!appWindow) {
         console.error('appWindow is undefined.');
@@ -61,13 +66,7 @@ export const setupCommonWindowIpcHandlers = () => {
 };
 
 export const setupappWindowIpcMainHandlers = () => {
-  const _appWindow = WindowManager.getInstance().appWindow;
-  if (!_appWindow) {
-    console.error('appWindow is undefined. IPC handlers not registered.');
-    return;
-  }
-
-  ipcMain.on('open-matchlive-window', async () => {
+  ipcMain.on('open-matchlive-window', async (event, data) => {
     const matchliveWindow =
       await WindowManager.getInstance().createMatchliveWindow();
     if (!matchliveWindow) {
@@ -95,20 +94,9 @@ export const setupappWindowIpcMainHandlers = () => {
 };
 
 export const setupMatchliveIpcMainHandlers = () => {
-  if (
-    !WindowManager.getInstance().matchliveWindow ||
-    WindowManager.getInstance().matchliveWindow?.isDestroyed()
-  ) {
-    console.error('matchliveWindow is not ready. IPC handlers not registered.');
-    return;
-  }
-
   ipcMain.on('to-matchlive', (event, data) => {
     const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow;
     if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
-      console.error(
-        'matchliveWindow is not ready. to-matchlive message ignored.',
-      );
       return;
     }
 
@@ -135,14 +123,23 @@ export const setupMatchliveIpcMainHandlers = () => {
   });
 };
 
-// export const removeAllappWindowIpcMainHandlers = () => {
-//   ipcMain.removeAllListeners('loginfo');
-//   ipcMain.removeAllListeners('open-matchlive-window');
-//   ipcMain.removeAllListeners('to-app');
-//   ipcMain.removeAllListeners('matchlive-react-ready');
-// };
+const sendMatchliveAlwaysOnTopToAppWindow = async () => {
+  const matchliveWindow = WindowManager.getInstance().matchliveWindow;
+  WindowManager.getInstance().appWindow?.webContents.send(
+    'window-control-response',
+    {
+      type: 'get:always-on-top',
+      data: matchliveWindow ? matchliveWindow.isAlwaysOnTop() : false,
+    },
+  );
+};
 
-// export const removeAllMatchliveIpcMainHandlers = () => {
-//   ipcMain.removeAllListeners('to-matchlive');
-//   ipcMain.removeAllListeners('reset-matchlive-window');
-// };
+const sendMatchliveAlwaysOnTopFalseToAppWindow = async () => {
+  WindowManager.getInstance().appWindow?.webContents.send(
+    'window-control-response',
+    {
+      type: 'get:always-on-top',
+      data: false,
+    },
+  );
+};

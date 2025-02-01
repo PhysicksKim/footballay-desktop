@@ -19,7 +19,6 @@ export type ReceiveIpcType =
   | 'SET_LINEUP'
   | 'SET_EVENTS'
   | 'SET_STATISTICS'
-  | 'SET_SHOW_PHOTO'
   | 'SET_PROCESSED_LINEUP';
 export type SendIpcType =
   | 'GET_FIXTURE_ID'
@@ -87,10 +86,6 @@ const FixtureIpc = () => {
       }
       case 'SET_EVENTS': {
         dispatch(setFixtureEvents(data));
-        break;
-      }
-      case 'SET_SHOW_PHOTO': {
-        dispatch(setShowPhoto(data));
         break;
       }
       case 'SET_PROCESSED_LINEUP': {

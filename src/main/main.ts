@@ -1,7 +1,7 @@
 import { app, net, protocol } from 'electron';
 import log from 'electron-log';
 import CustomElectronStoreIpc from './store/CustomElectronStoreIpc';
-import WindowManager from './windowManager';
+import WindowManager from './WindowManager';
 import UpdateManager from './UpdateManager';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -112,10 +112,10 @@ app
       }
     });
 
-    new CustomElectronStoreIpc();
     setupCommonWindowIpcHandlers();
     setupappWindowIpcMainHandlers();
     setupMatchliveIpcMainHandlers();
+    new CustomElectronStoreIpc();
     const windowManager = WindowManager.getInstance();
     const appWindow = await windowManager.createappWindow();
     const updatecheckerWindow = await windowManager.createUpdatecheckerWindow();

@@ -33,7 +33,9 @@ const MatchliveControlTab = () => {
     (state: RootState) => state.fixtureLiveOption.preference.key,
   );
 
-  const [isAlwaysOnTop, setIsAlwaysOnTop] = useState<boolean>(false);
+  const isAlwaysOnTop = useSelector(
+    (state: RootState) => state.windowInfo.matchliveAlwaysOnTop,
+  );
 
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
 
@@ -97,9 +99,8 @@ const MatchliveControlTab = () => {
   const alwaysOnTopMatchlive = () => {
     window.electron.ipcRenderer.send('window-control', {
       window: 'matchlive',
-      action: 'always-on-top',
+      action: 'toggle:always-on-top',
     });
-    setIsAlwaysOnTop(!isAlwaysOnTop);
   };
 
   const handleAddFilter = (event: FixtureEvent) => {
@@ -216,7 +217,7 @@ const MatchliveControlTab = () => {
           className="always-on-top-btn win-con-btn"
           onClick={alwaysOnTopMatchlive}
         >
-          {isAlwaysOnTop ? '항상 위' : '항상 위 해제'}
+          {isAlwaysOnTop ? '항상 위 해제' : '항상 위로'}
         </button>
         <button className="close-btn win-con-btn" onClick={closeMatchlive}>
           닫기
