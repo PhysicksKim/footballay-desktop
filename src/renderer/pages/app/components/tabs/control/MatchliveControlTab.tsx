@@ -96,11 +96,12 @@ const MatchliveControlTab = () => {
     });
   };
 
+  // temporary disabled because of issue #1
   const alwaysOnTopMatchlive = () => {
-    window.electron.ipcRenderer.send('window-control', {
-      window: 'matchlive',
-      action: 'toggle:always-on-top',
-    });
+    // window.electron.ipcRenderer.send('window-control', {
+    //   window: 'matchlive',
+    //   action: 'toggle:always-on-top',
+    // });
   };
 
   const handleAddFilter = (event: FixtureEvent) => {
@@ -213,12 +214,12 @@ const MatchliveControlTab = () => {
         >
           크기 초기화
         </button>
-        <button
+        {/* <button
           className="always-on-top-btn win-con-btn"
           onClick={alwaysOnTopMatchlive}
         >
           {isAlwaysOnTop ? '항상 위 해제' : '항상 위로'}
-        </button>
+        </button> */}
         <button className="close-btn win-con-btn" onClick={closeMatchlive}>
           닫기
         </button>
