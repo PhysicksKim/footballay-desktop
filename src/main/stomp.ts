@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 
 let stompClient: Client | null = null;
 
-const brokerURL = 'wss://gyechunsik.site/ws';
+const brokerURL = 'wss://gyechunhoe.com/ws';
 const stompConfig: StompConfig = {
   brokerURL: brokerURL,
   onConnect: () => {

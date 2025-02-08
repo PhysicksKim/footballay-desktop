@@ -147,8 +147,8 @@ const configuration: webpack.Configuration = {
       NODE_ENV: 'development',
     }),
     new webpack.DefinePlugin({
-      // 'process.env.API_URL': JSON.stringify('https://gyechunsik.site'),
-      // 'process.env.WEBSOCKET_URL': JSON.stringify('wss://gyechunsik.site/ws'),
+      // 'process.env.API_URL': JSON.stringify('https://gyechunhoe.com'),
+      // 'process.env.WEBSOCKET_URL': JSON.stringify('wss://gyechunhoe.com/ws'),
       'process.env.API_URL': JSON.stringify('https://localhost:8083'),
       'process.env.WEBSOCKET_URL': JSON.stringify('wss://localhost:8083/ws'),
     }),

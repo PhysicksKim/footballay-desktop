@@ -161,8 +161,8 @@ const configuration: webpack.Configuration = {
       E2E_BUILD: 'false',
     }),
     new webpack.DefinePlugin({
-      'process.env.API_URL': JSON.stringify('https://gyechunsik.site'),
-      'process.env.WEBSOCKET_URL': JSON.stringify('wss://gyechunsik.site/ws'),
+      'process.env.API_URL': JSON.stringify('https://gyechunhoe.com'),
+      'process.env.WEBSOCKET_URL': JSON.stringify('wss://gyechunhoe.com/ws'),
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
