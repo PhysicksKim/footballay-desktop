@@ -1,4 +1,4 @@
-@import '@app/styles/Color.scss';
+@use '@app/styles/Color.scss' as *;
 
 $menu-btn-hover: #ffffff4b;
 

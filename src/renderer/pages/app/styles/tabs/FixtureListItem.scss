@@ -1,4 +1,4 @@
-@import '@app/styles/Color.scss';
+@use '@app/styles/Color.scss' as *;
 
 $home-team-color: #565897;
 $away-team-color: #d89066;

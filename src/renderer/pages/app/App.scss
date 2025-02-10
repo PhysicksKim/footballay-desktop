@@ -1,8 +1,4 @@
-/*
- * @NOTE: Prepend a `~` to css file paths that are in your node_modules
- *        See https://github.com/webpack-contrib/sass-loader#imports
- */
-@import '@app/styles/Color.scss';
+@use '@app/styles/Color.scss' as *;
 
 /*
  * 폰트는 App.tsx 에서 global styled-components로 설정 됨. Pretendard

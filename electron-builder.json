@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "productName": "ChunCity",
+  "appId": "site.gyechunsick.chuncity",
+  "asar": true,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": ["dist-electron", "dist"],
+  "mac": {
+    "artifactName": "ChunCity_Setup_${version}.${ext}",
+    "target": ["dmg", "zip"]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "artifactName": "ChunCity_Setup_${version}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "allowElevation": true,
+    "perMachine": true,
+    "differentialPackage": true,
+    "uninstallDisplayName": "춘시티",
+    "installerSidebar": "assets/installerSidebar.bmp",
+    "installerHeader": "assets/installerHeader.bmp",
+    "installerHeaderIcon": "assets/icon.ico"
+  },
+  "publish": {
+    "provider": "generic",
+    "channel": "latest",
+    "url": "https://static.gyechunsik.site/chuncity/releases/latest"
+  }
+}

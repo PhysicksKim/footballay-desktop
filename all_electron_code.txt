@@ -1,0 +1,1487 @@
+/// <reference types="vite-electron-plugin/electron-env" />
+
+declare namespace NodeJS {
+  interface ProcessEnv {
+    VSCODE_DEBUG?: 'true'
+    /**
+     * The built directory structure
+     *
+     * ```tree
+     * ├─┬ dist-electron
+     * │ ├─┬ main
+     * │ │ └── index.js    > Electron-Main
+     * │ └─┬ preload
+     * │   └── index.mjs   > Preload-Scripts
+     * ├─┬ dist
+     * │ └── index.html    > Electron-Renderer
+     * ```
+     */
+    APP_ROOT: string
+    /** /dist/ or /public/ */
+    VITE_PUBLIC: string
+  }
+}
+import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+import os from 'node:os'
+import { update } from './update.ts.bak'
+
+const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// The built directory structure
+//
+// ├─┬ dist-electron
+// │ ├─┬ main
+// │ │ └── index.js    > Electron-Main
+// │ └─┬ preload
+// │   └── index.mjs   > Preload-Scripts
+// ├─┬ dist
+// │ └── index.html    > Electron-Renderer
+//
+process.env.APP_ROOT = path.join(__dirname, '../..')
+
+export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
+export const { VITE_DEV_SERVER_URL } = process.env
+
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
+  ? path.join(process.env.APP_ROOT, 'public')
+  : RENDERER_DIST
+
+// Disable GPU Acceleration for Windows 7
+if (os.release().startsWith('6.1')) app.disableHardwareAcceleration()
+
+// Set application name for Windows 10+ notifications
+if (process.platform === 'win32') app.setAppUserModelId(app.getName())
+
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+  process.exit(0)
+}
+
+let win: BrowserWindow | null = null
+const preload = path.join(__dirname, '../preload/index.mjs')
+const indexHtml = path.join(RENDERER_DIST, 'index.html')
+const matchliveIndexHtml = path.join(RENDERER_DIST, 'matchlive_index.html')
+const updatecheckerIndexHtml = path.join(
+  RENDERER_DIST,
+  'updatechecker_index.html'
+)
+
+async function createWindow() {
+  win = new BrowserWindow({
+    title: 'Main window',
+    icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    webPreferences: {
+      preload,
+      // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
+      // nodeIntegration: true,
+
+      // Consider using contextBridge.exposeInMainWorld
+      // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
+      // contextIsolation: false,
+    },
+  })
+
+  if (VITE_DEV_SERVER_URL) {
+    // #298
+    const appIndex = `${VITE_DEV_SERVER_URL}index.html`
+    const matchliveIndex = `${VITE_DEV_SERVER_URL}matchlive_index.html`
+    const updatecheckerIndex = `${VITE_DEV_SERVER_URL}updatechecker_index.html`
+    win.loadURL(appIndex)
+    // Open devTool if the app is not packaged
+    win.webContents.openDevTools()
+  } else {
+    win.loadFile(indexHtml)
+  }
+
+  // Test actively push message to the Electron-Renderer
+  win.webContents.on('did-finish-load', () => {
+    win?.webContents.send('main-process-message', new Date().toLocaleString())
+  })
+
+  // Make all links open with the browser, not with the application
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:')) shell.openExternal(url)
+    return { action: 'deny' }
+  })
+
+  // Auto update
+  update(win)
+}
+
+app.whenReady().then(createWindow)
+
+app.on('window-all-closed', () => {
+  win = null
+  if (process.platform !== 'darwin') app.quit()
+})
+
+app.on('second-instance', () => {
+  if (win) {
+    // Focus on the main window if the user tried to open another
+    if (win.isMinimized()) win.restore()
+    win.focus()
+  }
+})
+
+app.on('activate', () => {
+  const allWindows = BrowserWindow.getAllWindows()
+  if (allWindows.length) {
+    allWindows[0].focus()
+  } else {
+    createWindow()
+  }
+})
+
+// New window example arg: new windows url
+ipcMain.handle('open-win', (_, arg) => {
+  const childWindow = new BrowserWindow({
+    webPreferences: {
+      preload,
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  })
+
+  if (VITE_DEV_SERVER_URL) {
+    childWindow.loadURL(`${VITE_DEV_SERVER_URL}#${arg}`)
+  } else {
+    childWindow.loadFile(indexHtml, { hash: arg })
+  }
+})
+export const AppState = {
+  isUpdateInProgress: false,
+  isQuitInitiated: false,
+};
+const __APP_VERSION__ = '0.2.0';
+
+export { __APP_VERSION__ };
+owner: physickskim
+repo: chun-city
+provider: github
+import { ipcMain, BrowserWindow } from 'electron';
+
+export function setupIpcMainHandlers(
+  appWindow: BrowserWindow | null,
+  createMatchliveWindow: () => void,
+) {
+  ipcMain.on('open-matchlive-window', () => {
+    createMatchliveWindow();
+  });
+}
+import log from 'electron-log'
+import { ipcMain, app } from 'electron'
+import matchliveWindowService from './matchliveWindowService'
+import { WindowControlMsg } from '@src/types/WindowControl'
+import WindowManager from './WindowManager'
+
+export const setupCommonWindowIpcHandlers = () => {
+  ipcMain.on('window-control', async (event, msg: WindowControlMsg) => {
+    if (msg.window === 'matchlive') {
+      const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow
+      if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
+        sendMatchliveAlwaysOnTopFalseToAppWindow()
+        return
+      }
+      switch (msg.action) {
+        case 'reload':
+          await nowMatchliveWindow.reload()
+          break
+        case 'minimize':
+          if (nowMatchliveWindow.isMinimized()) {
+            await nowMatchliveWindow.restore()
+          } else {
+            await nowMatchliveWindow.minimize()
+          }
+          break
+        case 'close':
+          await nowMatchliveWindow.close()
+          sendMatchliveAlwaysOnTopFalseToAppWindow()
+          break
+        /* temporary disabled because of issue #1 */
+        // case 'toggle:always-on-top':
+        //   await nowMatchliveWindow.setAlwaysOnTop(
+        //     !nowMatchliveWindow.isAlwaysOnTop(),
+        //   );
+        //   sendMatchliveAlwaysOnTopToAppWindow();
+        //   break;
+        case 'get:always-on-top':
+          sendMatchliveAlwaysOnTopToAppWindow()
+          break
+        default:
+          log.error(`Unknown msg: ${JSON.stringify(msg)}`)
+      }
+      return
+    } else if (msg.window === 'app') {
+      const appWindow = WindowManager.getInstance().appWindow
+      if (!appWindow) {
+        console.error('appWindow is undefined.')
+        return
+      }
+      switch (msg.action) {
+        case 'minimize':
+          appWindow.minimize()
+          break
+        case 'quit':
+          app.quit()
+          break
+        default:
+          log.error(`Unknown window contol: ${msg}`)
+      }
+      return
+    }
+  })
+
+  ipcMain.on('loginfo', (event, data) => {
+    log.info(data)
+  })
+}
+
+export const setupappWindowIpcMainHandlers = () => {
+  ipcMain.on('open-matchlive-window', async (event, data) => {
+    const matchliveWindow =
+      await WindowManager.getInstance().createMatchliveWindow()
+    if (!matchliveWindow) {
+      console.error('Failed to create matchliveWindow.')
+    }
+  })
+
+  ipcMain.on('to-app', (event, data) => {
+    const appWindow = WindowManager.getInstance().appWindow
+    if (!appWindow) {
+      console.error('appWindow is undefined.')
+      return
+    }
+    appWindow.webContents.send('to-app', data)
+  })
+
+  ipcMain.on('matchlive-react-ready', () => {
+    const appWindow = WindowManager.getInstance().appWindow
+    if (!appWindow) {
+      console.error('appWindow is undefined.')
+      return
+    }
+    appWindow.webContents.send('to-app', { type: 'SEND_SHOW_PHOTO' })
+  })
+}
+
+export const setupMatchliveIpcMainHandlers = () => {
+  ipcMain.on('to-matchlive', (event, data) => {
+    const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow
+    if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
+      return
+    }
+
+    try {
+      nowMatchliveWindow.webContents.send('to-matchlive', data)
+    } catch (e) {
+      log.error('to-matchlive ipc error message', e)
+    }
+  })
+
+  ipcMain.handle('reset-matchlive-window', async () => {
+    const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow
+    if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
+      console.error('matchliveWindow is not ready for reset.')
+      return
+    }
+
+    const { height, width } =
+      await matchliveWindowService.getDefaultWindowSize()
+
+    nowMatchliveWindow.setSize(width, height)
+    nowMatchliveWindow.center()
+    nowMatchliveWindow.focus()
+  })
+}
+
+const sendMatchliveAlwaysOnTopToAppWindow = async () => {
+  const matchliveWindow = WindowManager.getInstance().matchliveWindow
+  WindowManager.getInstance().appWindow?.webContents.send(
+    'window-control-response',
+    {
+      type: 'get:always-on-top',
+      data: matchliveWindow ? matchliveWindow.isAlwaysOnTop() : false,
+    }
+  )
+}
+
+const sendMatchliveAlwaysOnTopFalseToAppWindow = async () => {
+  WindowManager.getInstance().appWindow?.webContents.send(
+    'window-control-response',
+    {
+      type: 'get:always-on-top',
+      data: false,
+    }
+  )
+}
+import { app, net, protocol } from 'electron'
+import log from 'electron-log'
+import CustomElectronStoreIpc from './store/CustomElectronStoreIpc'
+import WindowManager from './WindowManager'
+import UpdateManager from './UpdateManager'
+import { pathToFileURL } from 'node:url'
+import {
+  setupappWindowIpcMainHandlers,
+  setupCommonWindowIpcHandlers,
+  setupMatchliveIpcMainHandlers,
+} from './ipcManager'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+export const __filename = fileURLToPath(import.meta.url)
+export const __dirname = dirname(__filename)
+
+export const CUSTOM_PROTOCOL_NAME = 'chuncity'
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: CUSTOM_PROTOCOL_NAME,
+    privileges: {
+      standard: true, // 표준 프로토콜처럼 동작
+      secure: true, // 보안 프로토콜로 간주 (https와 유사)
+      supportFetchAPI: true, // Fetch API 지원
+      corsEnabled: true, // CORS 요청 허용
+      stream: true, // 스트림 지원
+      bypassCSP: true, // Content Security Policy 우회 불가
+    },
+  },
+])
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+const isDev = import.meta.env.MODE === 'development'
+const isTestAutoUpdate = false
+
+if (isDev) {
+  // 개발 환경에서 인증서 에러 무시
+  app.commandLine.appendSwitch('ignore-certificate-errors')
+}
+
+if (isDev && isTestAutoUpdate) {
+  // 임의로 낮은 버전을 설정하여 업데이트를 트리거
+  app.getVersion = () => '0.0.1'
+  Object.defineProperty(app, 'isPackaged', {
+    get() {
+      return true
+    },
+  })
+} else {
+  if (isDev) {
+    console.log('skipped update property injection for dev environment')
+  }
+}
+
+app
+  .whenReady()
+  .then(async () => {
+    protocol.handle(CUSTOM_PROTOCOL_NAME, async (req) => {
+      log.info(`CUSTOM Request URL: ${req.url}`)
+      const parsedUrl = new URL(req.url)
+      try {
+        let relativePath = decodeURIComponent(parsedUrl.pathname)
+
+        // Windows에서 경로가 '/'로 시작하므로 제거
+        if (process.platform === 'win32') {
+          relativePath = relativePath.replace(/^\/+/, '')
+        }
+
+        const basePath = path.join(__dirname, '..', 'renderer')
+
+        const normalizedPath = path.normalize(path.join(basePath, relativePath))
+
+        // basePath 외부 접근 방지
+        if (!normalizedPath.startsWith(basePath)) {
+          log.warn(`Unauthorized access attempt: ${normalizedPath}`)
+          return new Response('Not Found', {
+            status: 404,
+            statusText: 'Not Found',
+          })
+        }
+
+        // 파일 존재 여부 확인 및 반환
+        try {
+          const fileURL = pathToFileURL(normalizedPath).toString()
+          const response = await net.fetch(fileURL)
+          if (!response.ok) {
+            log.warn(`File not found or inaccessible: ${fileURL}`)
+            return new Response('Not Found', {
+              status: 404,
+              statusText: 'Not Found',
+            })
+          }
+          return response
+        } catch (error) {
+          log.error(`Failed to fetch file: ${normalizedPath}`, error)
+          return new Response('Internal Server Error', {
+            status: 500,
+            statusText: 'Internal Server Error',
+          })
+        }
+      } catch (error) {
+        log.error('Protocol handler error:', error)
+        return new Response('Bad Request', {
+          status: 400,
+          statusText: 'Bad Request',
+        })
+      }
+    })
+
+    setupCommonWindowIpcHandlers()
+    setupappWindowIpcMainHandlers()
+    setupMatchliveIpcMainHandlers()
+    new CustomElectronStoreIpc()
+    const windowManager = WindowManager.getInstance()
+    const appWindow = await windowManager.createappWindow()
+    const updatecheckerWindow = await windowManager.createUpdatecheckerWindow()
+    const updateManager = UpdateManager.getInstance(
+      appWindow,
+      updatecheckerWindow
+    )
+    updateManager.checkForUpdates()
+
+    // if (isDev) {
+    //   appWindow.webContents.openDevTools();
+    // }
+
+    /* Close update checker window in development mode */
+    if (isDev && !isTestAutoUpdate) {
+      setTimeout(() => {
+        updatecheckerWindow?.close()
+      }, 1000)
+    }
+  })
+  .catch((e) => {
+    log.error(e)
+  })
+const getDefaultWindowSize = async () => {
+  return {
+    width: 415,
+    height: 850,
+  };
+};
+
+const matchliveWindowService = {
+  getDefaultWindowSize,
+};
+
+export default matchliveWindowService;
+import {
+  app,
+  Menu,
+  shell,
+  BrowserWindow,
+  MenuItemConstructorOptions,
+} from 'electron'
+
+interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
+  selector?: string
+  submenu?: DarwinMenuItemConstructorOptions[] | Menu
+}
+
+export default class MenuBuilder {
+  appWindow: BrowserWindow
+
+  constructor(appWindow: BrowserWindow) {
+    this.appWindow = appWindow
+  }
+
+  buildMenu(): Menu {
+    if (
+      import.meta.env.MODE === 'development' ||
+      process.env.DEBUG_PROD === 'true'
+    ) {
+      this.setupDevelopmentEnvironment()
+    }
+
+    const template =
+      process.platform === 'darwin'
+        ? this.buildDarwinTemplate()
+        : this.buildDefaultTemplate()
+
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
+
+    return menu
+  }
+
+  setupDevelopmentEnvironment(): void {
+    this.appWindow.webContents.on('context-menu', (_, props) => {
+      const { x, y } = props
+
+      Menu.buildFromTemplate([
+        {
+          label: 'Inspect element',
+          click: () => {
+            this.appWindow.webContents.inspectElement(x, y)
+          },
+        },
+      ]).popup({ window: this.appWindow })
+    })
+  }
+
+  buildDarwinTemplate(): MenuItemConstructorOptions[] {
+    const subMenuAbout: DarwinMenuItemConstructorOptions = {
+      label: 'Electron',
+      submenu: [
+        {
+          label: 'About ElectronReact',
+          selector: 'orderFrontStandardAboutPanel:',
+        },
+        { type: 'separator' },
+        { label: 'Services', submenu: [] },
+        { type: 'separator' },
+        {
+          label: 'Hide ElectronReact',
+          accelerator: 'Command+H',
+          selector: 'hide:',
+        },
+        {
+          label: 'Hide Others',
+          accelerator: 'Command+Shift+H',
+          selector: 'hideOtherApplications:',
+        },
+        { label: 'Show All', selector: 'unhideAllApplications:' },
+        { type: 'separator' },
+        {
+          label: 'Quit',
+          accelerator: 'Command+Q',
+          click: () => {
+            app.quit()
+          },
+        },
+      ],
+    }
+    const subMenuEdit: DarwinMenuItemConstructorOptions = {
+      label: 'Edit',
+      submenu: [
+        { label: 'Undo', accelerator: 'Command+Z', selector: 'undo:' },
+        { label: 'Redo', accelerator: 'Shift+Command+Z', selector: 'redo:' },
+        { type: 'separator' },
+        { label: 'Cut', accelerator: 'Command+X', selector: 'cut:' },
+        { label: 'Copy', accelerator: 'Command+C', selector: 'copy:' },
+        { label: 'Paste', accelerator: 'Command+V', selector: 'paste:' },
+        {
+          label: 'Select All',
+          accelerator: 'Command+A',
+          selector: 'selectAll:',
+        },
+      ],
+    }
+    const subMenuViewDev: MenuItemConstructorOptions = {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Reload',
+          accelerator: 'Command+R',
+          click: () => {
+            this.appWindow.webContents.reload()
+          },
+        },
+        {
+          label: 'Toggle Full Screen',
+          accelerator: 'Ctrl+Command+F',
+          click: () => {
+            this.appWindow.setFullScreen(!this.appWindow.isFullScreen())
+          },
+        },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: 'Alt+Command+I',
+          click: () => {
+            this.appWindow.webContents.toggleDevTools()
+          },
+        },
+      ],
+    }
+    const subMenuViewProd: MenuItemConstructorOptions = {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Toggle Full Screen',
+          accelerator: 'Ctrl+Command+F',
+          click: () => {
+            this.appWindow.setFullScreen(!this.appWindow.isFullScreen())
+          },
+        },
+      ],
+    }
+    const subMenuWindow: DarwinMenuItemConstructorOptions = {
+      label: 'Window',
+      submenu: [
+        {
+          label: 'Minimize',
+          accelerator: 'Command+M',
+          selector: 'performMiniaturize:',
+        },
+        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
+        { type: 'separator' },
+        { label: 'Bring All to Front', selector: 'arrangeInFront:' },
+      ],
+    }
+    const subMenuHelp: MenuItemConstructorOptions = {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click() {
+            shell.openExternal('https://electronjs.org')
+          },
+        },
+        {
+          label: 'Documentation',
+          click() {
+            shell.openExternal(
+              'https://github.com/electron/electron/tree/main/docs#readme'
+            )
+          },
+        },
+        {
+          label: 'Community Discussions',
+          click() {
+            shell.openExternal('https://www.electronjs.org/community')
+          },
+        },
+        {
+          label: 'Search Issues',
+          click() {
+            shell.openExternal('https://github.com/electron/electron/issues')
+          },
+        },
+      ],
+    }
+
+    const subMenuView =
+      import.meta.env.MODE === 'development' ||
+      process.env.DEBUG_PROD === 'true'
+        ? subMenuViewDev
+        : subMenuViewProd
+
+    return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp]
+  }
+
+  buildDefaultTemplate() {
+    const templateDefault = [
+      {
+        label: '&File',
+        submenu: [
+          {
+            label: '&Open',
+            accelerator: 'Ctrl+O',
+          },
+          {
+            label: '&Close',
+            accelerator: 'Ctrl+W',
+            click: () => {
+              this.appWindow.close()
+            },
+          },
+        ],
+      },
+      {
+        label: '&View',
+        submenu:
+          import.meta.env.MODE === 'development' ||
+          process.env.DEBUG_PROD === 'true'
+            ? [
+                {
+                  label: '&Reload',
+                  accelerator: 'Ctrl+R',
+                  click: () => {
+                    this.appWindow.webContents.reload()
+                  },
+                },
+                {
+                  label: 'Toggle &Full Screen',
+                  accelerator: 'F11',
+                  click: () => {
+                    this.appWindow.setFullScreen(!this.appWindow.isFullScreen())
+                  },
+                },
+                {
+                  label: 'Toggle &Developer Tools',
+                  accelerator: 'Alt+Ctrl+I',
+                  click: () => {
+                    this.appWindow.webContents.toggleDevTools()
+                  },
+                },
+              ]
+            : [
+                {
+                  label: 'Toggle &Full Screen',
+                  accelerator: 'F11',
+                  click: () => {
+                    this.appWindow.setFullScreen(!this.appWindow.isFullScreen())
+                  },
+                },
+              ],
+      },
+      {
+        label: 'Help',
+        submenu: [
+          {
+            label: 'Learn More',
+            click() {
+              shell.openExternal('https://electronjs.org')
+            },
+          },
+          {
+            label: 'Documentation',
+            click() {
+              shell.openExternal(
+                'https://github.com/electron/electron/tree/main/docs#readme'
+              )
+            },
+          },
+          {
+            label: 'Community Discussions',
+            click() {
+              shell.openExternal('https://www.electronjs.org/community')
+            },
+          },
+          {
+            label: 'Search Issues',
+            click() {
+              shell.openExternal('https://github.com/electron/electron/issues')
+            },
+          },
+        ],
+      },
+    ]
+
+    return templateDefault
+  }
+}
+import { ipcMain, BrowserWindow } from 'electron';
+import { Client, IMessage, StompConfig } from '@stomp/stompjs';
+import WebSocket from 'ws';
+
+let stompClient: Client | null = null;
+
+const brokerURL = 'wss://gyechunhoe.com/ws';
+const stompConfig: StompConfig = {
+  brokerURL: brokerURL,
+  onConnect: () => {
+    console.log('Connected to WebSocket');
+  },
+  onDisconnect: () => {
+    console.log('Disconnected from WebSocket');
+  },
+};
+
+export function setupStompHandlers(appWindow: BrowserWindow | null) {
+  ipcMain.handle('init-stomp-client', async (_) => {
+    stompClient = new Client({
+      ...stompConfig,
+      webSocketFactory: () => new WebSocket(brokerURL),
+    });
+    stompClient.onConnect = () => {
+      appWindow?.webContents.send('ws-status', 'connected');
+    };
+    stompClient.onDisconnect = () => {
+      appWindow?.webContents.send('ws-status', 'disconnected');
+    };
+    stompClient.activate();
+  });
+
+  ipcMain.handle(
+    'stomp-publish',
+    async (_, destination: string, body: string) => {
+      if (stompClient) {
+        stompClient.publish({
+          destination: destination,
+          body: body,
+        });
+      }
+    },
+  );
+
+  ipcMain.handle('stomp-subscribe', async (_, destination: string) => {
+    if (stompClient) {
+      stompClient.subscribe(destination, (message: IMessage) => {
+        appWindow?.webContents.send('stomp-message', message.body);
+      });
+    }
+  });
+}
+import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from 'electron';
+import Store from 'electron-store';
+
+export default class CustomElectronStoreIpc {
+  constructor() {
+    const store = new Store();
+
+    ipcMain.handle('get-store-value', (event, key) => {
+      return store.get(key);
+    });
+
+    ipcMain.handle('set-store-value', (event, key, value) => {
+      store.set(key, value);
+    });
+  }
+}
+import ElectronStore from 'electron-store';
+
+const store = new ElectronStore();
+
+/**
+ * matchlive window 의 저장된 width, height 값을 가져온다. <br>
+ * 저장된 윈도우 사이즈가 없을 경우 기본 윈도우 사이즈를 반환한다. <br>
+ * @returns {height: number, width: number}
+ */
+const getMatchliveWindowSize = async () => {
+  const storedHeight = (await store.get('matchlive_window_height')) as number;
+  const storedWidth = (await store.get('matchlive_window_width')) as number;
+  const height = storedHeight ? storedHeight : 850;
+  const width = storedWidth ? storedWidth : 415;
+  return { height, width };
+};
+
+export { getMatchliveWindowSize };
+import { contextBridge, ipcMain, ipcRenderer } from 'electron';
+import { StoreKey } from './StoreKey';
+
+const electronStore = {
+  get: (key: StoreKey) => ipcRenderer.invoke('get-store-value', key),
+  set: (key: StoreKey, value: any) =>
+    ipcRenderer.invoke('set-store-value', key, value),
+  resetMatchliveWindowSizeAndPosition: () =>
+    ipcRenderer.invoke('reset-matchlive-window'),
+};
+
+export default electronStore;
+import { ElectronStoreKeys } from '@src/types/ElectronStoreKeys';
+
+export type StoreKey = ElectronStoreKeys;
+import electronUpdater from 'electron-updater'
+import log from 'electron-log'
+import { BrowserWindow } from 'electron'
+import { AppState } from './AppState'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+export const __filename = fileURLToPath(import.meta.url)
+export const __dirname = dirname(__filename)
+
+const { autoUpdater } = electronUpdater
+
+class UpdateManager {
+  private static instance: UpdateManager
+  private _isUpdateChecked: boolean = false
+
+  private appWindow: BrowserWindow
+  private updatecheckerWindow: BrowserWindow
+
+  private constructor(
+    appWindow: BrowserWindow,
+    updatecheckerWindow: BrowserWindow
+  ) {
+    this.appWindow = appWindow
+    this.updatecheckerWindow = updatecheckerWindow
+
+    if (import.meta.env.MODE === 'development') {
+      autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml')
+    }
+
+    this.setupAutoUpdaterListeners()
+
+    log.transports.file.level = 'info'
+    autoUpdater.logger = log
+  }
+
+  static getInstance(
+    appWindow: BrowserWindow,
+    updatecheckerWindow: BrowserWindow
+  ): UpdateManager {
+    if (!UpdateManager.instance) {
+      UpdateManager.instance = new UpdateManager(appWindow, updatecheckerWindow)
+    }
+    return UpdateManager.instance
+  }
+
+  get isUpdateChecked() {
+    return this._isUpdateChecked
+  }
+
+  private setupAutoUpdaterListeners() {
+    autoUpdater.on('checking-for-update', () => {
+      this._isUpdateChecked = true
+      log.info('Checking for update...')
+      AppState.isUpdateInProgress = true
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'CHECKING_FOR_UPDATE',
+        data: {},
+      })
+    })
+
+    autoUpdater.on('update-available', (info) => {
+      this._isUpdateChecked = true
+      log.info('Update available.')
+      AppState.isUpdateInProgress = true
+
+      const currentVersion = autoUpdater.currentVersion?.version || 'unknown'
+      const latestVersion = info.version || 'unknown'
+
+      log.info(
+        `Now version: ${currentVersion}, Latest version: ${latestVersion}`
+      )
+
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'UPDATE_AVAILABLE',
+        data: {},
+      })
+    })
+
+    autoUpdater.on('update-not-available', () => {
+      this._isUpdateChecked = true
+      log.info('Update not available.')
+      AppState.isUpdateInProgress = false
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'UPDATE_NOT_AVAILABLE',
+        data: {},
+      })
+
+      setTimeout(() => {
+        this.updatecheckerWindow?.close()
+        this.appWindow?.show()
+      }, 200)
+    })
+
+    autoUpdater.on('error', (err) => {
+      this._isUpdateChecked = true
+      log.error('Error in auto-updater. ' + err)
+      AppState.isUpdateInProgress = false
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'UPDATE_ERROR',
+        data: { error: err },
+      })
+
+      setTimeout(() => {
+        this.updatecheckerWindow?.close()
+        this.appWindow?.show()
+      }, 200)
+    })
+
+    autoUpdater.on('download-progress', (progressObj) => {
+      const logMessage = `다운로드 속도: ${progressObj.bytesPerSecond} - 다운로드 ${progressObj.percent}% 완료 (${progressObj.transferred}/${progressObj.total})`
+      log.info(logMessage)
+
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'DOWNLOAD_PROGRESS',
+        data: {
+          bytesPerSecond: progressObj.bytesPerSecond,
+          percent: progressObj.percent,
+          transferred: progressObj.transferred,
+          total: progressObj.total,
+        },
+      })
+    })
+
+    autoUpdater.on('update-downloaded', () => {
+      log.info('Update downloaded')
+      AppState.isUpdateInProgress = false
+      this.updatecheckerWindow?.webContents.send('to-updatechecker', {
+        type: 'UPDATE_DOWNLOADED',
+        data: {},
+      })
+
+      setTimeout(() => {
+        autoUpdater.quitAndInstall(true, true)
+      }, 1000)
+    })
+  }
+
+  checkForUpdates() {
+    autoUpdater.checkForUpdates()
+  }
+}
+
+export default UpdateManager
+/* eslint import/prefer-default-export: off */
+import { URL } from 'url'
+import path from 'path'
+import { CUSTOM_PROTOCOL_NAME } from './main'
+
+export function resolveHtmlPath(htmlFileName: string) {
+  if (import.meta.env.MODE === 'development') {
+    const port = process.env.PORT || 1212
+    const url = new URL(`https://localhost:${port}`)
+    url.pathname = htmlFileName
+    return url.href
+  }
+  return `${CUSTOM_PROTOCOL_NAME}://chuncity.app/${htmlFileName}`
+}
+import { BrowserWindow, Menu, app } from 'electron'
+import log from 'electron-log'
+import { AppState } from './AppState'
+import { resolveHtmlPath } from './util'
+import { getMatchliveWindowSize } from './store/DefaultSettingData'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+export const __filename = fileURLToPath(import.meta.url)
+export const __dirname = dirname(__filename)
+
+type AppWindow = BrowserWindow | null
+
+/**
+ * 각 윈도우는 싱글톤으로 관리합니다.
+ * create___Window 메서드를 통해 윈도우를 생성하거나 이전에 생성된 윈도우를 focus 합니다.
+ */
+class WindowManager {
+  static instance: WindowManager
+
+  appWindow: AppWindow = null
+  matchliveWindow: AppWindow = null
+  updatecheckerWindow: AppWindow = null
+
+  static getInstance() {
+    if (!WindowManager.instance) {
+      WindowManager.instance = new WindowManager()
+    }
+    return WindowManager.instance
+  }
+
+  /**
+   * App window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
+  async createappWindow() {
+    if (this.appWindow) {
+      this.appWindow.focus()
+      return this.appWindow
+    }
+
+    this.appWindow = new BrowserWindow({
+      show: false,
+      width: 800,
+      height: 600,
+      minWidth: 800,
+      minHeight: 600,
+      icon: this.getAssetPath('icon.png'),
+      frame: false,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+      movable: true,
+    })
+
+    this.appWindow.menuBarVisible = false
+    Menu.setApplicationMenu(null)
+    this.appWindow.loadURL(resolveHtmlPath('index.html'))
+
+    this.appWindow.on('ready-to-show', () => {
+      if (process.env.START_MINIMIZED === 'false') {
+        this.appWindow?.minimize()
+      } else {
+        this.appWindow?.show()
+      }
+    })
+
+    this.appWindow.on('closed', () => {
+      if (AppState.isUpdateInProgress) {
+        AppState.isQuitInitiated = true
+        this.appWindow?.webContents.send('to-app', {
+          type: 'UPDATE_IN_PROGRESS',
+        })
+      } else {
+        app.quit()
+      }
+
+      this.appWindow = null
+    })
+
+    this.appWindow.focus()
+    return this.appWindow
+  }
+
+  /**
+   * Matchlive window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
+  async createMatchliveWindow() {
+    if (this.matchliveWindow) {
+      this.matchliveWindow.focus()
+      return this.matchliveWindow
+    }
+
+    const { height, width } = await getMatchliveWindowSize()
+    this.matchliveWindow = new BrowserWindow({
+      width,
+      height,
+      resizable: true,
+      transparent: true,
+      frame: false,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+      movable: true,
+    })
+
+    this.matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'))
+
+    this.matchliveWindow.on('ready-to-show', () => {
+      this.matchliveWindow?.show()
+    })
+
+    this.matchliveWindow.on('closed', () => {
+      this.appWindow?.webContents.send('to-app', {
+        type: 'MATCHLIVE_WINDOW_CLOSED',
+      })
+
+      this.matchliveWindow = null
+    })
+
+    return this.matchliveWindow
+  }
+
+  /**
+   * Update checker window 를 생성하고 열거나, 이전에 생성되어 있다면 창을 focus 합니다.
+   * @returns BrowserWindow 객체
+   */
+  async createUpdatecheckerWindow() {
+    if (this.updatecheckerWindow) {
+      this.updatecheckerWindow.focus()
+      return this.updatecheckerWindow
+    }
+
+    if (!this.appWindow) {
+      log.error('Main window is required for update checker window')
+      throw new Error('Main window is required for update checker window')
+    }
+
+    this.updatecheckerWindow = new BrowserWindow({
+      width: 300,
+      height: 200,
+      resizable: false,
+      parent: this.appWindow,
+      frame: false,
+      transparent: true,
+      webPreferences: {
+        contextIsolation: true,
+        backgroundThrottling: false,
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+      movable: true,
+    })
+
+    this.updatecheckerWindow.loadURL(resolveHtmlPath('updatechecker.html'))
+
+    this.updatecheckerWindow.on('ready-to-show', () => {
+      this.updatecheckerWindow?.show()
+    })
+
+    this.updatecheckerWindow.on('closed', () => {
+      this.updatecheckerWindow = null
+      this.appWindow?.webContents.send('to-app', {
+        type: 'AUTO_UPDATER_WINDOW_CLOSED',
+      })
+    })
+
+    return this.updatecheckerWindow
+  }
+
+  /**
+   * Asset 폴더 내의 파일 경로를 반환합니다. dev 환경과 packaged 환경에 따라 적절한 경로를 반환합니다.
+   * @param paths 얻고자 하는 파일의 경로 (예: 'icon.png')
+   * @returns 파일의 절대 경로.
+   */
+  private getAssetPath(...paths: string[]) {
+    const RESOURCES_PATH = app.isPackaged
+      ? path.join(process.resourcesPath, 'assets')
+      : path.join(__dirname, '../../assets')
+    return path.join(RESOURCES_PATH, ...paths)
+  }
+}
+
+export default WindowManager
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Disable no-unused-vars, broken for spread args
+/* eslint no-unused-vars: off */
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import electronStore from '../main/store/ipcElectronStore'
+import { __APP_VERSION__ } from '../main/Constants'
+
+export type Channels =
+  | 'loginfo'
+  | 'window-control'
+  | 'window-control-response'
+  // App Channels
+  | 'react-ready'
+  | 'matchlive-react-ready'
+  | 'open-matchlive-window'
+  // Stomp Channels
+  | 'init-stomp-client'
+  | 'stomp-publish'
+  | 'stomp-subscribe'
+  | 'stomp-message'
+  | 'ws-status'
+  // Main - Sub Channels
+  | 'to-app'
+  | 'to-matchlive'
+  | 'to-updatechecker'
+
+const PRINT_IPC_MESSAGES = false
+
+const electronHandler = {
+  ipcRenderer: {
+    send(channel: Channels, ...args: any[]) {
+      if (PRINT_IPC_MESSAGES) {
+        console.log('ipcRenderer.send', channel, args)
+      }
+      ipcRenderer.send(channel, ...args)
+    },
+    on(channel: Channels, func: (...args: any[]) => void) {
+      const subscription = (_event: IpcRendererEvent, ...args: any[]) => {
+        if (PRINT_IPC_MESSAGES) {
+          console.log('ipcRenderer.on', channel, args)
+        }
+        func(...args)
+      }
+      ipcRenderer.on(channel, subscription)
+      return () => {
+        ipcRenderer.removeListener(channel, subscription)
+      }
+    },
+    once(channel: Channels, func: (...args: any[]) => void) {
+      ipcRenderer.once(channel, (_event, ...args) => func(...args))
+    },
+    removeAllListeners(channel: Channels) {
+      ipcRenderer.removeAllListeners(channel)
+    },
+    invoke(channel: Channels, ...args: any[]) {
+      return ipcRenderer.invoke(channel, ...args).catch((error) => {
+        console.error(`Error invoking IPC channel ${channel}`, error)
+      })
+    },
+  },
+  stomp: {
+    initClient: () => ipcRenderer.invoke('init-stomp-client'),
+    publish: (destination: string, body: string) =>
+      ipcRenderer.invoke('stomp-publish', destination, body),
+    subscribe: (destination: string) =>
+      ipcRenderer.invoke('stomp-subscribe', destination),
+    onWsStatus: (callback: (status: string) => void) =>
+      ipcRenderer.on('ws-status', (event, status) => callback(status)),
+    onMessage: (callback: (message: string) => void) =>
+      ipcRenderer.on('stomp-message', (event, message) => callback(message)),
+  },
+}
+
+contextBridge.exposeInMainWorld('electron', electronHandler)
+contextBridge.exposeInMainWorld('electronStore', electronStore)
+contextBridge.exposeInMainWorld('appVersion', __APP_VERSION__)
+
+export type ElectronHandler = typeof electronHandler
+export type ElectronStore = typeof electronStore
+import { ipcRenderer, contextBridge } from 'electron'
+
+// --------- Expose some API to the Renderer process ---------
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  on(...args: Parameters<typeof ipcRenderer.on>) {
+    const [channel, listener] = args
+    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+  },
+  off(...args: Parameters<typeof ipcRenderer.off>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.off(channel, ...omit)
+  },
+  send(...args: Parameters<typeof ipcRenderer.send>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.send(channel, ...omit)
+  },
+  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.invoke(channel, ...omit)
+  },
+
+  // You can expose other APTs you need here.
+  // ...
+})
+
+// --------- Preload scripts loading ---------
+function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
+  return new Promise(resolve => {
+    if (condition.includes(document.readyState)) {
+      resolve(true)
+    } else {
+      document.addEventListener('readystatechange', () => {
+        if (condition.includes(document.readyState)) {
+          resolve(true)
+        }
+      })
+    }
+  })
+}
+
+const safeDOM = {
+  append(parent: HTMLElement, child: HTMLElement) {
+    if (!Array.from(parent.children).find(e => e === child)) {
+      return parent.appendChild(child)
+    }
+  },
+  remove(parent: HTMLElement, child: HTMLElement) {
+    if (Array.from(parent.children).find(e => e === child)) {
+      return parent.removeChild(child)
+    }
+  },
+}
+
+/**
+ * https://tobiasahlin.com/spinkit
+ * https://connoratherton.com/loaders
+ * https://projects.lukehaas.me/css-loaders
+ * https://matejkustec.github.io/SpinThatShit
+ */
+function useLoading() {
+  const className = `loaders-css__square-spin`
+  const styleContent = `
+@keyframes square-spin {
+  25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
+  50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
+  75% { transform: perspective(100px) rotateX(0) rotateY(180deg); }
+  100% { transform: perspective(100px) rotateX(0) rotateY(0); }
+}
+.${className} > div {
+  animation-fill-mode: both;
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  animation: square-spin 3s 0s cubic-bezier(0.09, 0.57, 0.49, 0.9) infinite;
+}
+.app-loading-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #282c34;
+  z-index: 9;
+}
+    `
+  const oStyle = document.createElement('style')
+  const oDiv = document.createElement('div')
+
+  oStyle.id = 'app-loading-style'
+  oStyle.innerHTML = styleContent
+  oDiv.className = 'app-loading-wrap'
+  oDiv.innerHTML = `<div class="${className}"><div></div></div>`
+
+  return {
+    appendLoading() {
+      safeDOM.append(document.head, oStyle)
+      safeDOM.append(document.body, oDiv)
+    },
+    removeLoading() {
+      safeDOM.remove(document.head, oStyle)
+      safeDOM.remove(document.body, oDiv)
+    },
+  }
+}
+
+// ----------------------------------------------------------------------
+
+const { appendLoading, removeLoading } = useLoading()
+domReady().then(appendLoading)
+
+window.onmessage = (ev) => {
+  ev.data.payload === 'removeLoading' && removeLoading()
+}
+
+setTimeout(removeLoading, 4999)import { app, ipcMain } from 'electron'
+import { createRequire } from 'node:module'
+import type {
+  ProgressInfo,
+  UpdateDownloadedEvent,
+  UpdateInfo,
+} from 'electron-updater'
+
+const { autoUpdater } = createRequire(import.meta.url)('electron-updater');
+
+export function update(win: Electron.BrowserWindow) {
+
+  // When set to false, the update download will be triggered through the API
+  autoUpdater.autoDownload = false
+  autoUpdater.disableWebInstaller = false
+  autoUpdater.allowDowngrade = false
+
+  // start check
+  autoUpdater.on('checking-for-update', function () { })
+  // update available
+  autoUpdater.on('update-available', (arg: UpdateInfo) => {
+    win.webContents.send('update-can-available', { update: true, version: app.getVersion(), newVersion: arg?.version })
+  })
+  // update not available
+  autoUpdater.on('update-not-available', (arg: UpdateInfo) => {
+    win.webContents.send('update-can-available', { update: false, version: app.getVersion(), newVersion: arg?.version })
+  })
+
+  // Checking for updates
+  ipcMain.handle('check-update', async () => {
+    if (!app.isPackaged) {
+      const error = new Error('The update feature is only available after the package.')
+      return { message: error.message, error }
+    }
+
+    try {
+      return await autoUpdater.checkForUpdatesAndNotify()
+    } catch (error) {
+      return { message: 'Network error', error }
+    }
+  })
+
+  // Start downloading and feedback on progress
+  ipcMain.handle('start-download', (event: Electron.IpcMainInvokeEvent) => {
+    startDownload(
+      (error, progressInfo) => {
+        if (error) {
+          // feedback download error message
+          event.sender.send('update-error', { message: error.message, error })
+        } else {
+          // feedback update progress message
+          event.sender.send('download-progress', progressInfo)
+        }
+      },
+      () => {
+        // feedback update downloaded message
+        event.sender.send('update-downloaded')
+      }
+    )
+  })
+
+  // Install now
+  ipcMain.handle('quit-and-install', () => {
+    autoUpdater.quitAndInstall(false, true)
+  })
+}
+
+function startDownload(
+  callback: (error: Error | null, info: ProgressInfo | null) => void,
+  complete: (event: UpdateDownloadedEvent) => void,
+) {
+  autoUpdater.on('download-progress', (info: ProgressInfo) => callback(null, info))
+  autoUpdater.on('error', (error: Error) => callback(error, null))
+  autoUpdater.on('update-downloaded', complete)
+  autoUpdater.downloadUpdate()
+}

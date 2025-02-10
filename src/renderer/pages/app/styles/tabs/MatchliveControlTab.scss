@@ -1,4 +1,4 @@
-@import '@app/styles/Color.scss';
+@use '@app/styles/Color.scss' as *;
 
 .matchlive-control-container {
   display: flex;

@@ -1,4 +1,4 @@
-@import '@app/styles/Variables.scss';
+@use '@app/styles/Variables.scss' as *;
 
 $window-control-btn-width: 40px;
 

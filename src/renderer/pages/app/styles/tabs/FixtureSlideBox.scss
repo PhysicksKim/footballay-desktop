@@ -1,5 +1,5 @@
-@import '@app/styles/Color.scss';
-@import '@app/styles/Variables.scss';
+@use '@app/styles/Color.scss' as *;
+@use '@app/styles/Variables.scss' as *;
 
 .fixture-box-container {
   display: flex;

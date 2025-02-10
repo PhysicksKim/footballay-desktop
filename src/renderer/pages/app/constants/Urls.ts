@@ -1,6 +1,6 @@
 const Urls = {
-  apiUrl: process.env.API_URL,
-  websocketUrl: process.env.WEBSOCKET_URL,
+  apiUrl: import.meta.env.VITE_API_URL,
+  websocketUrl: import.meta.env.VITE_WEBSOCKET_URL,
   football: {
     leagues: '/api/football/leagues/available',
     fixtures: '/api/football/fixtures',
@@ -13,6 +13,6 @@ const Urls = {
     availableFixtures: '/api/football/stream/fixtures/available',
     preferenceKeyCheck: () => '/api/football/preferences/validate',
   },
-};
+}
 
-export default Urls;
+export default Urls
