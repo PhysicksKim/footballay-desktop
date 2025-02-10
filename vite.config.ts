@@ -1,19 +1,19 @@
-import { rmSync } from 'node:fs'
-import path, { resolve } from 'node:path'
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import electron from 'vite-plugin-electron/simple'
-import eslintPlugin from 'vite-plugin-eslint'
-import pkg from './package.json'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+import { rmSync } from 'node:fs';
+import path, { resolve } from 'node:path';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import electron from 'vite-plugin-electron/simple';
+import eslintPlugin from 'vite-plugin-eslint';
+import pkg from './package.json';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  rmSync('dist-electron', { recursive: true, force: true })
+  rmSync('dist-electron', { recursive: true, force: true });
 
-  const isServe = command === 'serve'
-  const isBuild = command === 'build'
-  const sourcemap = isServe || !!process.env.VSCODE_DEBUG
+  const isServe = command === 'serve';
+  const isBuild = command === 'build';
+  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
     resolve: {
@@ -21,10 +21,11 @@ export default defineConfig(({ command }) => {
         '@src': path.join(__dirname, 'src'),
         '@assets': path.join(__dirname, 'assets'),
         '@app': path.join(__dirname, 'src/renderer/pages/app'),
+        '@matchlive': path.join(__dirname, 'src/renderer/pages/matchlive'),
       },
     },
     plugins: [
-      // basicSsl(),
+      basicSsl(),
       react(),
       eslintPlugin({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
@@ -37,9 +38,9 @@ export default defineConfig(({ command }) => {
             if (process.env.VSCODE_DEBUG) {
               console.log(
                 /* For `.vscode/.debug.script.mjs` */ '[startup] Electron App'
-              )
+              );
             } else {
-              args.startup()
+              args.startup();
             }
           },
           vite: {
@@ -96,16 +97,18 @@ export default defineConfig(({ command }) => {
       },
     },
     server: {
-      // https: {},
-      ...(process.env.VSCODE_DEBUG &&
-        (() => {
-          const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
-          return {
-            host: url.hostname,
-            port: +url.port,
-          }
-        })()),
+      ...(process.env.VSCODE_DEBUG
+        ? (() => {
+            const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+            return {
+              host: url.hostname,
+              port: +url.port,
+            };
+          })()
+        : {
+            port: 7777,
+          }),
     },
     clearScreen: false,
-  }
-})
+  };
+});

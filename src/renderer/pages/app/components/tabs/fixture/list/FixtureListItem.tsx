@@ -62,7 +62,7 @@ const FixtureListItem = ({
 }: FixtureListItemProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const preferenceKey = useSelector(
-    (state: RootState) => state.fixtureLiveOption.preference.key,
+    (state: RootState) => state.fixtureLiveOption.preference.key
   );
 
   const convertKickoffTimeToHHMM = (kickoff: string) => {
@@ -104,7 +104,11 @@ const FixtureListItem = ({
             <div className="team-mark-text home-team-mark-text">H</div>
           </div>
           <div className="team-logo team-a-logo">
-            <TeamLogo logo={teamALogo.logo} name={teamALogo.name} />
+            <TeamLogo
+              key={fixtureId + teamALogo.name}
+              logo={teamALogo.logo}
+              name={teamALogo.name}
+            />
           </div>
         </div>
         <div className="team-versus-box">
@@ -126,7 +130,11 @@ const FixtureListItem = ({
         </div>
         <div className="team-logo-box team-b-logo-box">
           <div className="team-logo team-b-logo">
-            <TeamLogo logo={teamBLogo.logo} name={teamBLogo.name} />
+            <TeamLogo
+              key={fixtureId + teamBLogo.name}
+              logo={teamBLogo.logo}
+              name={teamBLogo.name}
+            />
           </div>
           <div className="team-mark away-team-mark">
             <div className="team-mark-text away-team-mark-text">A</div>

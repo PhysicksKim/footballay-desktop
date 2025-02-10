@@ -54,7 +54,6 @@ const FixtureIpc = () => {
 
   useEffect(() => {
     sendMatchliveReactReady();
-    getShowPhoto();
   }, []);
 
   const handleMessage = (...args: IpcMessage[]) => {
@@ -112,10 +111,6 @@ const FixtureIpc = () => {
 
   const sendMatchliveReactReady = () => {
     sendToApp('MATCHLIVE_REACT_READY');
-  };
-
-  const getShowPhoto = () => {
-    sendToApp('SEND_SHOW_PHOTO');
   };
 
   useEffect(() => {

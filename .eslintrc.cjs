@@ -8,6 +8,8 @@ module.exports = {
   ],
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'import', 'promise'],
   rules: {
+    'react/prop-types': 'off',
+    'prefer-const': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-object-type': 'off',
     '@typescript-eslint/no-shadow': 'off',
@@ -50,4 +52,4 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
   },
-}
+};

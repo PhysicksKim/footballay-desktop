@@ -10,10 +10,10 @@ import '@app/styles/tabs/FixtureListBox.scss';
 
 const FixtureListBox = () => {
   const fixtures = useSelector(
-    (state: RootState) => state.fixtureList.fixtures,
+    (state: RootState) => state.fixtureList.fixtures
   );
   const selectedLeagueId = useSelector(
-    (state: RootState) => state.selected.leagueId,
+    (state: RootState) => state.selected.leagueId
   );
 
   const fixtureItems = useMemo(() => {
@@ -55,7 +55,7 @@ const FixtureListBox = () => {
 
     return copiedFixtures.map((fixture, index) => (
       <FixtureListItem
-        key={index}
+        key={`${fixture.fixtureId}_${index}`}
         {...fixture}
         leagueId={selectedLeagueId}
         fixtureId={fixture.fixtureId}

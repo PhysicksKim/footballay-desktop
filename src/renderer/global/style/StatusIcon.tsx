@@ -31,9 +31,9 @@ const OkMark = (props?: MarkProps): JSX.Element => (
     <FontAwesomeIcon icon={faO} style={{ color: '#10c027' }} />
   </StatusMarkBox>
 );
-const ThumbsUpMark = (props?: MarkProps): JSX.Element => (
+const CheckCircleMark = (props?: MarkProps): JSX.Element => (
   <StatusMarkBox {...props}>
-    <FontAwesomeIcon icon={faThumbsUp} style={{ color: '#10c027' }} />
+    <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#f0f0f0' }} />
   </StatusMarkBox>
 );
 const SuccessMark = (props?: MarkProps): JSX.Element => (
@@ -69,5 +69,5 @@ export {
   FailMark,
   WarnMark,
   OkMark,
-  ThumbsUpMark,
+  CheckCircleMark,
 };

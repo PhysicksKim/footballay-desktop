@@ -19,7 +19,8 @@
     "paths": {
       "@src/*": ["src/*"],
       "@assets/*": ["assets/*"],
-      "@app/*": ["src/renderer/pages/app/*"]
+      "@app/*": ["src/renderer/pages/app/*"],
+      "@matchlive/*": ["src/renderer/pages/matchlive/*"]
     }
   },
   "include": ["src", "electron"],

@@ -109,7 +109,7 @@ class WindowManager {
       webPreferences: {
         contextIsolation: true,
         backgroundThrottling: false,
-        preload: path.join(__dirname, '../preload/preload.js'),
+        preload: path.join(__dirname, '../preload/preload.mjs'),
       },
       movable: true,
     });
@@ -117,7 +117,9 @@ class WindowManager {
     this.matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
 
     this.matchliveWindow.on('ready-to-show', () => {
+      console.log('matchliveWindow ready-to-show');
       this.matchliveWindow?.show();
+      this.matchliveWindow?.webContents.openDevTools();
     });
 
     this.matchliveWindow.on('closed', () => {
@@ -157,7 +159,7 @@ class WindowManager {
       webPreferences: {
         contextIsolation: true,
         backgroundThrottling: false,
-        preload: path.join(__dirname, '../preload/preload.js'),
+        preload: path.join(__dirname, '../preload/preload.mjs'),
       },
       movable: true,
     });

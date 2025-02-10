@@ -12,11 +12,11 @@ import {
 import { validatePreferenceKey } from '../../../store/slices/live/option/fixtureLiveOptionThunk';
 import { persistPreferenceKey } from '../../../store/slices/live/option/preferenceKeyIO';
 import {
+  CheckCircleMark,
   FailMark,
   IdleMark,
   LoadingMark,
   SuccessMark,
-  ThumbsUpMark,
   WarnMark,
 } from '@src/renderer/global/style/StatusIcon';
 import { Tooltip } from 'react-tooltip';
@@ -27,21 +27,21 @@ type InputKeyType = 'password' | 'text';
 const SettingsTab = () => {
   const dispatch = useAppDispatch();
   const preferenceKey = useSelector(
-    (state: RootState) => state.fixtureLiveOption.preference.key,
+    (state: RootState) => state.fixtureLiveOption.preference.key
   );
   const isValidKey = useSelector(
-    (state: RootState) => state.fixtureLiveOption.preference.isValid,
+    (state: RootState) => state.fixtureLiveOption.preference.isValid
   );
   const validateStatus = useSelector(
-    (state: RootState) => state.fixtureLiveOption.preference.status,
+    (state: RootState) => state.fixtureLiveOption.preference.status
   );
-  const [inputKey, setInputKey] = useState(preferenceKey);
+  const [inputKey, setInputKey] = useState(preferenceKey ?? '');
   const [inputKeyType, seyInputKeyType] = useState<InputKeyType>('password');
   const [NotValidPrefKeyInput, setNotValidPrefKeyInput] = useState(false);
   const [diffInputAndSavedKey, setDiffInputAndSavedKey] = useState(false);
 
   useEffect(() => {
-    setInputKey(preferenceKey);
+    setInputKey(preferenceKey ?? '');
   }, [preferenceKey]);
 
   useEffect(() => {
@@ -125,13 +125,13 @@ const inputValidateIcon = (NotValidPrefKeyInput: boolean) => {
           <div>
             속성키 형식이 올바르지 않습니다. <br />
             {PREFERENCE_KEY_VALID_CONDITION_MESSAGE}
-          </div>,
+          </div>
         )}
       />
     );
   } else {
     return (
-      <ThumbsUpMark
+      <CheckCircleMark
         {...COMMON_MARGIN}
         data-tooltip-id="input-validate-tooltip"
         data-tooltip-content="속성키 형식이 올바릅니다"
@@ -144,7 +144,7 @@ const DEBUG = false;
 const validateIcon = (
   validateStatus: RequestStatus,
   isValidKey: boolean | null,
-  diffInputAndSavedKey: boolean,
+  diffInputAndSavedKey: boolean
 ) => {
   if (DEBUG) {
     return (

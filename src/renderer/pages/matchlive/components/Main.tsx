@@ -141,7 +141,7 @@ const Main = () => {
   const [prevShortStatus, setPrevShortStatus] = useState<string | null>(null);
 
   const liveShortStatus = useSelector(
-    (state: RootState) => state.fixture.liveStatus?.liveStatus.shortStatus,
+    (state: RootState) => state.fixture.liveStatus?.liveStatus.shortStatus
   );
 
   // CSSTransition 을 위한 nodeRef 생성
