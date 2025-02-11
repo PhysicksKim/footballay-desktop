@@ -150,9 +150,9 @@ const LineupView: React.FC<{
                     {finalPlayer.photo && (
                       <RetryableImage
                         src={finalPlayer.photo}
-                        alt={finalPlayer.name}
                         height={photoSize}
                         width={photoSize}
+                        useLoading={true}
                       />
                     )}
                     {finalPlayer.events.subIn && (
