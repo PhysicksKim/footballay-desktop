@@ -95,7 +95,7 @@ class UpdateManager {
       setTimeout(() => {
         this.updatecheckerWindow?.close();
         this.appWindow?.show();
-      }, 200);
+      }, 1000);
     });
 
     autoUpdater.on('error', (err) => {
@@ -106,11 +106,12 @@ class UpdateManager {
         type: 'UPDATE_ERROR',
         data: { error: err },
       });
+      log.error('Error in auto-updater. ' + err);
 
       setTimeout(() => {
         this.updatecheckerWindow?.close();
         this.appWindow?.show();
-      }, 200);
+      }, 1000);
     });
 
     autoUpdater.on('download-progress', (progressObj) => {

@@ -38,11 +38,10 @@ app.on('window-all-closed', () => {
 });
 
 const isDev = import.meta.env.MODE === 'development';
-const isTestAutoUpdate = true;
+const isTestAutoUpdate = false;
 
 if (isDev) {
   // 개발 환경에서 인증서 에러 무시
-  console.log('ignore-certificate-errors');
   app.commandLine.appendSwitch('ignore-certificate-errors');
   app.commandLine.appendSwitch('allow-insecure-localhost');
   app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1');
@@ -52,7 +51,6 @@ app
   .whenReady()
   .then(async () => {
     protocol.handle(CUSTOM_PROTOCOL_NAME, async (req) => {
-      log.info(`CUSTOM Request URL: ${req.url}`);
       const parsedUrl = new URL(req.url);
       try {
         let relativePath = decodeURIComponent(parsedUrl.pathname);
@@ -62,8 +60,7 @@ app
           relativePath = relativePath.replace(/^\/+/, '');
         }
 
-        const basePath = path.join(__dirname, '..', 'renderer');
-
+        const basePath = path.join(app.getAppPath(), 'dist');
         const normalizedPath = path.normalize(
           path.join(basePath, relativePath)
         );
@@ -119,14 +116,15 @@ app
     updateManager.checkForUpdates();
 
     /* Close update checker window in development mode */
-    if (isDev && isTestAutoUpdate) {
-      updatecheckerWindow.once('ready-to-show', () => {
-        updatecheckerWindow.show();
-        console.log('updatecheckerWindow is shown');
-      });
+    if (isDev) {
+      if (isTestAutoUpdate) {
+        updatecheckerWindow.once('ready-to-show', () => {
+          updatecheckerWindow.show();
+        });
+      }
       setTimeout(() => {
         updatecheckerWindow?.close();
-      }, 5000);
+      }, 1000);
     }
   })
   .catch((e) => {

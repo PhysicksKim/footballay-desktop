@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { CUSTOM_PROTOCOL_NAME } from './main';
+import log from 'electron-log';
 
 export function resolveHtmlPath(htmlFileName: string): string {
   if (import.meta.env.MODE === 'development') {

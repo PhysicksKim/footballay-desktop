@@ -10,6 +10,7 @@ export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = dirname(__filename);
 
 type AppWindow = BrowserWindow | null;
+const isDev = import.meta.env.MODE === 'development';
 
 /**
  * 각 윈도우는 싱글톤으로 관리합니다.
@@ -76,7 +77,6 @@ class WindowManager {
       this.appWindow = null;
     });
 
-    const isDev = import.meta.env.MODE === 'development';
     this.appWindow.on('show', () => {
       if (!this.appWindow) return;
 
@@ -117,9 +117,10 @@ class WindowManager {
     this.matchliveWindow.loadURL(resolveHtmlPath('matchlive.html'));
 
     this.matchliveWindow.on('ready-to-show', () => {
-      console.log('matchliveWindow ready-to-show');
       this.matchliveWindow?.show();
-      this.matchliveWindow?.webContents.openDevTools();
+      if (isDev) {
+        this.matchliveWindow?.webContents.openDevTools();
+      }
     });
 
     this.matchliveWindow.on('closed', () => {
@@ -138,7 +139,6 @@ class WindowManager {
    * @returns BrowserWindow 객체
    */
   async createUpdatecheckerWindow() {
-    console.log('createUpdatecheckerWindow');
     if (this.updatecheckerWindow) {
       this.updatecheckerWindow.focus();
       return this.updatecheckerWindow;
@@ -168,7 +168,6 @@ class WindowManager {
 
     this.updatecheckerWindow.on('ready-to-show', () => {
       this.updatecheckerWindow?.show();
-      console.log('updatecheckerWindow ready-to-show');
     });
 
     this.updatecheckerWindow.on('closed', () => {

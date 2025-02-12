@@ -12,15 +12,15 @@ import PassSuccessPieChart from './PassSuccessPieChart';
 const TeamStatisticsTab = () => {
   const info = useSelector((state: RootState) => state.fixture.info);
   const liveStatus = useSelector(
-    (state: RootState) => state.fixture.liveStatus,
+    (state: RootState) => state.fixture.liveStatus
   );
   const homeInfo = useSelector((state: RootState) => state.fixture.info?.home);
   const awayInfo = useSelector((state: RootState) => state.fixture.info?.away);
   const homeStatistics = useSelector(
-    (state: RootState) => state.fixture.statistics?.home.teamStatistics,
+    (state: RootState) => state.fixture.statistics?.home.teamStatistics
   );
   const awayStatistics = useSelector(
-    (state: RootState) => state.fixture.statistics?.away.teamStatistics,
+    (state: RootState) => state.fixture.statistics?.away.teamStatistics
   );
 
   const score = liveStatus?.liveStatus.score;
