@@ -17,24 +17,24 @@ const MatchliveControlTab = () => {
   const dispatch = useDispatch();
   const info = useSelector((state: RootState) => state.fixtureLive.info);
   const lastFetch = useSelector(
-    (state: RootState) => state.fixtureLive.lastFetchedAt,
+    (state: RootState) => state.fixtureLive.lastFetchedAt
   );
   const fixtureLive = useSelector((state: RootState) => state.fixtureLive);
   const fixtureEvents = useSelector(
-    (state: RootState) => state.fixtureLive.events,
+    (state: RootState) => state.fixtureLive.events
   );
   const filterEvents = useSelector(
-    (state: RootState) => state.fixtureLiveControl.filterEvents,
+    (state: RootState) => state.fixtureLiveControl.filterEvents
   ); // 필터된 이벤트 가져오기
   const selectedFixtureId = useSelector(
-    (state: RootState) => state.fixtureLive.fixtureId,
+    (state: RootState) => state.fixtureLive.fixtureId
   );
   const preferenceKey = useSelector(
-    (state: RootState) => state.fixtureLiveOption.preference.key,
+    (state: RootState) => state.fixtureLiveOption.preference.key
   );
 
   const isAlwaysOnTop = useSelector(
-    (state: RootState) => state.windowInfo.matchliveAlwaysOnTop,
+    (state: RootState) => state.windowInfo.matchliveAlwaysOnTop
   );
 
   const contentTabContainerRef = useRef<HTMLDivElement>(null);
@@ -98,10 +98,10 @@ const MatchliveControlTab = () => {
 
   // temporary disabled because of issue #1
   const alwaysOnTopMatchlive = () => {
-    // window.electron.ipcRenderer.send('window-control', {
-    //   window: 'matchlive',
-    //   action: 'toggle:always-on-top',
-    // });
+    window.electron.ipcRenderer.send('window-control', {
+      window: 'matchlive',
+      action: 'toggle:always-on-top',
+    });
   };
 
   const handleAddFilter = (event: FixtureEvent) => {
@@ -115,8 +115,8 @@ const MatchliveControlTab = () => {
   const unfilteredEvents = fixtureEvents?.events.filter(
     (event) =>
       !filterEvents.some(
-        (filterEvent) => filterEvent.sequence === event.sequence,
-      ),
+        (filterEvent) => filterEvent.sequence === event.sequence
+      )
   );
 
   /**
@@ -214,12 +214,12 @@ const MatchliveControlTab = () => {
         >
           크기 초기화
         </button>
-        {/* <button
+        <button
           className="always-on-top-btn win-con-btn"
           onClick={alwaysOnTopMatchlive}
         >
           {isAlwaysOnTop ? '항상 위 해제' : '항상 위로'}
-        </button> */}
+        </button>
         <button className="close-btn win-con-btn" onClick={closeMatchlive}>
           닫기
         </button>

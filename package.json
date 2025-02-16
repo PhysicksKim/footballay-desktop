@@ -1,6 +1,6 @@
 {
   "name": "chun-city",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist-electron/main/main.js",
   "description": "football live streaming overlay tool",
   "author": "physicks",

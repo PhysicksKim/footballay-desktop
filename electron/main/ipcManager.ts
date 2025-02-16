@@ -28,12 +28,12 @@ export const setupCommonWindowIpcHandlers = () => {
           sendMatchliveAlwaysOnTopFalseToAppWindow();
           break;
         /* temporary disabled because of issue #1 */
-        // case 'toggle:always-on-top':
-        //   await nowMatchliveWindow.setAlwaysOnTop(
-        //     !nowMatchliveWindow.isAlwaysOnTop(),
-        //   );
-        //   sendMatchliveAlwaysOnTopToAppWindow();
-        //   break;
+        case 'toggle:always-on-top':
+          await nowMatchliveWindow.setAlwaysOnTop(
+            !nowMatchliveWindow.isAlwaysOnTop()
+          );
+          sendMatchliveAlwaysOnTopToAppWindow();
+          break;
         case 'get:always-on-top':
           sendMatchliveAlwaysOnTopToAppWindow();
           break;
