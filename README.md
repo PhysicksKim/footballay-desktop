@@ -1,11 +1,13 @@
-![gyechunhoe_fconline](https://github.com/user-attachments/assets/5c659ac8-deaf-484b-ad0c-8e63673457b5)
-
-![춘시티0_0_3](https://github.com/user-attachments/assets/017b28de-4fcc-4544-9cb0-224b275c6fd4)
-
-# 춘시티 - Chun City
-
+![춘시티0_2_1](https://github.com/user-attachments/assets/a1b5cb33-1f2a-40dc-8d62-a32f05f913f3)  
+   
+#  춘시티 - Chun City
+  
+[chuncity.webm](https://github.com/user-attachments/assets/76c4122f-7e80-4f0a-b660-b2134bcb5c34)  
+  
 실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **춘시티** 입니다.
 
+[💾 다운로드](https://github.com/PhysicksKim/chun-city/releases)  
+  
 <br><br>
 
 # 라이선스
