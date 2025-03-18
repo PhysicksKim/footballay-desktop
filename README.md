@@ -1,6 +1,6 @@
 ![춘시티0_2_1](https://github.com/user-attachments/assets/a1b5cb33-1f2a-40dc-8d62-a32f05f913f3)  
    
-#  춘시티 - Chun City
+# ⚽️ 춘시티 - Chun City
   
 [chuncity.webm](https://github.com/user-attachments/assets/76c4122f-7e80-4f0a-b660-b2134bcb5c34)  
   
@@ -10,6 +10,14 @@
   
 <br><br>
 
+# 💻 For Developers 
+  
+### Backend 
+Spring 백엔드 레포지토리 입니다.  
+[Backend Repository](https://github.com/PhysicksKim/score-board-backend)  
+
+<br><br> 
+  
 # 라이선스
 
 ```
