@@ -1,12 +1,14 @@
 ![춘시티0_2_1](https://github.com/user-attachments/assets/a1b5cb33-1f2a-40dc-8d62-a32f05f913f3)  
    
-# ⚽️ 춘시티 - Chun City
+# ⚽️ 춘시티 - Chun City  
+    
+[chuncity.webm](https://github.com/user-attachments/assets/76c4122f-7e80-4f0a-b660-b2134bcb5c34)    
+   
+실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **춘시티** 입니다.  
   
-[chuncity.webm](https://github.com/user-attachments/assets/76c4122f-7e80-4f0a-b660-b2134bcb5c34)  
-  
-실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **춘시티** 입니다.
-
 [💾 다운로드](https://github.com/PhysicksKim/chun-city/releases)  
+  
+[📄 사용설명서](https://exuberant-longan-0fc.notion.site/Chun-City-1c1b75adcd658087a55ffdc32c3735ce)  
   
 <br><br>
 
