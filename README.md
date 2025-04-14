@@ -13,10 +13,16 @@
 <br><br>
 
 # 💻 For Developers 
+
+### 개발 노션
+개발 과정에서 발생한 문제와 설계 고민들을 노션에 정리해 두었습니다.  
+[📄노션으로 이동](https://exuberant-longan-0fc.notion.site/1d5b75adcd6580f28510dcc84dc59437?pvs=4)  
+  
+  
   
 ### Backend 
 Spring 백엔드 레포지토리 입니다.  
-[Backend Repository](https://github.com/PhysicksKim/score-board-backend)  
+[👉Backend Repository](https://github.com/PhysicksKim/score-board-backend)  
 
 <br><br> 
   
