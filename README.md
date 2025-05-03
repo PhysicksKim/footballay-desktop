@@ -1,10 +1,28 @@
-![gyechunhoe_fconline](https://github.com/user-attachments/assets/5c659ac8-deaf-484b-ad0c-8e63673457b5)
+![풋볼레이0_2_1](https://github.com/user-attachments/assets/a1b5cb33-1f2a-40dc-8d62-a32f05f913f3)
 
-![춘시티0_0_3](https://github.com/user-attachments/assets/017b28de-4fcc-4544-9cb0-224b275c6fd4)
+# ⚽️ 풋볼레이 - Footballay
 
-# 춘시티 - Chun City
+[footballay.webm](https://github.com/user-attachments/assets/76c4122f-7e80-4f0a-b660-b2134bcb5c34)
 
-실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **춘시티** 입니다.
+실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **풋볼레이** 입니다.
+
+[💾 다운로드](https://github.com/PhysicksKim/footballay-desktop/releases)
+
+[📄 사용설명서](https://exuberant-longan-0fc.notion.site/Chun-City-1c1b75adcd658087a55ffdc32c3735ce)
+
+<br><br>
+
+# 💻 For Developers
+
+### 개발 노션
+
+개발 과정에서 발생한 문제와 설계 고민들을 노션에 정리해 두었습니다.  
+[📄노션으로 이동](https://exuberant-longan-0fc.notion.site/1d5b75adcd6580f28510dcc84dc59437?pvs=4)
+
+### Backend
+
+Spring 백엔드 레포지토리 입니다.  
+[👉Backend Repository](https://github.com/PhysicksKim/score-board-backend)
 
 <br><br>
 

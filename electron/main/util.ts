@@ -14,6 +14,6 @@ export function resolveHtmlPath(htmlFileName: string): string {
     return url.href;
   } else {
     // 프로덕션 환경에서는 커스텀 프로토콜을 사용
-    return `${CUSTOM_PROTOCOL_NAME}://chuncity.app/${htmlFileName}`;
+    return `${CUSTOM_PROTOCOL_NAME}://footballay.app/${htmlFileName}`;
   }
 }
