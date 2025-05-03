@@ -1,11 +1,14 @@
 /// <reference types="vite/client" />
 
-import type { ElectronHandler, ElectronStore } from './electron/preload/preload'
+import type {
+  ElectronHandler,
+  ElectronStore,
+} from './electron/preload/preload';
 
 declare global {
   interface Window {
-    electron: ElectronHandler
-    electronStore: ElectronStore
-    appVersion: string
+    electron: ElectronHandler;
+    electronStore: ElectronStore;
+    appVersion: string;
   }
 }

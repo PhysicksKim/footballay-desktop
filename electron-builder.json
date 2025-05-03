@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "productName": "춘시티",
-  "appId": "com.gyechunhoe.chuncity",
+  "productName": "풋볼레이",
+  "appId": "com.footballay.desktop",
   "asar": true,
   "directories": {
     "output": "release/${version}",
@@ -9,7 +9,7 @@
   },
   "files": ["dist-electron", "dist"],
   "mac": {
-    "artifactName": "ChunCity_Setup_${version}.${ext}",
+    "artifactName": "Footballay_Setup_${version}.${ext}",
     "target": ["dmg", "zip"]
   },
   "win": {
@@ -19,7 +19,7 @@
         "arch": ["x64"]
       }
     ],
-    "artifactName": "ChunCity_Setup_${version}.${ext}",
+    "artifactName": "Footballay_Setup_${version}.${ext}",
     "icon": "assets/icon.ico"
   },
   "extraResources": "/assets",
@@ -29,7 +29,7 @@
     "allowElevation": true,
     "perMachine": true,
     "differentialPackage": true,
-    "uninstallDisplayName": "춘시티",
+    "uninstallDisplayName": "풋볼레이",
     "installerSidebar": "assets/installerSidebar.bmp",
     "installerHeader": "assets/installerHeader.bmp",
     "installerHeaderIcon": "assets/icon.ico"
@@ -37,6 +37,6 @@
   "publish": {
     "provider": "generic",
     "channel": "latest",
-    "url": "https://static.gyechunhoe.com/chuncity/releases/latest"
+    "url": "https://static.footballay.com/footballay/releases/latest"
   }
 }
