@@ -124,7 +124,7 @@ app
       }
       setTimeout(() => {
         updatecheckerWindow?.close();
-      }, 1000);
+      }, 3000);
     }
   })
   .catch((e) => {

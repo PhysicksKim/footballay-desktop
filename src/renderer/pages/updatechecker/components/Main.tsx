@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Main.scss';
 import ChunsikTwerking from '@assets/image/chunsikTwerking.gif';
+import FootballayLogoBounce from '@assets/image/footballay_bounce_animation.gif';
 
 export interface IPCMessage {
   type: string;
@@ -45,8 +46,11 @@ const Main = () => {
   return (
     <div className="main-container">
       <div className="update-animation">
-        {/* 여기에 로고 이미지나 애니메이션을 추가하세요 */}
-        <img src={ChunsikTwerking} alt="chunsik-twerking" />
+        <img
+          src={FootballayLogoBounce}
+          alt="update-animation"
+          style={{ width: '80px', height: '80px', marginBottom: '1px' }}
+        />
       </div>
       <div className="main-status-box">
         <span className="update-status">{status}</span>
