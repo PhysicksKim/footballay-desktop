@@ -1,21 +1,97 @@
-MIT License
-
+MIT License  
 Copyright (c) 2025 PhysicksKim
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+Permission is hereby granted, free of charge, to any person obtaining a copy  
+of this software and associated documentation files (the “Software”), to deal  
+in the Software without restriction, including without limitation the rights  
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
+copies of the Software, and to permit persons to whom the Software is  
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
+The above copyright notice and this permission notice shall be included in all  
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  
 SOFTWARE.
+
+> **Scope clarification** This MIT License applies **only to the source-code files** of the Software.  
+> Any external data, images, streams or other materials consumed or displayed by the Software are governed by the “Additional License Terms” below and by their respective right-holders.
+
+================================================================================
+추가 라이선스 조항 (국문 — 우선 적용)
+================================================================================
+※ 본 국문 조항과 영문 번역본이 상충될 경우 **국문 조항**이 우선합니다.
+
+1. 데이터 사용 및 제한
+
+   - 본 애플리케이션이 호출·표시하는 모든 축구 데이터는 **API-SPORTS(api-sports.io)** 로부터 제공됩니다.
+   - 사용자는 최신 API-SPORTS 이용약관을 준수해야 하며, 약관이 허용한 범위를 넘어선 **저장·재가공·재배포**는 금지됩니다.
+   - 데이터는 개인적·비재판매 목적의 서비스 기능 구현에 한해 사용할 수 있습니다.
+
+2. 사용자 콘텐츠
+
+   - 사용자는 자신이 게시한 콘텐츠(댓글·이미지 등)의 저작권을 보유합니다.
+   - 게시와 동시에 **Footballay** 가 해당 콘텐츠를 서비스 내·외부에 표시·배포할 수 있는 비독점적 라이선스를 부여하게 됩니다.
+   - 사용자는 게시물에 대한 모든 권리를 보유·보장해야 하며, 제3자의 권리를 침해해선 안 됩니다. Footballay는 위반 게시물을 예고 없이 삭제할 수 있습니다.
+
+3. 제3자 서비스·지적재산권
+
+   - 본 애플리케이션은 API-SPORTS 등 제3자 서비스를 통합합니다. 각 서비스 이용 시 해당 사업자의 약관이 적용됩니다.
+   - Footballay는 제3자가 제공한 데이터·콘텐츠·서비스의 품질이나 적법성에 대해 책임지지 않습니다.
+   - 애플리케이션에 표시되는 **로고·이미지·선수/팀 정보**는 공정 이용(Fair Use) 원칙에 따라 *식별 목적*으로만 사용되며, 모든 권리는 원저작권자에게 있습니다. 권리자 요청 시 Footballay는 해당 자료를 즉시 수정·삭제합니다.
+   - Footballay는 어떤 공식 리그·클럽·연맹과도 **제휴·후원 관계가 아닙니다**.
+
+4. 보증의 면책
+
+   - 데이터 및 서비스는 “현 상태 그대로(As-Is)” 제공되며, Footballay는 데이터 오류·지연, 서비스 이용·중단으로 인한 **금전적 손실·결과적 손해** 등에 대해 법적 책임을 지지 않습니다.
+
+5. 관할 법 및 분쟁 해결
+
+   - 본 추가 조항 및 본 소프트웨어 라이선스는 대한민국 법을 준거법으로 합니다.
+   - 본 조항 또는 소프트웨어 사용과 관련하여 발생하는 모든 분쟁은, 대한민국 「민사소송법」이 정하는 관할 법원에 제소할 수 있습니다.
+   - 단, API-SPORTS 데이터 이용과 직접적으로 관련된 쟁점은 API-SPORTS 약관(프랑스 법 적용 및 프랑스 관할)을 우선 적용합니다.
+
+6. 약관 변경
+   - Footballay는 본 추가 조항을 예고 없이 개정할 수 있습니다. 개정 후 서비스를 계속 이용하면, 이용자는 변경된 조항에 동의한 것으로 간주됩니다.
+
+================================================================================
+Additional License Terms (English — reference translation)
+================================================================================
+**If any discrepancy arises, the Korean version prevails.**
+
+1. Data Usage
+
+   - All football data is supplied by **API-SPORTS (api-sports.io)**.
+   - You must comply with the latest API-SPORTS Terms of Service. Storage, re-processing or redistribution of the data **beyond the limits permitted** by API-SPORTS is prohibited.
+   - Data may be used only for personal, non-resale purposes within the functionality of this Software.
+
+2. User Content
+
+   - Users retain copyright to the content they post.
+   - By posting, users grant **Footballay** a non-exclusive licence to display and distribute that content in and outside the service.
+   - Users must ensure they have all necessary rights to post their content; Footballay may remove infringing material without notice.
+
+3. Third-Party Services & Intellectual Property
+
+   - This application integrates several third-party services, including API-SPORTS. Use of those services is governed by their respective terms.
+   - Footballay assumes no responsibility for third-party data, content or services.
+   - All logos, images and team/player information are used under Fair-Use principles for identification only; all rights remain with the respective owners. Upon request by a right-holder, Footballay will promptly modify or remove the material.
+   - Footballay is **not affiliated with, endorsed by or sponsored by any official league, club or federation.**
+
+4. Disclaimer of Warranties
+
+   - The service and data are provided “as is”. Footballay disclaims all liability for **financial or consequential losses** resulting from use, inaccuracy or unavailability of the service.
+
+5. Governing Law and Dispute Resolution
+
+   - These Additional Terms and this Software License shall be governed by the laws of the Republic of Korea.
+   - Any dispute arising out of or in connection with these Terms or the use of the Software may be brought before a court of competent jurisdiction as determined by the Korean Civil Procedure Act.
+   - Notwithstanding the foregoing, matters directly related to the use of API-SPORTS data shall be governed by the API-SPORTS Terms of Service (subject to French law and the exclusive jurisdiction of the French courts).
+
+6. Modifications
+   - Footballay may amend these Additional Terms at any time without prior notice. Continued use after changes constitutes acceptance of the revised terms.

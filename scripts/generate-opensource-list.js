@@ -1,4 +1,7 @@
 /* eslint-env node */
+/**
+ * 사용한 오픈소스 목록 json 을 생성합니다
+ */
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';

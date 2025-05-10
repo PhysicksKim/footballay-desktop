@@ -32,7 +32,8 @@
     "uninstallDisplayName": "풋볼레이",
     "installerSidebar": "assets/installerSidebar.bmp",
     "installerHeader": "assets/installerHeader.bmp",
-    "installerHeaderIcon": "assets/icon.ico"
+    "installerHeaderIcon": "assets/icon.ico",
+    "license": "assets/license.txt"
   },
   "publish": {
     "provider": "generic",

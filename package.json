@@ -2,7 +2,7 @@
   "name": "footballay-desktop",
   "version": "0.3.0",
   "main": "dist-electron/main/main.js",
-  "description": "football live streaming overlay tool",
+  "description": "football live match streaming overlay tool",
   "author": "physicks",
   "license": "MIT",
   "private": true,
@@ -20,7 +20,9 @@
     "test": "vitest run",
     "lint": "eslint --ext .ts,.tsx src",
     "lint:fix": "eslint --fix --ext .ts,.tsx src",
-    "generate-opensource-list": "node scripts/generate-opensource-list.js"
+    "generate-opensource-list": "node scripts/generate-opensource-list.js",
+    "generate-license-txt": "node scripts/generate-license-txt.js",
+    "prebuild": "npm run generate-opensource-list && npm run generate-license-txt"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
