@@ -26,29 +26,14 @@ jobs:
         run: |
           npm run generate-opensource-list
           npm run generate-license-txt
-          echo "opensource_list_file_name=opensource-list-${{ github.event.repository.name }}.json" >> $GITHUB_ENV
-          echo "license_file_name=license.txt" >> $GITHUB_ENV
 
-      - name: Upload Open Source List to R2
+      - name: Upload Licenses to R2
         uses: ryand56/r2-upload-action@latest
         with:
           r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
           r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
           r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           r2-bucket: ${{ secrets.R2_BUCKET_NAME }}
-          source-dir: dist
-          destination-dir: footballay/licenses/
+          source-dir: dist/licenses
+          destination-dir: footballay/licenses/footballay-desktop
           keep-file-fresh: true
-          output-file-url: ${{ env.opensource_list_file_name }}
-
-      - name: Upload License File to R2
-        uses: ryand56/r2-upload-action@latest
-        with:
-          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          r2-bucket: ${{ secrets.R2_BUCKET_NAME }}
-          source-dir: assets
-          destination-dir: footballay/licenses/
-          keep-file-fresh: true
-          output-file-url: ${{ env.license_file_name }}

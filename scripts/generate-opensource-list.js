@@ -10,6 +10,14 @@ import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const __rootDir = path.resolve(__dirname, '..');
+
+const __outputDir = '/dist/licenses/';
+const getOutputFileName = (appName) => {
+  return `opensource-list-${appName}.json`;
+};
+
+const __packageJsonPath = path.join(__rootDir, 'package.json');
 
 // 라이선스 파일 내용을 읽고 해시값을 생성하는 함수
 const readLicenseFile = (filePath) => {
@@ -74,9 +82,7 @@ const normalizeLicenseInfo = (licenseInfo) => {
 const generateOpenSourceList = () => {
   try {
     // package.json 읽기
-    const packageJson = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
-    );
+    const packageJson = JSON.parse(fs.readFileSync(__packageJsonPath, 'utf8'));
 
     // license-checker 실행 결과를 JSON으로 받기
     const licenseInfo = JSON.parse(
@@ -97,18 +103,15 @@ const generateOpenSourceList = () => {
 
     // 결과를 파일로 저장
     const outputPath = path.join(
-      __dirname,
-      `../dist/opensource-list-${packageJson.name}.json`
+      __rootDir,
+      __outputDir,
+      getOutputFileName(packageJson.name)
     );
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
 
-    // R2에 업로드할 경로 설정
-    const r2Path = `footballay/licenses/opensource-list-${packageJson.name}.json`;
-
     // 생성된 파일 경로를 출력
     console.log(`Generated file path: ${outputPath}`);
-    console.log(`R2 upload path: ${r2Path}`);
   } catch (error) {
     console.error('Error generating open source list:', error);
     process.exit(1);

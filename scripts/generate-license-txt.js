@@ -5,13 +5,17 @@ import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const __rootDir = path.resolve(__dirname, '..');
+
+const __outputDir = '/dist/licenses/';
+const __outputFileName = 'license.txt';
+const __packageJsonPath = path.join(__rootDir, 'package.json');
+
+const __opensourceListFileName = 'opensource-list-footballay-desktop.json';
 
 const getAppName = () => {
   try {
-    const packageJson = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
-    );
+    const packageJson = JSON.parse(fs.readFileSync(__packageJsonPath, 'utf8'));
     return packageJson.name;
   } catch (error) {
     console.error('Error getting app name:', error);
@@ -24,13 +28,16 @@ const generateLicenseFile = () => {
   try {
     const appName = getAppName();
 
-    // 1. 앱의 MIT 라이선스 읽기
-    const appLicense = fs.readFileSync(path.join(rootDir, 'LICENSE'), 'utf-8');
+    // 1. 앱 라이선스 읽기
+    const appLicense = fs.readFileSync(
+      path.join(__rootDir, 'LICENSE'),
+      'utf-8'
+    );
 
     // 2. 오픈소스 라이선스 목록 읽기
     const opensourceList = JSON.parse(
       fs.readFileSync(
-        path.join(rootDir, 'dist', 'opensource-list-footballay-desktop.json'),
+        path.join(__rootDir, __outputDir, __opensourceListFileName),
         'utf-8'
       )
     );
@@ -61,7 +68,7 @@ ${license.content ? `${license.content}\n` : ''}
   .join('\n')}`;
 
     // 4. 라이선스 파일 저장
-    const outputPath = path.join(rootDir, 'assets', 'license.txt');
+    const outputPath = path.join(__rootDir, __outputDir, __outputFileName);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, licenseContent);
     console.log('Successfully license.txt file generated at:', outputPath);
