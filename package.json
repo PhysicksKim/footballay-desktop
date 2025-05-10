@@ -19,7 +19,8 @@
     "pretest": "vite build --mode=test",
     "test": "vitest run",
     "lint": "eslint --ext .ts,.tsx src",
-    "lint:fix": "eslint --fix --ext .ts,.tsx src"
+    "lint:fix": "eslint --fix --ext .ts,.tsx src",
+    "generate-opensource-list": "node scripts/generate-opensource-list.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -84,6 +85,7 @@
     "vite-plugin-electron-renderer": "^0.14.6",
     "vite-plugin-eslint": "^1.8.1",
     "vitest": "^3.1.2",
-    "ws": "8.18.0"
+    "ws": "8.18.0",
+    "license-checker": "^25.0.1"
   }
 }
