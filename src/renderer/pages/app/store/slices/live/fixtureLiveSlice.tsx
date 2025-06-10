@@ -114,13 +114,31 @@ const fixtureLiveSlice = createSlice({
     },
     removeIntervalId(state, action: PayloadAction<NodeJS.Timeout>) {
       state.intervalIds = state.intervalIds.filter(
-        (id) => id !== action.payload,
+        (id) => id !== action.payload
       );
     },
     setEventMeta(state, action: PayloadAction<FixtureEventMeta[]>) {
       if (!state.events) {
         return;
       }
+
+      // 이전 meta와 비교하여 실제 변경이 있는지 확인
+      const currentMeta = state.events.meta;
+      const newMeta = action.payload;
+
+      // meta가 같은 길이이고 각 요소가 동일한지 확인
+      if (currentMeta && currentMeta.length === newMeta.length) {
+        const isEqual = currentMeta.every(
+          (item, index) =>
+            item.sequence === newMeta[index]?.sequence &&
+            JSON.stringify(item.data) === JSON.stringify(newMeta[index]?.data)
+        );
+
+        if (isEqual) {
+          return; // 변경사항이 없으면 업데이트하지 않음
+        }
+      }
+
       state.events.meta = action.payload;
     },
     clearAllIntervals(state) {
@@ -142,27 +160,27 @@ const fixtureLiveSlice = createSlice({
         (state, action: PayloadAction<FixtureInfo>) => {
           state.info = action.payload;
           updateLastFetchedAt(state);
-        },
+        }
       )
       .addCase(
         fetchFixtureLiveStatus.fulfilled,
         (state, action: PayloadAction<FixtureLiveStatus>) => {
           state.liveStatus = action.payload;
           updateLastFetchedAt(state);
-        },
+        }
       )
       .addCase(
         fetchFixtureLineup.fulfilled,
         (state, action: PayloadAction<FixtureLineup>) => {
           state.lineup = action.payload;
           updateLastFetchedAt(state);
-        },
+        }
       )
       .addCase(
         fetchFixtureEvents.fulfilled,
         (state, action: PayloadAction<FixtureEventState>) => {
           const sortedEvents = action.payload.events.sort(
-            (a, b) => a.sequence - b.sequence,
+            (a, b) => a.sequence - b.sequence
           );
 
           const processedEvents: FixtureEventState = {
@@ -171,14 +189,14 @@ const fixtureLiveSlice = createSlice({
           };
           state.events = processedEvents;
           updateLastFetchedAt(state);
-        },
+        }
       )
       .addCase(
         fetchFixtureStatistics.fulfilled,
         (state, action: PayloadAction<FixtureStatistics>) => {
           state.statistics = action.payload;
           updateLastFetchedAt(state);
-        },
+        }
       );
   },
 });

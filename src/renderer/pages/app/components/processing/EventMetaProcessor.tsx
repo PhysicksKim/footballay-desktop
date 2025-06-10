@@ -4,55 +4,55 @@ import {
   FixtureLineup,
   LineupPlayer,
   SubstMeta,
-} from '@src/types/FixtureIpc'
-import React, { useEffect } from 'react'
+} from '@src/types/FixtureIpc';
+import React, { useEffect } from 'react';
 import {
   setEventMeta,
   SimpleLineup,
   SimpleLineupPlayer,
-} from '../../store/slices/live/fixtureLiveSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store/store'
-import { cloneDeep } from 'lodash'
+} from '../../store/slices/live/fixtureLiveSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { cloneDeep } from 'lodash';
 
 export const isSubOutPlayer = (checkId: number, simpleLineup: SimpleLineup) => {
-  const players = simpleLineup.lineup
+  const players = simpleLineup.lineup;
   for (let i = 0; i < players.length; i++) {
-    let currentPlayer = players[i]
+    let currentPlayer = players[i];
     if (!currentPlayer) {
-      continue
+      continue;
     }
 
     while (currentPlayer.subInPlayer) {
-      currentPlayer = currentPlayer.subInPlayer
+      currentPlayer = currentPlayer.subInPlayer;
     }
     if (currentPlayer.id === checkId) {
-      return true
+      return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 export const isSubOutUnregisteredPlayer = (
   checkTempId: string,
   simpleLineup: SimpleLineup
 ) => {
-  const players = simpleLineup.lineup
+  const players = simpleLineup.lineup;
   for (let i = 0; i < players.length; i++) {
-    let currentPlayer = players[i]
+    let currentPlayer = players[i];
     if (!currentPlayer) {
-      continue
+      continue;
     }
 
     while (currentPlayer.subInPlayer) {
-      currentPlayer = currentPlayer.subInPlayer
+      currentPlayer = currentPlayer.subInPlayer;
     }
     if (currentPlayer.tempId === checkTempId) {
-      return true
+      return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 /**
  * WindowControlTab 의 Fixture Event List 에 사용할 Lineup 정보를 생성합니다. <br>
@@ -60,8 +60,8 @@ export const isSubOutUnregisteredPlayer = (
  * @returns
  */
 const createSimpleLineup = (lineup: FixtureLineup) => {
-  const homeId = lineup.lineup.home.teamId
-  const awayId = lineup.lineup.away.teamId
+  const homeId = lineup.lineup.home.teamId;
+  const awayId = lineup.lineup.away.teamId;
 
   const createSimpleLineupPlayer = (player: LineupPlayer) => {
     if (!player.id) {
@@ -69,41 +69,45 @@ const createSimpleLineup = (lineup: FixtureLineup) => {
         id: player.id,
         subInPlayer: null,
         tempId: player.tempId,
-      }
+      };
     } else {
       return {
         id: player.id,
         subInPlayer: null,
         tempId: null,
-      }
+      };
     }
-  }
+  };
 
   const homeSimpleLineupPlayers: SimpleLineupPlayer[] =
-    lineup.lineup.home.players.map((player) => createSimpleLineupPlayer(player))
+    lineup.lineup.home.players.map((player) =>
+      createSimpleLineupPlayer(player)
+    );
   const awaySimpleLineupPlayers: SimpleLineupPlayer[] =
-    lineup.lineup.away.players.map((player) => createSimpleLineupPlayer(player))
+    lineup.lineup.away.players.map((player) =>
+      createSimpleLineupPlayer(player)
+    );
   const homeSubstitutes: SimpleLineupPlayer[] =
     lineup.lineup.home.substitutes.map((player) =>
       createSimpleLineupPlayer(player)
-    )
+    );
   const awaySubstitutes: SimpleLineupPlayer[] =
     lineup.lineup.away.substitutes.map((player) =>
       createSimpleLineupPlayer(player)
-    )
+    );
 
   const home: SimpleLineup = {
     teamId: homeId,
     lineup: homeSimpleLineupPlayers,
     substitutes: homeSubstitutes,
-  }
+  };
   const away: SimpleLineup = {
     teamId: awayId,
     lineup: awaySimpleLineupPlayers,
     substitutes: awaySubstitutes,
-  }
-  return { home, away }
-}
+  };
+  return { home, away };
+};
 
 const updateSimpleLineup = (
   simpleLineup: SimpleLineup,
@@ -112,13 +116,13 @@ const updateSimpleLineup = (
   outPlayerId: number | null,
   outPlayerTempId: string | null
 ) => {
-  const { lineup } = simpleLineup
+  const { lineup } = simpleLineup;
 
   // find sub out player
   for (let i = 0; i < lineup.length; i++) {
-    let nowPlayer = lineup[i]
+    let nowPlayer = lineup[i];
     while (nowPlayer.subInPlayer) {
-      nowPlayer = nowPlayer.subInPlayer
+      nowPlayer = nowPlayer.subInPlayer;
     }
 
     if (
@@ -129,19 +133,19 @@ const updateSimpleLineup = (
         id: inPlayerId,
         subInPlayer: null,
         tempId: inPlayerTempId,
-      }
-      nowPlayer.subInPlayer = subInPlayer
-      break
+      };
+      nowPlayer.subInPlayer = subInPlayer;
+      break;
     }
   }
-}
+};
 
 const matchRegisteredPlayer = (id1: number | any, id2: number | any) => {
   if (!id1 && !id2 && typeof id1 === 'number' && typeof id2 === 'number') {
-    return id1 === id2
+    return id1 === id2;
   }
-  return false
-}
+  return false;
+};
 
 const matchUnregisteredPlayer = (
   tempId1: string | any,
@@ -153,10 +157,10 @@ const matchUnregisteredPlayer = (
     typeof tempId1 === 'string' &&
     typeof tempId2 === 'string'
   ) {
-    return tempId1 === tempId2
+    return tempId1 === tempId2;
   }
-  return false
-}
+  return false;
+};
 
 /**
  * 이벤트에 필요한 메타 정보를 처리하고 FixtureEventMeta 배열을 반환합니다. <br>
@@ -168,39 +172,39 @@ const matchUnregisteredPlayer = (
  */
 const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
   if (!lineup || !lineup?.lineup) {
-    return
+    return;
   }
   const sortedEvents = cloneDeep(events).sort(
     (a: FixtureEvent, b: FixtureEvent) => a.sequence - b.sequence
-  )
+  );
 
   const { home: homeSimpleLineup, away: awaySimpleLineup } =
-    createSimpleLineup(lineup)
-  const homeId = lineup.lineup.home.teamId
+    createSimpleLineup(lineup);
+  const homeId = lineup.lineup.home.teamId;
 
-  const eventMetaList: FixtureEventMeta[] = []
+  const eventMetaList: FixtureEventMeta[] = [];
 
   sortedEvents.forEach((event: FixtureEvent) => {
-    const nowTeamId = event.team.teamId
-    const nowPlayerId = event.player?.playerId
-    const nowPlayerTempId = event.player?.tempId
+    const nowTeamId = event.team.teamId;
+    const nowPlayerId = event.player?.playerId;
+    const nowPlayerTempId = event.player?.tempId;
     const nowAssistId: number | null = event.assist
       ? event.assist.playerId
-      : null
+      : null;
     const nowAssistTempId: string | null = event.assist
       ? event.assist.tempId
-      : null
-    const nowEventType = event.type.toUpperCase()
-    const nowSequence = event.sequence
+      : null;
+    const nowEventType = event.type.toUpperCase();
+    const nowSequence = event.sequence;
 
     switch (nowEventType) {
       case 'SUBST':
         // filter no id event
         if (!nowPlayerId && !nowPlayerTempId) {
-          break
+          break;
         }
         if (!nowAssistId && !nowAssistTempId) {
-          break
+          break;
         }
 
         const isPlayerSubOut = nowPlayerTempId
@@ -213,11 +217,11 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
                 nowPlayerId,
                 nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup
               )
-            : false
+            : false;
 
         const { inPlayer, outPlayer } = isPlayerSubOut
           ? { inPlayer: 'assist', outPlayer: 'player' }
-          : { inPlayer: 'player', outPlayer: 'assist' }
+          : { inPlayer: 'player', outPlayer: 'assist' };
         const { subInId, subInTempId, subOutId, subOutTempId } = isPlayerSubOut
           ? {
               subInId: nowAssistId,
@@ -230,46 +234,46 @@ const updateEventMeta = (lineup: FixtureLineup, events: FixtureEvent[]) => {
               subInTempId: nowPlayerTempId,
               subOutId: nowAssistId,
               subOutTempId: nowAssistTempId,
-            }
+            };
         const substMeta = {
           inPlayer,
           outPlayer,
           teamId: nowTeamId,
-        } as SubstMeta
+        } as SubstMeta;
 
         eventMetaList.push({
           sequence: nowSequence,
           data: substMeta,
-        })
+        });
 
         const targetSimpleLineup =
-          nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup
+          nowTeamId === homeId ? homeSimpleLineup : awaySimpleLineup;
         updateSimpleLineup(
           targetSimpleLineup,
           subInId ? subInId : null,
           subInTempId ? subInTempId : null,
           subOutId ? subOutId : null,
           subOutTempId ? subOutTempId : null
-        )
-        break
+        );
+        break;
       default:
         eventMetaList.push({
           sequence: nowSequence,
           data: null,
-        })
+        });
     }
-  })
+  });
 
   // sort eventMetaList by sequence
-  eventMetaList.sort((a, b) => a.sequence - b.sequence)
-  return eventMetaList
-}
+  eventMetaList.sort((a, b) => a.sequence - b.sequence);
+  return eventMetaList;
+};
 
 const EventMetaProcessor = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const lineup = useSelector((state: RootState) => state.fixtureLive.lineup)
-  const events = useSelector((state: RootState) => state.fixtureLive.events)
+  const lineup = useSelector((state: RootState) => state.fixtureLive.lineup);
+  const events = useSelector((state: RootState) => state.fixtureLive.events);
 
   useEffect(() => {
     if (
@@ -278,18 +282,26 @@ const EventMetaProcessor = () => {
       !events.events ||
       events.meta?.length === events.events.length
     ) {
-      return
+      return;
     }
     const sortedEvents = cloneDeep(events.events).sort(
       (a: FixtureEvent, b: FixtureEvent) => a.sequence - b.sequence
-    )
-    const eventMetaList = updateEventMeta(lineup, sortedEvents)
+    );
+    const eventMetaList = updateEventMeta(lineup, sortedEvents);
     if (eventMetaList) {
-      dispatch(setEventMeta(eventMetaList))
+      dispatch(setEventMeta(eventMetaList));
     }
-  }, [lineup, events])
+  }, [
+    lineup?.fixtureId,
+    events?.fixtureId,
+    events?.events?.length,
+    events?.meta?.length,
+    // 마지막 이벤트의 sequence를 통해 실제 이벤트 내용 변경 감지
+    events?.events?.[events.events.length - 1]?.sequence,
+    dispatch,
+  ]);
 
-  return <></>
-}
+  return <></>;
+};
 
-export default EventMetaProcessor
+export default EventMetaProcessor;

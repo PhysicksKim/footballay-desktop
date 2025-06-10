@@ -122,6 +122,7 @@ app
           updatecheckerWindow.show();
         });
       }
+      appWindow.webContents.openDevTools();
       setTimeout(() => {
         updatecheckerWindow?.close();
       }, 3000);
