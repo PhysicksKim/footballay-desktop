@@ -70,8 +70,19 @@ ${license.content ? `${license.content}\n` : ''}
     // 4. 라이선스 파일 저장
     const outputPath = path.join(__rootDir, __outputDir, __outputFileName);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, licenseContent);
+    fs.writeFileSync(
+      outputPath,
+      '\uFEFF' + licenseContent, // Add BOM for UTF-8 encoding
+      { encoding: 'utf8' }
+    );
     console.log('Successfully license.txt file generated at:', outputPath);
+
+    // 5. assets 경로로 복사
+    const assetDir = path.join(__rootDir, 'assets');
+    const assetPath = path.join(assetDir, __outputFileName);
+    fs.mkdirSync(assetDir, { recursive: true });
+    fs.copyFileSync(outputPath, assetPath);
+    console.log('Also copied to assets at:', assetPath);
   } catch (error) {
     console.error('Error generating license file:', error);
     process.exit(1);
