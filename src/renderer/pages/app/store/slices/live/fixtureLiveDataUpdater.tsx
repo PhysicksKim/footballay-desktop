@@ -21,18 +21,24 @@ const isFetchStopStatus = (status: string) => {
   return END_STATUS.includes(status);
 };
 
-export const startFetchLineup = (fixtureId: number, preferenceKey: string) => {
+export const startFetchLineup = (
+  fixtureId: number,
+  preferenceKey: string = ''
+) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const fetchLineup = async () => {
       try {
+        console.log('fetchLineup start', fixtureId);
         const response = await dispatch(
-          fetchFixtureLineup({ fixtureId, preferenceKey }),
+          fetchFixtureLineup({ fixtureId })
         )?.unwrap();
+        console.log('fetch response', response);
         if (
           response &&
           response.lineup !== null &&
           isCompleteLineupData(response)
         ) {
+          console.log('fetchLineup success', response);
           clearInterval(intervalId);
           dispatch(removeIntervalId(intervalId));
         }
@@ -42,7 +48,7 @@ export const startFetchLineup = (fixtureId: number, preferenceKey: string) => {
     };
     const intervalId: NodeJS.Timeout = setInterval(
       fetchLineup,
-      LINEUP_INTERVAL_TIME,
+      LINEUP_INTERVAL_TIME
     );
     dispatch(addIntervalId(intervalId));
     fetchLineup();
@@ -54,7 +60,7 @@ export const startFetchLiveStatus = (fixtureId: number) => {
     const fetchLiveStatus = async () => {
       try {
         const response = await dispatch(
-          fetchFixtureLiveStatus(fixtureId),
+          fetchFixtureLiveStatus(fixtureId)
         ).unwrap();
         if (isFetchStopStatus(response.liveStatus.shortStatus)) {
           clearInterval(intervalId);

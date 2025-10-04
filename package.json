@@ -1,6 +1,6 @@
 {
   "name": "footballay-desktop",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "dist-electron/main/main.js",
   "description": "football live match streaming overlay tool",
   "author": "physicks",
@@ -14,6 +14,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+    "start:prod-api": "cross-env UNABLE_WEBSECURITY=1 dotenv -e .env.production -- vite --mode development",
     "build": "tsc && vite build && electron-builder",
     "preview": "vite preview",
     "pretest": "vite build --mode=test",
@@ -88,6 +89,8 @@
     "vite-plugin-eslint": "^1.8.1",
     "vitest": "^3.1.2",
     "ws": "8.18.0",
+    "dotenv-cli": "^7.3.0",
+    "cross-env": "^7.0.3",
     "license-checker": "^25.0.1"
   }
 }

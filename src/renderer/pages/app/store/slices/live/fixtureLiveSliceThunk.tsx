@@ -20,17 +20,17 @@ export const fetchFixtureInfo = createAsyncThunk<
     try {
       const response = await axios.get<{ response: FixtureInfo[] }>(
         `${Urls.apiUrl}${Urls.football.fixtureInfo}`,
-        { params: { fixtureId } },
+        { params: { fixtureId } }
       );
 
       decodeInfoHtmlEntities(response.data.response[0]);
       return response.data.response[0];
     } catch (error: any) {
       return rejectWithValue(
-        error.response ? error.response.data : error.message,
+        error.response ? error.response.data : error.message
       );
     }
-  },
+  }
 );
 
 export const fetchFixtureLiveStatus = createAsyncThunk<
@@ -41,20 +41,20 @@ export const fetchFixtureLiveStatus = createAsyncThunk<
   try {
     const response = await axios.get<{ response: FixtureLiveStatus[] }>(
       `${Urls.apiUrl}${Urls.football.fixtureLiveStatus}`,
-      { params: { fixtureId } },
+      { params: { fixtureId } }
     );
 
     return response.data.response[0];
   } catch (error: any) {
     return rejectWithValue(
-      error.response ? error.response.data : error.message,
+      error.response ? error.response.data : error.message
     );
   }
 });
 
 export type FetchFixtureLineupParams = {
   fixtureId: number;
-  preferenceKey: string;
+  preferenceKey?: string;
 };
 
 /**
@@ -81,18 +81,22 @@ export const fetchFixtureLineup = createAsyncThunk<
             fixtureId: lineupParams.fixtureId,
             preferenceKey: lineupParams.preferenceKey,
           },
-        },
+        }
       );
+      const respArray = axiosResponse.data?.response;
+      if (!respArray || respArray.length === 0 || !respArray[0]) {
+        return rejectWithValue('No lineup response');
+      }
 
-      const respData = axiosResponse.data.response[0];
+      const respData = respArray[0];
       decodeLineupHtmlEntities(respData);
       return respData;
     } catch (error: any) {
       return rejectWithValue(
-        error.response ? error.response.data : error.message,
+        error.response ? error.response.data : error.message
       );
     }
-  },
+  }
 );
 
 export const fetchFixtureEvents = createAsyncThunk<
@@ -103,14 +107,14 @@ export const fetchFixtureEvents = createAsyncThunk<
   try {
     const response = await axios.get<{ response: FixtureEventState[] }>(
       `${Urls.apiUrl}${Urls.football.fixtureEvents}`,
-      { params: { fixtureId } },
+      { params: { fixtureId } }
     );
 
     decodeEventsHtmlEntities(response.data.response[0]);
     return response.data.response[0];
   } catch (error: any) {
     return rejectWithValue(
-      error.response ? error.response.data : error.message,
+      error.response ? error.response.data : error.message
     );
   }
 });
@@ -141,7 +145,7 @@ export const fetchFixtureStatistics = createAsyncThunk<
     return response.data.response[0];
   } catch (error: any) {
     return rejectWithValue(
-      error.response ? error.response.data : error.message,
+      error.response ? error.response.data : error.message
     );
   }
 });

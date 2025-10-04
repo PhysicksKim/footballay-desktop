@@ -11,6 +11,7 @@ export const __dirname = dirname(__filename);
 
 type AppWindow = BrowserWindow | null;
 const isDev = import.meta.env.MODE === 'development';
+const disableWebSecurity = isDev && process.env.UNABLE_WEBSECURITY === '1';
 
 /**
  * 각 윈도우는 싱글톤으로 관리합니다.
@@ -52,6 +53,7 @@ class WindowManager {
         contextIsolation: true,
         backgroundThrottling: false,
         preload: path.join(__dirname, '../preload/preload.mjs'),
+        webSecurity: !disableWebSecurity,
       },
       movable: true,
     });
@@ -110,6 +112,7 @@ class WindowManager {
         contextIsolation: true,
         backgroundThrottling: false,
         preload: path.join(__dirname, '../preload/preload.mjs'),
+        webSecurity: !disableWebSecurity,
       },
       movable: true,
     });
@@ -160,6 +163,7 @@ class WindowManager {
         contextIsolation: true,
         backgroundThrottling: false,
         preload: path.join(__dirname, '../preload/preload.mjs'),
+        webSecurity: !disableWebSecurity,
       },
       movable: true,
     });

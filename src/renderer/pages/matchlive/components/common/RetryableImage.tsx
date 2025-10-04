@@ -1,6 +1,5 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { he } from 'date-fns/locale';
 import React, { ReactEventHandler, useEffect, useState } from 'react';
 
 interface RetryableImageProps {
@@ -64,7 +63,8 @@ const RetryableImage: React.FC<RetryableImageProps> = ({
       )}
       <img
         className={className}
-        src={src + '?retry=' + retryCount}
+        key={`${src}-${retryCount}`}
+        src={src}
         alt={alt}
         onError={handleError}
         onLoad={() => setIsLoading(false)}
