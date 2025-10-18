@@ -19,11 +19,11 @@ const SideNavigation = () => {
           <div className="selected-fixture-item">라이브 정보 컨트롤</div>
         </div>
       </Link>
-      <Link to="/settings" className="settings">
+      {/* <Link to="/settings" className="settings">
         <div className="settings-tab">
           <div className="settings-tab-item">설정</div>
         </div>
-      </Link>
+      </Link> */}
       <div className="version-text-box">
         <div className="version-text">v {version}</div>
       </div>
