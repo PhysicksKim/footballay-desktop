@@ -5,6 +5,12 @@ export interface FixtureProcessedDataState {
   lineup: ProcessedLineup;
 }
 
+/**
+ * 처리된 라인업(ProcessedLineup) ; View 용 Lineup
+ * - 원본 라인업 + 이벤트 + 선수 통계를 결합해 화면 표시에 최적화된 구조입니다.
+ * - 각 `ViewPlayer`는 `events`(교체/카드/골)와 `statistics`(평점 등)를 포함합니다.
+ * - matchlive UI는 평점/아이콘 표시에 이 구조를 직접 사용합니다.
+ */
 export interface ProcessedLineup {
   home: ViewLineup | null;
   away: ViewLineup | null;

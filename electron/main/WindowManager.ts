@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, app } from 'electron';
+import { BrowserWindow, Menu, app, contextBridge } from 'electron';
 import log from 'electron-log';
 import { AppState } from './AppState';
 import { resolveHtmlPath } from './util';
@@ -87,6 +87,8 @@ class WindowManager {
       }
       this.appWindow.focus();
     });
+
+    console.log('appVersion', app.getVersion());
 
     return this.appWindow;
   }

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
-import electronStore from '../main/store/ipcElectronStore'
-import { __APP_VERSION__ } from '../main/Constants'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import electronStore from '../main/store/ipcElectronStore';
 
 export type Channels =
   | 'loginfo'
@@ -22,40 +21,40 @@ export type Channels =
   // Main - Sub Channels
   | 'to-app'
   | 'to-matchlive'
-  | 'to-updatechecker'
+  | 'to-updatechecker';
 
-const PRINT_IPC_MESSAGES = false
+const PRINT_IPC_MESSAGES = false;
 
 const electronHandler = {
   ipcRenderer: {
     send(channel: Channels, ...args: any[]) {
       if (PRINT_IPC_MESSAGES) {
-        console.log('ipcRenderer.send', channel, args)
+        console.log('ipcRenderer.send', channel, args);
       }
-      ipcRenderer.send(channel, ...args)
+      ipcRenderer.send(channel, ...args);
     },
     on(channel: Channels, func: (...args: any[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: any[]) => {
         if (PRINT_IPC_MESSAGES) {
-          console.log('ipcRenderer.on', channel, args)
+          console.log('ipcRenderer.on', channel, args);
         }
-        func(...args)
-      }
-      ipcRenderer.on(channel, subscription)
+        func(...args);
+      };
+      ipcRenderer.on(channel, subscription);
       return () => {
-        ipcRenderer.removeListener(channel, subscription)
-      }
+        ipcRenderer.removeListener(channel, subscription);
+      };
     },
     once(channel: Channels, func: (...args: any[]) => void) {
-      ipcRenderer.once(channel, (_event, ...args) => func(...args))
+      ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
     removeAllListeners(channel: Channels) {
-      ipcRenderer.removeAllListeners(channel)
+      ipcRenderer.removeAllListeners(channel);
     },
     invoke(channel: Channels, ...args: any[]) {
       return ipcRenderer.invoke(channel, ...args).catch((error) => {
-        console.error(`Error invoking IPC channel ${channel}`, error)
-      })
+        console.error(`Error invoking IPC channel ${channel}`, error);
+      });
     },
   },
   stomp: {
@@ -69,11 +68,18 @@ const electronHandler = {
     onMessage: (callback: (message: string) => void) =>
       ipcRenderer.on('stomp-message', (event, message) => callback(message)),
   },
-}
+};
 
-contextBridge.exposeInMainWorld('electron', electronHandler)
-contextBridge.exposeInMainWorld('electronStore', electronStore)
-contextBridge.exposeInMainWorld('appVersion', __APP_VERSION__)
+contextBridge.exposeInMainWorld('electron', electronHandler);
+contextBridge.exposeInMainWorld('electronStore', electronStore);
+contextBridge.exposeInMainWorld('getVersion', async () => {
+  try {
+    const v = await ipcRenderer.invoke('get-app-version');
+    return typeof v === 'string' ? v : String(v);
+  } catch (e) {
+    return 'unknown';
+  }
+});
 
-export type ElectronHandler = typeof electronHandler
-export type ElectronStore = typeof electronStore
+export type ElectronHandler = typeof electronHandler;
+export type ElectronStore = typeof electronStore;

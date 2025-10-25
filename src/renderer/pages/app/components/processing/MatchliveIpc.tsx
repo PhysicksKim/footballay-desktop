@@ -36,6 +36,15 @@ export interface IpcMessage {
 }
 
 const sendFixtureId = (selectedFixtureId: number) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_FIXTURE_ID',
+      data: { fixtureId: selectedFixtureId },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_FIXTURE_ID',
     data: selectedFixtureId,
@@ -43,6 +52,15 @@ const sendFixtureId = (selectedFixtureId: number) => {
 };
 
 const sendFixtureInfo = (fixtureInfo: FixtureInfo | null) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_FIXTURE_INFO',
+      data: { has: !!fixtureInfo },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_FIXTURE_INFO',
     data: fixtureInfo,
@@ -50,6 +68,18 @@ const sendFixtureInfo = (fixtureInfo: FixtureInfo | null) => {
 };
 
 const sendLiveStatus = (fixtureLiveStatus: FixtureLiveStatus | null) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_LIVE_STATUS',
+      data: {
+        has: !!fixtureLiveStatus,
+        shortStatus: fixtureLiveStatus?.liveStatus?.shortStatus,
+      },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_LIVE_STATUS',
     data: fixtureLiveStatus,
@@ -57,6 +87,15 @@ const sendLiveStatus = (fixtureLiveStatus: FixtureLiveStatus | null) => {
 };
 
 const sendLineup = (fixtureLineup: FixtureLineup | null) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_LINEUP',
+      data: { has: !!fixtureLineup },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_LINEUP',
     data: fixtureLineup,
@@ -64,6 +103,15 @@ const sendLineup = (fixtureLineup: FixtureLineup | null) => {
 };
 
 const sendStatistics = (fixtureStatistics: FixtureStatistics | null) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_STATISTICS',
+      data: { has: !!fixtureStatistics },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_STATISTICS',
     data: fixtureStatistics,
@@ -72,7 +120,7 @@ const sendStatistics = (fixtureStatistics: FixtureStatistics | null) => {
 
 export const getFilteredEvents = (
   fixtureEvents: FixtureEventState,
-  filterEvents: FixtureEvent[],
+  filterEvents: FixtureEvent[]
 ): FixtureEventState => {
   const fixtureId = fixtureEvents.fixtureId;
 
@@ -92,7 +140,7 @@ export const getFilteredEvents = (
         }
       }
       return true;
-    },
+    }
   );
 
   return {
@@ -104,9 +152,18 @@ export const getFilteredEvents = (
 
 const sendEvents = (
   fixtureEvents: FixtureEventState | null,
-  filterList: FixtureEvent[] = [],
+  filterList: FixtureEvent[] = []
 ) => {
   if (!fixtureEvents) {
+    try {
+      (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+        where: 'app:ipc',
+        msg: 'send:SET_EVENTS',
+        data: { has: false },
+      });
+    } catch (e) {
+      void e;
+    }
     window.electron.ipcRenderer.send('to-matchlive', {
       type: 'SET_EVENTS',
       data: fixtureEvents,
@@ -114,6 +171,19 @@ const sendEvents = (
     return;
   }
   const filteredEvents = getFilteredEvents(fixtureEvents, filterList);
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_EVENTS',
+      data: {
+        has: true,
+        before: fixtureEvents?.events?.length,
+        after: filteredEvents?.events?.length,
+      },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_EVENTS',
     data: filteredEvents,
@@ -121,6 +191,15 @@ const sendEvents = (
 };
 
 const sendProcessedLineup = (processedLineup: any) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'app:ipc',
+      msg: 'send:SET_PROCESSED_LINEUP',
+      data: { has: !!processedLineup },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-matchlive', {
     type: 'SET_PROCESSED_LINEUP',
     data: processedLineup,
@@ -144,34 +223,34 @@ const MatchliveIpc = () => {
   const dispatch = useDispatch();
 
   const selectedFixtureId = useSelector(
-    (state: RootState) => state.fixtureLive.fixtureId,
+    (state: RootState) => state.fixtureLive.fixtureId
   );
   const fixtureInfo = useSelector((state: RootState) => state.fixtureLive.info);
   const fixtureLiveStatus = useSelector(
-    (state: RootState) => state.fixtureLive.liveStatus,
+    (state: RootState) => state.fixtureLive.liveStatus
   );
   const fixtureLineup = useSelector(
-    (state: RootState) => state.fixtureLive.lineup,
+    (state: RootState) => state.fixtureLive.lineup
   );
   const fixtureEvents = useSelector(
-    (state: RootState) => state.fixtureLive.events,
+    (state: RootState) => state.fixtureLive.events
   );
   const fixtureStatistics = useSelector(
-    (state: RootState) => state.fixtureLive.statistics,
+    (state: RootState) => state.fixtureLive.statistics
   );
   const filterEvents = useSelector(
-    (state: RootState) => state.fixtureLiveControl.filterEvents,
+    (state: RootState) => state.fixtureLiveControl.filterEvents
   );
   const processedLineup = useSelector(
-    (state: RootState) => state.fixtureProcessedData.lineup,
+    (state: RootState) => state.fixtureProcessedData.lineup
   );
   const showPhoto = useSelector(
-    (state: RootState) => state.fixtureLiveOption.showPhoto,
+    (state: RootState) => state.fixtureLiveOption.showPhoto
   );
   const showPhotoRef = useRef(showPhoto);
 
   const initTaskState = useSelector(
-    (state: RootState) => state.fixtureLive.taskState.init,
+    (state: RootState) => state.fixtureLive.taskState.init
   );
   const fixtureLive = useSelector((state: RootState) => state.fixtureLive);
 
@@ -185,7 +264,7 @@ const MatchliveIpc = () => {
     useState(false);
 
   const handleToAppMessage = (...args: IpcMessage[]) => {
-    const { type, data } = args[0];
+    const { type } = args[0];
     switch (type) {
       case 'MATCHLIVE_WINDOW_READY':
         dispatch(setMatchliveWindowReady(true));
@@ -237,7 +316,7 @@ const MatchliveIpc = () => {
     window.electron.ipcRenderer.on('to-app', handleToAppMessage);
     window.electron.ipcRenderer.on(
       'window-control-response',
-      handleWindowControlResponseMessage,
+      handleWindowControlResponseMessage
     );
   }, []);
 

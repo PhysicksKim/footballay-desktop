@@ -94,6 +94,13 @@ export interface FixtureInfo {
   away: Team;
 }
 
+/**
+ * 원본 라인업(FixtureLineup)
+ * - API에서 전달받은 경기 라인업의 원형 데이터입니다.
+ * - 포메이션/선수 배치 등 기본 정보만 포함하며, 이벤트/통계는 적용되지 않습니다.
+ * - 화면 표시는 보통 `ProcessedLineup`(가공 라인업)을 사용하고,
+ *   이 타입은 레이아웃 계산이나 가공의 입력으로 사용됩니다.
+ */
 export interface FixtureLineup {
   fixtureId: number;
   lineup: TeamLineups;

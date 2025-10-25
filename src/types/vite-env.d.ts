@@ -9,6 +9,7 @@ declare global {
   interface Window {
     electron: ElectronHandler;
     electronStore: ElectronStore;
-    appVersion: string;
+    appVersion?: string;
+    getVersion?: () => Promise<string>;
   }
 }

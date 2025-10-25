@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { faList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +6,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@app/styles/SideNavigation.scss';
 
 const SideNavigation = () => {
-  const version = window.appVersion;
+  const [version, setVersion] = useState<string>(window.appVersion || '');
+
+  useEffect(() => {
+    if (version) return;
+    const fetchVersion = async () => {
+      try {
+        if (window.getVersion) {
+          const v = await window.getVersion();
+          setVersion(v);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchVersion();
+  }, [version]);
   return (
     <div className="side-navigation-container">
       <Link to="/" className="fixture-selection">

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@app/store/store';
@@ -30,6 +30,16 @@ const isDeepEqual = (obj1: any, obj2: any): boolean => {
   return true;
 };
 
+/**
+ * ViewLineupProcessor
+ *
+ * 변경 사항:
+ * - useMemo를 제거하여 통계 값(예: rating) 변화처럼 배열 길이가 동일한 경우에도
+ *   재계산이 보장되도록 수정했습니다.
+ * - 기존 구현은 통계 배열의 length 의존으로 인해 값 변경이 반영되지 않는 경우가 있어
+ *   초기 표시 누락/지연 문제가 발생했습니다.
+ * - 성능 최적화는 추후 안전한 체크섬(내용 기반)으로 대체하는 것이 바람직합니다.
+ */
 const ViewLineupProcessor = () => {
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.fixtureLive.events);
@@ -55,69 +65,40 @@ const ViewLineupProcessor = () => {
     statisticsExists: boolean;
   } | null>(null);
 
-  // processedEvents를 useMemo로 최적화
-  const processedEvents = useMemo(() => {
+  // 항상 최신 이벤트 필터링 결과를 계산
+  const processedEvents: FixtureEvent[] = (() => {
     if (!events || !events.events) {
       return [] as FixtureEvent[];
     }
-
-    // filterEvents가 빈 배열이면 그냥 원본 events 반환
     if (!filterEvents || filterEvents.length === 0) {
       return events.events;
     }
-
-    // 실제 필터링이 필요한 경우에만 getFilteredEvents 호출
     return getFilteredEvents(events, filterEvents).events;
-  }, [
-    events?.fixtureId,
-    events?.events?.length,
-    filterEvents?.length,
-    // events와 filterEvents의 실제 내용이 변경되었는지도 체크
-    events?.events?.[events.events.length - 1]?.sequence,
-    filterEvents?.[filterEvents.length - 1]?.sequence,
-  ]);
+  })();
 
-  // homeViewLineup을 useMemo로 최적화
-  const homeViewLineup = useMemo(() => {
+  // 항상 최신 홈 라인업 뷰 계산
+  const homeViewLineup = (() => {
     if (!lineup?.lineup?.home) {
       return null;
     }
-
     return processLineupToView(
       lineup.lineup.home,
       processedEvents,
       statistics?.home?.playerStatistics
     );
-  }, [
-    lineup?.fixtureId,
-    lineup?.lineup?.home?.teamId,
-    lineup?.lineup?.home?.players?.length,
-    lineup?.lineup?.home?.substitutes?.length,
-    processedEvents?.length,
-    processedEvents?.[processedEvents.length - 1]?.sequence,
-    statistics?.home?.playerStatistics?.length,
-  ]);
+  })();
 
-  // awayViewLineup을 useMemo로 최적화
-  const awayViewLineup = useMemo(() => {
+  // 항상 최신 원정 라인업 뷰 계산
+  const awayViewLineup = (() => {
     if (!lineup?.lineup?.away) {
       return null;
     }
-
     return processLineupToView(
       lineup.lineup.away,
       processedEvents,
       statistics?.away?.playerStatistics
     );
-  }, [
-    lineup?.fixtureId,
-    lineup?.lineup?.away?.teamId,
-    lineup?.lineup?.away?.players?.length,
-    lineup?.lineup?.away?.substitutes?.length,
-    processedEvents?.length,
-    processedEvents?.[processedEvents.length - 1]?.sequence,
-    statistics?.away?.playerStatistics?.length,
-  ]);
+  })();
 
   // 실제 변경이 있을 때만 dispatch 호출
   useEffect(() => {

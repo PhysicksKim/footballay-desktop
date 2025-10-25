@@ -30,13 +30,13 @@ const LineupTab: React.FC<LineupTabProps> = ({
   isActive,
 }) => {
   const lineup = useSelector(
-    (state: RootState) => state.fixture.lineup,
+    (state: RootState) => state.fixture.lineup
   )?.lineup;
   const info = useSelector((state: RootState) => state.fixture.info);
   const events = useSelector((state: RootState) => state.fixture.events);
   const showPhoto = useSelector((state: RootState) => state.options.showPhoto);
   const processedLineup = useSelector(
-    (state: RootState) => state.fixtureProcessedData.lineup,
+    (state: RootState) => state.fixtureProcessedData.lineup
   );
 
   const homeTeamContainerRef = useRef<HTMLDivElement>(null);
@@ -91,11 +91,11 @@ const LineupTab: React.FC<LineupTabProps> = ({
 
     const homeLineupGridCount = Math.max(
       MIN_GRID_COUNT,
-      _lineup.home.formation.split('-').length + 1,
+      _lineup.home.formation.split('-').length + 1
     );
     const awayLineupGridCount = Math.max(
       MIN_GRID_COUNT,
-      _lineup.away.formation.split('-').length + 1,
+      _lineup.away.formation.split('-').length + 1
     );
 
     if (homeTeamContainerRef.current) {
@@ -145,11 +145,11 @@ const LineupTab: React.FC<LineupTabProps> = ({
   const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
   const minGridPlayerHeight = Math.min(
     homeGridPlayerHeight,
-    awayGridPlayerHeight,
+    awayGridPlayerHeight
   );
 
   /*
-  선수 통계 Modal 창 개발 중, hot-reload 이후에도 항상 modal 창을 띄워두고 싶을때 사용합니다
+  개발용 플래그, 선수 통계 Modal 창 항시 띄워두기 위한 플래그 
   */
   const MODAL_TEST_MODE = false;
   useEffect(() => {
@@ -162,7 +162,7 @@ const LineupTab: React.FC<LineupTabProps> = ({
       Set opacity of 'PlayerModalOverlayStyle' to 1 to display modal.
       Because CSSTransition className appending does not work when hot reloading,
       you need to manually set the opacity to 1 to see the modal.
-      `,
+      `
     );
     if (!lineup || !lineup.home || !lineup.away || !processedHomeLineup) {
       return;

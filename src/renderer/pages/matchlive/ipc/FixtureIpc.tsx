@@ -36,10 +36,27 @@ export interface IpcMessage {
 }
 
 const sendToApp = (type: SendIpcType, data?: any) => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'matchlive:ipc',
+      msg: 'sendToApp',
+      data: { type },
+    });
+  } catch (e) {
+    void e;
+  }
   window.electron.ipcRenderer.send('to-app', { type, data });
 };
 
 const requestFixtureInitialLiveData = () => {
+  try {
+    (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+      where: 'matchlive:ipc',
+      msg: 'requestFixtureInitialLiveData',
+    });
+  } catch (e) {
+    void e;
+  }
   sendToApp('GET_FIXTURE_LIVE_STATUS');
   sendToApp('GET_FIXTURE_LINEUP');
   sendToApp('GET_PROCESSED_LINEUP');
@@ -58,6 +75,15 @@ const FixtureIpc = () => {
 
   const handleMessage = (...args: IpcMessage[]) => {
     const { type, data } = args[0];
+    try {
+      (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+        where: 'matchlive:ipc',
+        msg: 'recv:to-matchlive',
+        data: { type },
+      });
+    } catch (e) {
+      void e;
+    }
 
     switch (type) {
       case 'SET_FIXTURE_ID': {
@@ -76,22 +102,79 @@ const FixtureIpc = () => {
         break;
       }
       case 'SET_LIVE_STATUS': {
+        try {
+          (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+            where: 'matchlive:ipc',
+            msg: 'apply:SET_LIVE_STATUS',
+            data: {
+              has: !!data,
+              shortStatus: data?.liveStatus?.shortStatus,
+              elapsed: data?.liveStatus?.elapsed,
+            },
+          });
+        } catch (e) {
+          void e;
+        }
         dispatch(setFixtureLiveStatus(data));
         break;
       }
       case 'SET_LINEUP': {
+        try {
+          (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+            where: 'matchlive:ipc',
+            msg: 'apply:SET_LINEUP',
+            data: {
+              has: !!data,
+              homePlayers: data?.lineup?.home?.players?.length,
+              awayPlayers: data?.lineup?.away?.players?.length,
+            },
+          });
+        } catch (e) {
+          void e;
+        }
         dispatch(setFixtureLineup(data));
         break;
       }
       case 'SET_EVENTS': {
+        try {
+          (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+            where: 'matchlive:ipc',
+            msg: 'apply:SET_EVENTS',
+            data: { total: data?.events?.length },
+          });
+        } catch (e) {
+          void e;
+        }
         dispatch(setFixtureEvents(data));
         break;
       }
       case 'SET_PROCESSED_LINEUP': {
+        try {
+          (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+            where: 'matchlive:ipc',
+            msg: 'apply:SET_PROCESSED_LINEUP',
+            data: { has: !!data },
+          });
+        } catch (e) {
+          void e;
+        }
         dispatch(setProcessedLineup(data));
         break;
       }
       case 'SET_STATISTICS': {
+        try {
+          (window as any)?.electron?.ipcRenderer?.send('loginfo', {
+            where: 'matchlive:ipc',
+            msg: 'apply:SET_STATISTICS',
+            data: {
+              has: !!data,
+              homeCount: data?.home?.playerStatistics?.length,
+              awayCount: data?.away?.playerStatistics?.length,
+            },
+          });
+        } catch (e) {
+          void e;
+        }
         dispatch(setFixtureStatistics(data));
         break;
       }

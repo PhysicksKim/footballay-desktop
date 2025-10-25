@@ -64,6 +64,15 @@ export const setupCommonWindowIpcHandlers = () => {
   ipcMain.on('loginfo', (event, data) => {
     log.info(data);
   });
+
+  // Provide app version to renderer on demand
+  ipcMain.handle('get-app-version', async () => {
+    try {
+      return app.getVersion();
+    } catch (e) {
+      return 'unknown';
+    }
+  });
 };
 
 export const setupappWindowIpcMainHandlers = () => {
