@@ -6,9 +6,11 @@
 
 실시간으로 축구 라이브 경기의 라인업, 카드, 골, 교체 정보를 표시해주는 스트리밍용 오버레이 프로그램 **풋볼레이** 입니다.
 
-[💾 다운로드](https://github.com/PhysicksKim/footballay-desktop/releases)
+[🔗 홈페이지](https://footballay.com/) 
 
-[📄 사용설명서](https://exuberant-longan-0fc.notion.site/Chun-City-1c1b75adcd658087a55ffdc32c3735ce)
+[💾 다운로드](https://footballay.com/download)
+
+[📄 사용설명서](https://footballay.gitbook.io/docs/)
 
 <br><br>
 
