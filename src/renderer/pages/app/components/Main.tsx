@@ -5,6 +5,7 @@ import TopBar from '@app/components/TopBar';
 import SideNavigation from '@app/components/SideNavigation';
 import Processors from '@app/components/processing/Processors';
 import MatchliveIpc from '@app/components/processing/MatchliveIpc';
+import V1MatchliveBridge from '@app/components/processing/V1MatchliveBridge';
 
 import '@app/styles/Main.scss';
 
@@ -14,6 +15,7 @@ const Main = () => {
   return (
     <div className="main-container">
       <MatchliveIpc />
+      <V1MatchliveBridge />
       <Processors />
       <div className="top-bar-area">
         <TopBar />

@@ -3,6 +3,7 @@ import fixtureReducer from './slices/fixtureSlice';
 import fixtureLiveOptionSlice from './slices/fixtureLiveOptionSlice';
 import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
 import teamColorSlice from './slices/teamColorSlice';
+import v1FixtureSlice from './slices/v1FixtureSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     fixtureProcessedData: fixtureProcessedDataSlice,
     options: fixtureLiveOptionSlice,
     teamColor: teamColorSlice,
+    v1Fixture: v1FixtureSlice,
   },
 });
 

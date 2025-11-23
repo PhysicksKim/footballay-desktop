@@ -19,7 +19,7 @@ export const fetchFixtureInfo = createAsyncThunk<
   async (fixtureId: number, { rejectWithValue }) => {
     try {
       const response = await axios.get<{ response: FixtureInfo[] }>(
-        `${Urls.apiUrl}${Urls.football.fixtureInfo}`,
+        `${Urls.domainUrl}${Urls.football.fixtureInfo}`,
         { params: { fixtureId } }
       );
 
@@ -40,7 +40,7 @@ export const fetchFixtureLiveStatus = createAsyncThunk<
 >('fixture/fetchLiveStatus', async (fixtureId: number, { rejectWithValue }) => {
   try {
     const response = await axios.get<{ response: FixtureLiveStatus[] }>(
-      `${Urls.apiUrl}${Urls.football.fixtureLiveStatus}`,
+      `${Urls.domainUrl}${Urls.football.fixtureLiveStatus}`,
       { params: { fixtureId } }
     );
 
@@ -75,7 +75,7 @@ export const fetchFixtureLineup = createAsyncThunk<
   async (lineupParams: FetchFixtureLineupParams, { rejectWithValue }) => {
     try {
       const axiosResponse = await axios.get<{ response: FixtureLineup[] }>(
-        `${Urls.apiUrl}${Urls.football.fixtureLineup}`,
+        `${Urls.domainUrl}${Urls.football.fixtureLineup}`,
         {
           params: {
             fixtureId: lineupParams.fixtureId,
@@ -106,7 +106,7 @@ export const fetchFixtureEvents = createAsyncThunk<
 >('fixture/fetchEvents', async (fixtureId: number, { rejectWithValue }) => {
   try {
     const response = await axios.get<{ response: FixtureEventState[] }>(
-      `${Urls.apiUrl}${Urls.football.fixtureEvents}`,
+      `${Urls.domainUrl}${Urls.football.fixtureEvents}`,
       { params: { fixtureId } }
     );
 
@@ -128,7 +128,7 @@ export const fetchFixtureStatistics = createAsyncThunk<
     const response = await axios.get<{
       response: FixtureStatistics[];
       metaData: any;
-    }>(`${Urls.apiUrl}${Urls.football.fixtureStatistics}`, {
+    }>(`${Urls.domainUrl}${Urls.football.fixtureStatistics}`, {
       params: { fixtureId },
     });
     if (

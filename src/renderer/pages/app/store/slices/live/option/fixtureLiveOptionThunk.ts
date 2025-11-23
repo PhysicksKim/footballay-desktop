@@ -11,14 +11,14 @@ export const validatePreferenceKey = createAsyncThunk<
   async (preferencekey, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${Urls.apiUrl}${Urls.football.preferenceKeyCheck()}`,
+        `${Urls.domainUrl}${Urls.football.preferenceKeyCheck()}`,
         {
           preferencekey: preferencekey,
         },
         {
           maxRedirects: 0,
           validateStatus: (status) => status >= 200 && status < 400,
-        },
+        }
       );
 
       let isValid;
@@ -35,5 +35,5 @@ export const validatePreferenceKey = createAsyncThunk<
       // 에러 메시지 로깅 등 추가 처리 가능
       return rejectWithValue(error.response?.data?.message || '키 검증 실패');
     }
-  },
+  }
 );

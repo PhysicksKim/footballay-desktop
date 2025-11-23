@@ -9,7 +9,7 @@ const fetchLeagueList = createAsyncThunk<League[]>(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get<ApiResponse<League>>(
-        Urls.apiUrl + Urls.football.leagues,
+        Urls.domainUrl + Urls.football.leagues
       );
       if (
         response.data.response === null ||
@@ -23,10 +23,10 @@ const fetchLeagueList = createAsyncThunk<League[]>(
     } catch (error: any) {
       console.log(error);
       return rejectWithValue(
-        error.response ? error.response.data : error.message,
+        error.response ? error.response.data : error.message
       );
     }
-  },
+  }
 );
 
 export default fetchLeagueList;

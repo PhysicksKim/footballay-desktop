@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { faList } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
+import {
+  faList,
+  faSliders,
+  faFlagCheckered,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import '@app/styles/SideNavigation.scss';
+import { RootState } from '@app/store/store';
+import { getEnvLabel } from '@app/config/environment';
 
 const SideNavigation = () => {
   const [version, setVersion] = useState<string>(window.appVersion || '');
+  const developerMode = useSelector(
+    (state: RootState) => state.featureFlags.developerMode
+  );
+  const envLabel = getEnvLabel();
 
   useEffect(() => {
     if (version) return;
@@ -22,6 +33,7 @@ const SideNavigation = () => {
     };
     fetchVersion();
   }, [version]);
+
   return (
     <div className="side-navigation-container">
       <Link to="/" className="fixture-selection">
@@ -34,11 +46,26 @@ const SideNavigation = () => {
           <div className="selected-fixture-item">라이브 정보 컨트롤</div>
         </div>
       </Link>
-      {/* <Link to="/settings" className="settings">
-        <div className="settings-tab">
-          <div className="settings-tab-item">설정</div>
-        </div>
-      </Link> */}
+      {developerMode && (
+        <>
+          <div className="division-bar labeled">
+            <span>V1</span>
+          </div>
+          <Link to="/v1/fixtures" className="nav-link">
+            <span>V1 경기 선택</span>
+            <FontAwesomeIcon icon={faFlagCheckered} />
+          </Link>
+        </>
+      )}
+      <div className="settings">
+        <Link to="/settings/v1" className="settings-tab">
+          <div className="settings-tab-item">
+            <FontAwesomeIcon icon={faSliders} />
+            <span className="settings-tab-text">설정</span>
+            <span className="settings-env-label">{envLabel}</span>
+          </div>
+        </Link>
+      </div>
       <div className="version-text-box">
         <div className="version-text">v {version}</div>
       </div>

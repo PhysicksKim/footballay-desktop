@@ -37,3 +37,5 @@ yarn.lock
 .ai/**
 .claude/**
 .mock/**
+
+docs/**

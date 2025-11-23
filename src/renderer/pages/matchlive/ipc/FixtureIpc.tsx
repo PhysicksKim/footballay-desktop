@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setFixtureEvents,
@@ -11,6 +11,7 @@ import {
 import { setProcessedLineup } from '@matchlive/store/slices/fixtureProcessedDataSlice';
 import { RootState } from '@matchlive/store/store';
 import { setShowPhoto } from '@matchlive/store/slices/fixtureLiveOptionSlice';
+import { selectIsV1Mode } from '@matchlive/store/slices/v1FixtureSlice';
 
 export type ReceiveIpcType =
   | 'SET_FIXTURE_ID'
@@ -68,12 +69,36 @@ const FixtureIpc = () => {
   const dispatch = useDispatch();
   const fixtureId = useSelector((state: RootState) => state.fixture.fixtureId);
   const fixtureInfo = useSelector((state: RootState) => state.fixture.info);
+  const isV1Mode = useSelector((state: RootState) => selectIsV1Mode(state));
+
+  // Timeout 관리를 위한 ref
+  const fixtureInfoRetryTimeoutRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+  const retryCountRef = useRef(0);
+  const MAX_RETRY_COUNT = 10; // 최대 10회 재시도 (10초)
 
   useEffect(() => {
-    sendMatchliveReactReady();
-  }, []);
+    // V1 모드가 아닐 때만 레거시 IPC 활성화
+    if (!isV1Mode) {
+      sendMatchliveReactReady();
+    }
+
+    // Cleanup: 컴포넌트 언마운트 시 모든 timeout 정리
+    return () => {
+      if (fixtureInfoRetryTimeoutRef.current) {
+        clearTimeout(fixtureInfoRetryTimeoutRef.current);
+        fixtureInfoRetryTimeoutRef.current = null;
+      }
+    };
+  }, [isV1Mode]);
 
   const handleMessage = (...args: IpcMessage[]) => {
+    // V1 모드일 때는 레거시 IPC 메시지 무시
+    if (isV1Mode) {
+      return;
+    }
+
     const { type, data } = args[0];
     try {
       (window as any)?.electron?.ipcRenderer?.send('loginfo', {
@@ -92,10 +117,37 @@ const FixtureIpc = () => {
       }
       case 'SET_FIXTURE_INFO': {
         if (!data) {
-          setTimeout(() => {
-            sendFixtureInfoRequest();
-          }, 1000);
+          // 최대 재시도 횟수 체크
+          if (retryCountRef.current < MAX_RETRY_COUNT) {
+            retryCountRef.current += 1;
+
+            // 이전 timeout 정리
+            if (fixtureInfoRetryTimeoutRef.current) {
+              clearTimeout(fixtureInfoRetryTimeoutRef.current);
+            }
+
+            // 재시도 (지수 백오프: 1초, 2초, 4초... 최대 5초)
+            const retryDelay = Math.min(
+              1000 * Math.pow(2, retryCountRef.current - 1),
+              5000
+            );
+            fixtureInfoRetryTimeoutRef.current = setTimeout(() => {
+              sendFixtureInfoRequest();
+            }, retryDelay);
+          } else {
+            // 최대 재시도 초과 시 로그만 남기고 중단
+            console.warn(
+              '[FixtureIpc] Max retry count reached for fixture info request'
+            );
+          }
         } else {
+          // 데이터 수신 성공 시 재시도 카운트 리셋
+          retryCountRef.current = 0;
+          if (fixtureInfoRetryTimeoutRef.current) {
+            clearTimeout(fixtureInfoRetryTimeoutRef.current);
+            fixtureInfoRetryTimeoutRef.current = null;
+          }
+
           dispatch(setFixtureInfo(data));
           requestFixtureInitialLiveData();
         }
@@ -185,8 +237,20 @@ const FixtureIpc = () => {
   };
 
   useEffect(() => {
+    // V1 모드일 때는 레거시 fixture info 요청 안 함
+    if (isV1Mode) {
+      return;
+    }
+
+    // fixtureId 변경 시 재시도 카운트 리셋 및 기존 timeout 정리
+    retryCountRef.current = 0;
+    if (fixtureInfoRetryTimeoutRef.current) {
+      clearTimeout(fixtureInfoRetryTimeoutRef.current);
+      fixtureInfoRetryTimeoutRef.current = null;
+    }
+
     sendFixtureInfoRequest();
-  }, [fixtureId]);
+  }, [fixtureId, isV1Mode]);
 
   const sendFixtureInfoRequest = () => {
     sendToApp('GET_FIXTURE_INFO');

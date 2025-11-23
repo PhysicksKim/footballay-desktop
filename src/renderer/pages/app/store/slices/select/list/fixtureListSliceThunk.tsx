@@ -17,12 +17,12 @@ export interface FixtureListItemResponse {
     kickoff: string;
     round: string;
   };
-  teamALogo: {
+  teamA: {
     name: string;
     logo: string;
     koreanName: string | null;
   };
-  teamBLogo: {
+  teamB: {
     name: string;
     logo: string;
     koreanName: string | null;
@@ -49,18 +49,18 @@ const fetchFixtureList = createAsyncThunk<
       let response: AxiosResponse<ApiResponse<FixtureListItemResponse>>;
       if (date === '' || date === '_' || date === null || date === undefined) {
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
-          Urls.apiUrl + Urls.football.fixtures,
+          Urls.domainUrl + Urls.football.fixtures,
           {
             params: { leagueId },
-          },
+          }
         );
       } else {
         const dateYMDstring = isoStringToYearMonthDay(date);
         response = await axios.get<ApiResponse<FixtureListItemResponse>>(
-          Urls.apiUrl + Urls.football.fixturesOnDate,
+          Urls.domainUrl + Urls.football.fixturesOnDate,
           {
             params: { leagueId, date: dateYMDstring },
-          },
+          }
         );
       }
 
@@ -80,16 +80,16 @@ const fetchFixtureList = createAsyncThunk<
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
-        error.response ? error.response.data : error.message,
+        error.response ? error.response.data : error.message
       );
     }
-  },
+  }
 );
 export default fetchFixtureList;
 
 const decodeHtmlEntities = (response: FixtureListItemResponse[]) => {
   response.forEach((fixture) => {
-    fixture.teamALogo.name = decode(fixture?.teamALogo?.name);
-    fixture.teamBLogo.name = decode(fixture?.teamBLogo?.name);
+    fixture.teamA.name = decode(fixture?.teamA?.name);
+    fixture.teamB.name = decode(fixture?.teamB?.name);
   });
 };

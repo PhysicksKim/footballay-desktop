@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/Body.scss';
 import FixtureIpc from '../ipc/FixtureIpc';
+import V1FixtureIpc from '../ipc/V1FixtureIpc';
 import LineupTab from './tabs/lineup/LineupTab';
 import '@matchlive/styles/Body.scss';
 import '@matchlive/styles/Main.scss';
@@ -12,6 +13,8 @@ import TeamColorProcessor from './processor/TeamColorProcessor';
 import { useSelector } from 'react-redux';
 import { stat } from 'fs';
 import { RootState } from '../store/store';
+import { selectIsV1Mode } from '../store/slices/v1FixtureSlice';
+import V1Layout from './v1/V1Layout';
 
 export type ActiveTab = 'lineup' | 'teamStatistics';
 
@@ -140,6 +143,7 @@ const Main = () => {
 
   const [prevShortStatus, setPrevShortStatus] = useState<string | null>(null);
 
+  const isV1Mode = useSelector((state: RootState) => selectIsV1Mode(state));
   const liveShortStatus = useSelector(
     (state: RootState) => state.fixture.liveStatus?.liveStatus.shortStatus
   );
@@ -200,54 +204,61 @@ const Main = () => {
 
   return (
     <div className="root-container">
-      <>
-        <TeamColorProcessor />
-        <FixtureIpc />
-      </>
-      <FootballFieldCanvas />
-      <SwitchTabButton
-        className="toggle-button left"
-        onClick={() => switchTab(activeTab)}
-      ></SwitchTabButton>
-      <div className="contents-area">
-        {/* LineupTab */}
-        <CSSTransition
-          in={activeTab === 'lineup'}
-          timeout={500}
-          classNames="fade"
-          unmountOnExit={false}
-          nodeRef={lineupRef}
-        >
-          <ContentAreaContainer
-            ref={lineupRef}
-            className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
-            $tabname="lineup"
-            $active={activeTab}
-            $isLineup={true}
-          >
-            <LineupTab isActive={activeTab === 'lineup'} />
-          </ContentAreaContainer>
-        </CSSTransition>
+      {/* IPC는 항상 렌더링 (V1FixtureIpc는 v1 데이터 수신용, FixtureIpc는 내부에서 v1 모드 체크) */}
+      <FixtureIpc />
+      <V1FixtureIpc />
 
-        {/* TeamStatisticsTab */}
-        <CSSTransition
-          in={activeTab === 'teamStatistics'}
-          timeout={500}
-          classNames="fade"
-          /* 비활성시 unmount 하지 않으면 Lineup 을 가리기 때문에 lineup 에서 hover 이벤트가 발생하지 않음 */
-          unmountOnExit={true}
-          nodeRef={teamStatisticsRef}
-        >
-          <ContentAreaContainer
-            ref={teamStatisticsRef}
-            className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
-            $tabname="teamStatistics"
-            $active={activeTab}
-          >
-            <TeamStatisticsTab />
-          </ContentAreaContainer>
-        </CSSTransition>
-      </div>
+      {isV1Mode ? (
+        <V1Layout />
+      ) : (
+        <>
+          <TeamColorProcessor />
+          <FootballFieldCanvas />
+          <SwitchTabButton
+            className="toggle-button left"
+            onClick={() => switchTab(activeTab)}
+          ></SwitchTabButton>
+          <div className="contents-area">
+            {/* LineupTab */}
+            <CSSTransition
+              in={activeTab === 'lineup'}
+              timeout={500}
+              classNames="fade"
+              unmountOnExit={false}
+              nodeRef={lineupRef}
+            >
+              <ContentAreaContainer
+                ref={lineupRef}
+                className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
+                $tabname="lineup"
+                $active={activeTab}
+                $isLineup={true}
+              >
+                <LineupTab isActive={activeTab === 'lineup'} />
+              </ContentAreaContainer>
+            </CSSTransition>
+
+            {/* TeamStatisticsTab */}
+            <CSSTransition
+              in={activeTab === 'teamStatistics'}
+              timeout={500}
+              classNames="fade"
+              /* 비활성시 unmount 하지 않으면 Lineup 을 가리기 때문에 lineup 에서 hover 이벤트가 발생하지 않음 */
+              unmountOnExit={true}
+              nodeRef={teamStatisticsRef}
+            >
+              <ContentAreaContainer
+                ref={teamStatisticsRef}
+                className={`tab ${activeTab === 'lineup' ? 'visible' : 'hidden'}`}
+                $tabname="teamStatistics"
+                $active={activeTab}
+              >
+                <TeamStatisticsTab />
+              </ContentAreaContainer>
+            </CSSTransition>
+          </div>
+        </>
+      )}
     </div>
   );
 };

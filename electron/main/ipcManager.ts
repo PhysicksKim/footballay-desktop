@@ -132,6 +132,32 @@ export const setupMatchliveIpcMainHandlers = () => {
   });
 };
 
+export const setupV1IpcHandlers = () => {
+  ipcMain.on('v1:to-matchlive', (event, data) => {
+    const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow;
+    if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
+      return;
+    }
+    try {
+      nowMatchliveWindow.webContents.send('v1:to-matchlive', data);
+    } catch (e) {
+      log.error('v1:to-matchlive ipc error message', e);
+    }
+  });
+
+  ipcMain.on('v1:request-data', (event, data) => {
+    const appWindow = WindowManager.getInstance().appWindow;
+    if (!appWindow) {
+      return;
+    }
+    try {
+      appWindow.webContents.send('v1:request-data', data);
+    } catch (e) {
+      log.error('v1:request-data ipc error message', e);
+    }
+  });
+};
+
 const sendMatchliveAlwaysOnTopToAppWindow = async () => {
   const matchliveWindow = WindowManager.getInstance().matchliveWindow;
   WindowManager.getInstance().appWindow?.webContents.send(

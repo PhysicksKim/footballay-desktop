@@ -2,4 +2,12 @@
 
 .content-area-container {
   height: calc(100vh - #{$top-bar-height});
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  > * {
+    flex: 1;
+    min-height: 0;
+  }
 }

@@ -27,12 +27,12 @@ export interface FixtureListItemProps {
     kickoff: string;
     round: string;
   };
-  teamALogo: {
+  teamA: {
     name: string;
     logo: string;
     koreanName: string | null;
   };
-  teamBLogo: {
+  teamB: {
     name: string;
     logo: string;
     koreanName: string | null;
@@ -54,8 +54,8 @@ const FixtureListItem = ({
   leagueId,
   fixtureId,
   matchSchedule,
-  teamALogo,
-  teamBLogo,
+  teamA,
+  teamB,
   status,
   index,
   available,
@@ -105,16 +105,14 @@ const FixtureListItem = ({
           </div>
           <div className="team-logo team-a-logo">
             <TeamLogo
-              key={fixtureId + teamALogo.name}
-              logo={teamALogo.logo}
-              name={teamALogo.name}
+              key={fixtureId + teamA.name}
+              logo={teamA.logo}
+              name={teamA.name}
             />
           </div>
         </div>
         <div className="team-versus-box">
-          <div className="team-a-name">
-            {teamALogo.koreanName || teamALogo.name}
-          </div>
+          <div className="team-a-name">{teamA.koreanName || teamA.name}</div>
           <div className="match-score">
             <div className="home-score">
               {status?.score?.home ? status.score.home : 0}
@@ -124,16 +122,14 @@ const FixtureListItem = ({
               {status?.score?.away ? status.score.away : 0}
             </div>
           </div>
-          <div className="team-b-name">
-            {teamBLogo.koreanName || teamBLogo.name}
-          </div>
+          <div className="team-b-name">{teamB.koreanName || teamB.name}</div>
         </div>
         <div className="team-logo-box team-b-logo-box">
           <div className="team-logo team-b-logo">
             <TeamLogo
-              key={fixtureId + teamBLogo.name}
-              logo={teamBLogo.logo}
-              name={teamBLogo.name}
+              key={fixtureId + teamB.name}
+              logo={teamB.logo}
+              name={teamB.name}
             />
           </div>
           <div className="team-mark away-team-mark">

@@ -10,6 +10,15 @@ import fixtureProcessedDataSlice from './slices/fixtureProcessedDataSlice';
 import WindowInfoSlice from './slices/states/WindowInfoSlice';
 import { useDispatch } from 'react-redux';
 import { loadPreferenceKey } from './slices/live/option/preferenceKeyIO';
+import {
+  featureFlagsReducer,
+  loadFeatureFlags,
+} from './slices/settings/featureFlagsSlice';
+import { v1Reducer } from '@app/v1/store';
+import {
+  loadV1Preferences,
+  v1PreferencesReducer,
+} from './slices/settings/v1PreferencesSlice';
 
 const store = configureStore({
   reducer: {
@@ -25,6 +34,9 @@ const store = configureStore({
     fixtureLiveControl: fixtureLiveControlReducer,
     fixtureProcessedData: fixtureProcessedDataSlice,
     windowInfo: WindowInfoSlice,
+    featureFlags: featureFlagsReducer,
+    v1: v1Reducer,
+    v1Preferences: v1PreferencesReducer,
   },
 });
 
@@ -33,6 +45,8 @@ const store = configureStore({
  */
 const initDispatchActions = () => {
   store.dispatch(loadPreferenceKey());
+  store.dispatch(loadFeatureFlags());
+  store.dispatch(loadV1Preferences());
 };
 initDispatchActions();
 

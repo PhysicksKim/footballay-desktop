@@ -15,12 +15,12 @@ const DebugTab = () => {
 
   const info = useSelector((state: RootState) => state.fixtureLive.info);
   const liveStatus = useSelector(
-    (state: RootState) => state.fixtureLive.liveStatus,
+    (state: RootState) => state.fixtureLive.liveStatus
   );
   const lineup = useSelector((state: RootState) => state.fixtureLive.lineup);
   const events = useSelector((state: RootState) => state.fixtureLive.events);
 
-  const apiUrl = Urls.apiUrl;
+  const apiUrl = Urls.domainUrl;
 
   const getLeagues = () => {
     dispatch(fetchLeagueList());

@@ -25,7 +25,7 @@ export default defineConfig(({ command }) => {
       },
     },
     plugins: [
-      basicSsl(),
+      // basicSsl(),
       react(),
       eslintPlugin({
         include: ['src/**/*.ts', 'src/**/*.tsx'],

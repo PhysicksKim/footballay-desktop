@@ -7,6 +7,8 @@ import DebugTab from './tabs/debug/DebugTab';
 
 import '@app/styles/ContentsArea.scss';
 import SettingsTab from './tabs/settings/SettingsTab';
+import SettingsV1Tab from './tabs/settings/SettingsV1Tab';
+import V1FixtureSelectTab from './tabs/v1/V1FixtureSelectTab';
 
 const ContentsArea = () => {
   return (
@@ -16,6 +18,8 @@ const ContentsArea = () => {
         <Route path="/debug-tool" element={<DebugTab />} />
         <Route path="/matchlive-control" element={<MatchliveControlTab />} />
         <Route path="/settings" element={<SettingsTab />} />
+        <Route path="/settings/v1" element={<SettingsV1Tab />} />
+        <Route path="/v1/fixtures" element={<V1FixtureSelectTab />} />
       </Routes>
     </div>
   );
