@@ -204,7 +204,6 @@ const Main = () => {
 
   return (
     <div className="root-container">
-      {/* IPC는 항상 렌더링 (V1FixtureIpc는 v1 데이터 수신용, FixtureIpc는 내부에서 v1 모드 체크) */}
       <FixtureIpc />
       <V1FixtureIpc />
 

@@ -17,8 +17,6 @@ const SideNavigation = () => {
   const developerMode = useSelector(
     (state: RootState) => state.featureFlags.developerMode
   );
-  const envLabel = getEnvLabel();
-
   useEffect(() => {
     if (version) return;
     const fetchVersion = async () => {
@@ -49,11 +47,10 @@ const SideNavigation = () => {
       {developerMode && (
         <>
           <div className="division-bar labeled">
-            <span>V1</span>
+            <span>--- V1 ---</span>
           </div>
           <Link to="/v1/fixtures" className="nav-link">
-            <span>V1 경기 선택</span>
-            <FontAwesomeIcon icon={faFlagCheckered} />
+            <span>경기 선택</span>
           </Link>
         </>
       )}
@@ -62,7 +59,6 @@ const SideNavigation = () => {
           <div className="settings-tab-item">
             <FontAwesomeIcon icon={faSliders} />
             <span className="settings-tab-text">설정</span>
-            <span className="settings-env-label">{envLabel}</span>
           </div>
         </Link>
       </div>
