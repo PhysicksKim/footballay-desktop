@@ -4,11 +4,11 @@
   width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
-  pointer-events: none;
+  // pointer-events: none;
 
-  & > * {
-    pointer-events: none;
-  }
+  // & > * {
+  //   pointer-events: all;
+  // }
 }
 
 .contents-area {

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { RootState } from '@matchlive/store/store';
 import { TeamStatistics } from '@app/v1/types/api';
+import V1PassSuccessPieChart from './stats/V1PassSuccessPieChart';
 
 interface V1StatsTabProps {
   isActive: boolean;
@@ -15,7 +16,12 @@ interface StatRowProps {
   isPercentage?: boolean;
 }
 
-const StatRow = ({ label, homeValue, awayValue, isPercentage }: StatRowProps) => {
+const StatRow = ({
+  label,
+  homeValue,
+  awayValue,
+  isPercentage,
+}: StatRowProps) => {
   const home = homeValue ?? 0;
   const away = awayValue ?? 0;
   const total = home + away;
@@ -38,7 +44,9 @@ const StatRow = ({ label, homeValue, awayValue, isPercentage }: StatRowProps) =>
 };
 
 const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
-  const statistics = useSelector((state: RootState) => state.v1Fixture.statistics);
+  const statistics = useSelector(
+    (state: RootState) => state.v1Fixture.statistics
+  );
 
   if (!statistics) {
     return (
@@ -51,16 +59,50 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
   const homeStats = statistics.home.teamStatistics;
   const awayStats = statistics.away.teamStatistics;
 
+  // Calculate pass accuracy percentage for pie chart
+  const homePassAccuracy =
+    homeStats.totalPasses && homeStats.totalPasses > 0
+      ? Math.round(
+          ((homeStats.passesAccurate || 0) / homeStats.totalPasses) * 100
+        )
+      : 0;
+
+  const awayPassAccuracy =
+    awayStats.totalPasses && awayStats.totalPasses > 0
+      ? Math.round(
+          ((awayStats.passesAccurate || 0) / awayStats.totalPasses) * 100
+        )
+      : 0;
+
   return (
     <Container $isActive={isActive}>
       <StatsContent>
         <TeamNames>
-          <TeamName>{statistics.home.team.koreanName || statistics.home.team.name}</TeamName>
-          <TeamName>{statistics.away.team.koreanName || statistics.away.team.name}</TeamName>
+          <TeamName>
+            {statistics.home.team.koreanName || statistics.home.team.name}
+          </TeamName>
+          <TeamName>
+            {statistics.away.team.koreanName || statistics.away.team.name}
+          </TeamName>
         </TeamNames>
 
+        {/* Pass Success Pie Chart */}
         <StatsSection>
-          <SectionTitle>슈팅</SectionTitle>
+          <V1PassSuccessPieChart
+            homePassSuccess={homePassAccuracy}
+            awayPassSuccess={awayPassAccuracy}
+          />
+        </StatsSection>
+
+        {/* Main Stats */}
+        <StatsSection>
+          <SectionTitle>주요 스텟</SectionTitle>
+          <StatRow
+            label="점유율"
+            homeValue={homeStats.ballPossession}
+            awayValue={awayStats.ballPossession}
+            isPercentage
+          />
           <StatRow
             label="전체 슈팅"
             homeValue={homeStats.totalShots}
@@ -71,6 +113,41 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
             homeValue={homeStats.shotsOnGoal}
             awayValue={awayStats.shotsOnGoal}
           />
+          <StatRow
+            label="코너킥"
+            homeValue={homeStats.cornerKicks}
+            awayValue={awayStats.cornerKicks}
+          />
+          <StatRow
+            label="오프사이드"
+            homeValue={homeStats.offsides}
+            awayValue={awayStats.offsides}
+          />
+          <StatRow
+            label="파울"
+            homeValue={homeStats.fouls}
+            awayValue={awayStats.fouls}
+          />
+          <StatRow
+            label="옐로카드"
+            homeValue={homeStats.yellowCards}
+            awayValue={awayStats.yellowCards}
+          />
+          <StatRow
+            label="레드카드"
+            homeValue={homeStats.redCards}
+            awayValue={awayStats.redCards}
+          />
+          <StatRow
+            label="세이브"
+            homeValue={homeStats.goalkeeperSaves}
+            awayValue={awayStats.goalkeeperSaves}
+          />
+        </StatsSection>
+
+        {/* Detail Stats */}
+        <StatsSection>
+          <SectionTitle>세부 스텟</SectionTitle>
           <StatRow
             label="빗나간 슈팅"
             homeValue={homeStats.shotsOffGoal}
@@ -91,16 +168,6 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
             homeValue={homeStats.shotsOutsideBox}
             awayValue={awayStats.shotsOutsideBox}
           />
-        </StatsSection>
-
-        <StatsSection>
-          <SectionTitle>점유율 & 패스</SectionTitle>
-          <StatRow
-            label="점유율"
-            homeValue={homeStats.ballPossession}
-            awayValue={awayStats.ballPossession}
-            isPercentage
-          />
           <StatRow
             label="전체 패스"
             homeValue={homeStats.totalPasses}
@@ -112,71 +179,41 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
             awayValue={awayStats.passesAccurate}
           />
         </StatsSection>
-
-        <StatsSection>
-          <SectionTitle>기타</SectionTitle>
-          <StatRow
-            label="코너킥"
-            homeValue={homeStats.cornerKicks}
-            awayValue={awayStats.cornerKicks}
-          />
-          <StatRow
-            label="오프사이드"
-            homeValue={homeStats.offsides}
-            awayValue={awayStats.offsides}
-          />
-          <StatRow
-            label="파울"
-            homeValue={homeStats.fouls}
-            awayValue={awayStats.fouls}
-          />
-          <StatRow
-            label="세이브"
-            homeValue={homeStats.goalkeeperSaves}
-            awayValue={awayStats.goalkeeperSaves}
-          />
-          <StatRow
-            label="옐로카드"
-            homeValue={homeStats.yellowCards}
-            awayValue={awayStats.yellowCards}
-          />
-          <StatRow
-            label="레드카드"
-            homeValue={homeStats.redCards}
-            awayValue={awayStats.redCards}
-          />
-        </StatsSection>
       </StatsContent>
     </Container>
   );
 };
 
 const Container = styled.div<{ $isActive: boolean }>`
+  flex: 1;
   width: 100%;
-  height: 100%;
-  padding: 140px 32px 32px;
+  min-height: 0;
+  padding: 32px;
   box-sizing: border-box;
   overflow-y: auto;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isActive ? 'all' : 'none')};
+  user-select: auto;
   transition: opacity 0.3s ease;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  color: #fff;
 
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -187,7 +224,7 @@ const EmptyMessage = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
 `;
 
 const StatsContent = styled.div`
@@ -206,15 +243,15 @@ const TeamNames = styled.div`
 `;
 
 const TeamName = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: none;
 `;
 
 const StatsSection = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   padding: 20px;
   display: flex;
@@ -223,12 +260,14 @@ const StatsSection = styled.div`
 `;
 
 const SectionTitle = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 4px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
 `;
 
 const StatRowContainer = styled.div`
@@ -241,7 +280,7 @@ const StatRowContainer = styled.div`
 const StatValue = styled.div`
   font-size: 16px;
   font-weight: 700;
-  color: white;
+  color: #111;
   text-align: center;
 `;
 
@@ -253,14 +292,14 @@ const StatBarSection = styled.div`
 
 const StatLabel = styled.div`
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #555;
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 const StatBar = styled.div`
   height: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: #eee;
   border-radius: 4px;
   display: flex;
   overflow: hidden;
@@ -271,10 +310,9 @@ const StatBarFill = styled.div<{ $percent: number; $side: 'home' | 'away' }>`
   width: ${(props) => props.$percent}%;
   background: ${(props) =>
     props.$side === 'home'
-      ? 'linear-gradient(90deg, #3b82f6, #60a5fa)'
-      : 'linear-gradient(90deg, #ef4444, #f87171)'};
+      ? '#3b82f6' // Solid Blue
+      : '#ef4444'}; // Solid Red
   transition: width 0.5s ease;
 `;
 
 export default V1StatsTab;
-

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import V1Header from './V1Header';
-import V1LineupTab from './tabs/V1LineupTab';
+import V1LineupTab from './tabs/lineup/V1LineupTab';
 import V1StatsTab from './tabs/V1StatsTab';
 import V1EventsTab from './tabs/V1EventsTab';
 
@@ -20,10 +20,22 @@ const V1Layout = () => {
     });
   };
 
+  const switchToPrevTab = () => {
+    setActiveTab((current) => {
+      if (current === 'lineup') return 'events';
+      if (current === 'stats') return 'lineup';
+      return 'stats'; // events -> stats
+    });
+  };
+
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault();
-      switchToNextTab();
+      if (event.shiftKey) {
+        switchToPrevTab();
+      } else {
+        switchToNextTab();
+      }
     } else if (event.key === 'Escape') {
       setActiveTab('lineup');
     } else if (event.key === '1') {
@@ -48,31 +60,27 @@ const V1Layout = () => {
 
   return (
     <LayoutContainer>
-      <V1Header />
-      
-      <TabSelector>
-        <TabButton $active={activeTab === 'lineup'} onClick={() => setActiveTab('lineup')}>
-          라인업
-        </TabButton>
-        <TabButton $active={activeTab === 'stats'} onClick={() => setActiveTab('stats')}>
-          통계
-        </TabButton>
-        <TabButton $active={activeTab === 'events'} onClick={() => setActiveTab('events')}>
-          이벤트
-        </TabButton>
-      </TabSelector>
+      {/* Lineup is always rendered in background */}
+      <LineupBackground $isBlurred={activeTab !== 'lineup'}>
+        <V1LineupTab isActive={true} />
+      </LineupBackground>
 
-      <TabsContainer>
-        <TabPane $active={activeTab === 'lineup'}>
-          <V1LineupTab isActive={activeTab === 'lineup'} />
-        </TabPane>
-        <TabPane $active={activeTab === 'stats'}>
-          <V1StatsTab isActive={activeTab === 'stats'} />
-        </TabPane>
-        <TabPane $active={activeTab === 'events'}>
-          <V1EventsTab isActive={activeTab === 'events'} />
-        </TabPane>
-      </TabsContainer>
+      {/* Stats and Events tabs overlay with header */}
+      {activeTab !== 'lineup' ? (
+        <TabsContainer>
+          <V1Header
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            $isAbsolute={false}
+          />
+          <TabPane $active={activeTab === 'stats'}>
+            <V1StatsTab isActive={activeTab === 'stats'} />
+          </TabPane>
+          <TabPane $active={activeTab === 'events'}>
+            <V1EventsTab isActive={activeTab === 'events'} />
+          </TabPane>
+        </TabsContainer>
+      ) : null}
     </LayoutContainer>
   );
 };
@@ -83,68 +91,43 @@ const LayoutContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: transparent;
   z-index: 1;
 `;
 
-const TabSelector = styled.div`
+const LineupBackground = styled.div<{ $isBlurred: boolean }>`
   position: absolute;
-  top: 120px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  padding: 6px;
-  border-radius: 12px;
-  z-index: 101;
-`;
-
-const TabButton = styled.button<{ $active: boolean }>`
-  padding: 8px 20px;
-  border: none;
-  background: ${(props) =>
-    props.$active ? 'rgba(255, 255, 255, 0.25)' : 'transparent'};
-  color: ${(props) => (props.$active ? 'white' : 'rgba(255, 255, 255, 0.7)')};
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  -webkit-app-region: no-drag;
-  user-select: none;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  filter: ${(props) => (props.$isBlurred ? 'blur(8px)' : 'none')};
+  transition: filter 0.3s ease;
 `;
 
 const TabsContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+
+  & > * {
+    pointer-events: all;
+  }
 `;
 
 const TabPane = styled.div<{ $active: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  grid-row: 2;
+  grid-column: 1;
   opacity: ${(props) => (props.$active ? 1 : 0)};
-  pointer-events: ${(props) => (props.$active ? 'all' : 'none')};
   transition: opacity 0.3s ease;
-  z-index: ${(props) => (props.$active ? 2 : 1)};
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 export default V1Layout;
-

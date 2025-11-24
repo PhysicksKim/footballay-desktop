@@ -31,7 +31,7 @@ const getEventColor = (type: string, detail?: string) => {
   if (type.toLowerCase() === 'goal') {
     return '#10b981';
   }
-  return 'rgba(255, 255, 255, 0.6)';
+  return '#666';
 };
 
 const EventCard = ({ event }: { event: EventInfo }) => {
@@ -100,31 +100,35 @@ const V1EventsTab = ({ isActive }: V1EventsTabProps) => {
 };
 
 const Container = styled.div<{ $isActive: boolean }>`
+  flex: 1;
   width: 100%;
-  height: 100%;
-  padding: 140px 32px 32px;
+  min-height: 0;
+  padding: 32px;
   box-sizing: border-box;
   overflow-y: auto;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isActive ? 'all' : 'none')};
+  user-select: auto;
   transition: opacity 0.3s ease;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  color: #fff;
 
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -135,7 +139,7 @@ const EmptyMessage = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
 `;
 
 const EventsContent = styled.div`
@@ -149,10 +153,10 @@ const EventsContent = styled.div`
 const Title = styled.h2`
   font-size: 20px;
   font-weight: 700;
-  color: white;
+  color: #fff;
   text-align: center;
   margin: 0 0 8px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 `;
 
 const EventsList = styled.div`
@@ -162,8 +166,8 @@ const EventsList = styled.div`
 `;
 
 const EventCardContainer = styled.div`
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
   padding: 16px;
   display: flex;
@@ -172,15 +176,15 @@ const EventCardContainer = styled.div`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
     transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   }
 `;
 
 const EventTime = styled.div`
   font-size: 16px;
   font-weight: 700;
-  color: white;
+  color: #333;
   min-width: 50px;
   text-align: right;
   padding-top: 2px;
@@ -215,30 +219,30 @@ const EventType = styled.div`
 
 const EventPlayer = styled.div`
   font-size: 15px;
-  color: white;
+  color: #111;
   font-weight: 500;
 `;
 
 const AssistInfo = styled.span`
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: #666;
   font-weight: 400;
   margin-left: 4px;
 `;
 
 const EventComments = styled.div`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #888;
   font-style: italic;
 `;
 
 const TeamBadge = styled.div`
   padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.15);
+  background: #eee;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
-  color: white;
+  color: #444;
   white-space: nowrap;
   align-self: flex-start;
 `;

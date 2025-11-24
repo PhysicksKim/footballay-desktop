@@ -1,7 +1,7 @@
-import { PlayerStatistics } from '@src/types/FixtureIpc';
+import { PlayerStatistics } from '@src/renderer/pages/app/v1/types/api';
 import React from 'react';
 import styled from 'styled-components';
-import getRatingColor from './RatingUtils';
+import getRatingColor from './V1RatingUtils';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RetryableImage from '../../common/RetryableImage';
@@ -85,37 +85,23 @@ const calculatePassesAccuracyPercentString = (
   return `${((success / total) * 100).toFixed(1)}%`;
 };
 
+/**
+ * V1 API PlayerStatistics has limited fields compared to legacy API.
+ * Available fields: minutesPlayed, position, rating, captain, substitute,
+ * shotsTotal, shotsOn, goals, assists, yellowCards, redCards
+ *
+ * Missing fields that legacy had: passesTotal, passesAccuracy, dribbles,
+ * fouls, tackles, duels, interceptions, etc.
+ *
+ * These detailed stats may be available in TeamStatistics, but are not
+ * provided at the individual player level in V1 API.
+ */
 const statisticsArray = (stats: PlayerStatistics, position: PositionString) => {
-  const passesAccuracyPercent = calculatePassesAccuracyPercentString(
-    stats.passesTotal,
-    stats.passesAccuracy
-  );
-
-  if (position === 'G') {
-    return [
-      { data: stats.saves, name: '세이브' },
-      { data: stats.goalsConceded, name: '실점' },
-      { data: stats.passesTotal, name: '패스 횟수' },
-      { data: stats.passesAccuracy, name: '패스성공' },
-      { data: passesAccuracyPercent, name: '패스성공률' },
-    ];
-  }
-
   return [
-    { data: stats.passesTotal, name: '패스 횟수' },
-    { data: stats.passesAccuracy, name: '패스성공' },
-    { data: passesAccuracyPercent, name: '패스성공률' },
-    { data: stats.passesKey, name: '키패스' },
-    { data: stats.shotsTotal, name: '슈팅' },
-    { data: stats.shotsOn, name: '유효슈팅' },
-    { data: stats.dribblesAttempts, name: '드리블 시도' },
-    { data: stats.dribblesSuccess, name: '드리블 성공' },
-    { data: stats.foulsCommitted, name: '파울' },
-    { data: stats.foulsDrawn, name: '파울 유도' },
-    { data: stats.interceptions, name: '인터셉트' },
-    { data: stats.tacklesTotal, name: '태클' },
-    { data: stats.duelsTotal, name: '볼경합 횟수' },
-    { data: stats.duelsWon, name: '볼경합 승리' },
+    { data: stats.shotsTotal || 0, name: '슈팅' },
+    { data: stats.shotsOn || 0, name: '유효슈팅' },
+    { data: stats.goals || 0, name: '골' },
+    { data: stats.assists || 0, name: '어시스트' },
   ];
 };
 
@@ -167,12 +153,6 @@ const CommonStatisticItem = styled.div`
   user-select: none;
   -webkit-app-region: no-drag;
 
-  /*
-    line-height 는 (hover 시 line-height) * (scale) 값을 계산해서 설정
-    hover line-height = 1rem, scale = 1.2
-    1rem * 1.2 = 1.2rem
-    따라서 평시 line-height = 1.2rem로 설정
-  */
   line-height: 1.2rem;
 
   &:hover {
@@ -182,7 +162,7 @@ const CommonStatisticItem = styled.div`
     & > * {
       transition: transform 0s;
       transform: scale(1.2) translate(0, -5%);
-      line-height: 1rem; // 1rem * scale(1.2) = 1.2rem
+      line-height: 1rem;
     }
   }
 `;

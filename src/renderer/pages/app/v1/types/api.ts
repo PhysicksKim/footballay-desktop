@@ -158,4 +158,3 @@ export interface FixtureStatisticsResponse {
   home: TeamWithStatistics;
   away: TeamWithStatistics;
 }
-

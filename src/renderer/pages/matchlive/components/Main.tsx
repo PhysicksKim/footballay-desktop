@@ -84,10 +84,10 @@ const ContentAreaContainer = styled.div<{
     opacity 0.5s ease-in-out,
     transform 0.5s ease-in-out;
 
-  & > * {
+  /* & > * {
     pointer-events: ${(props) =>
-      props.$tabname === props.$active ? 'all' : 'none'};
-  }
+    props.$tabname === props.$active ? 'all' : 'none'};
+  } */
 
   // teamstat 탭에 대해서만 적용
   // active 시 1 translate(0,0)

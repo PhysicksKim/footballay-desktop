@@ -1,9 +1,28 @@
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-
+import styled, { keyframes, css } from 'styled-components';
 import { RootState } from '@matchlive/store/store';
+import { V1ActiveTab } from './V1Layout';
 
-const V1Header = () => {
+interface V1HeaderProps {
+  activeTab: V1ActiveTab;
+  onTabChange: (tab: V1ActiveTab) => void;
+  $isAbsolute?: boolean;
+}
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const V1Header = ({
+  activeTab,
+  onTabChange,
+  $isAbsolute = true,
+}: V1HeaderProps) => {
   const info = useSelector((state: RootState) => state.v1Fixture.info);
   const liveStatus = useSelector(
     (state: RootState) => state.v1Fixture.liveStatus
@@ -19,7 +38,7 @@ const V1Header = () => {
   const status = liveStatus?.liveStatus;
 
   return (
-    <HeaderContainer>
+    <HeaderContainer $isAbsolute={$isAbsolute}>
       <LeagueInfo>
         {info.league.logo && <LeagueLogo src={info.league.logo} alt="" />}
         <LeagueName>{info.league.koreanName || info.league.name}</LeagueName>
@@ -52,20 +71,52 @@ const V1Header = () => {
           <TeamName>{awayTeam.koreanName || awayTeam.name}</TeamName>
         </TeamSection>
       </MatchInfo>
+
+      <TabSelector>
+        <TabButton
+          $active={activeTab === 'lineup'}
+          onClick={() => onTabChange('lineup')}
+        >
+          라인업
+        </TabButton>
+        <TabButton
+          $active={activeTab === 'stats'}
+          onClick={() => onTabChange('stats')}
+        >
+          통계
+        </TabButton>
+        <TabButton
+          $active={activeTab === 'events'}
+          onClick={() => onTabChange('events')}
+        >
+          이벤트
+        </TabButton>
+      </TabSelector>
     </HeaderContainer>
   );
 };
 
-const HeaderContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 24px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+const HeaderContainer = styled.div<{ $isAbsolute: boolean }>`
+  position: ${(props) => (props.$isAbsolute ? 'absolute' : 'relative')};
+  top: ${(props) => (props.$isAbsolute ? '0' : 'auto')};
+  left: ${(props) => (props.$isAbsolute ? '0' : 'auto')};
+  right: ${(props) => (props.$isAbsolute ? '0' : 'auto')};
+  padding: 16px 24px 12px 24px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
   backdrop-filter: blur(8px);
-  z-index: 100;
-  pointer-events: none;
+  z-index: ${(props) => (props.$isAbsolute ? '100' : '1')};
+  animation: ${fadeIn} 0.3s ease forwards;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-app-region: drag;
+  pointer-events: all;
+  user-select: none;
 `;
 
 const LeagueInfo = styled.div`
@@ -93,6 +144,7 @@ const MatchInfo = styled.div`
   align-items: center;
   justify-content: center;
   gap: 32px;
+  width: 100%;
 `;
 
 const TeamSection = styled.div`
@@ -101,6 +153,7 @@ const TeamSection = styled.div`
   align-items: center;
   gap: 8px;
   min-width: 120px;
+  flex: 1;
 `;
 
 const TeamLogo = styled.img`
@@ -115,6 +168,10 @@ const TeamName = styled.div`
   color: white;
   text-align: center;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 const ScoreSection = styled.div`
@@ -140,5 +197,31 @@ const Status = styled.div`
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 `;
 
-export default V1Header;
+const TabSelector = styled.div`
+  display: flex;
+  gap: 4px;
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 8px;
+`;
 
+const TabButton = styled.button<{ $active: boolean }>`
+  padding: 6px 16px;
+  border: none;
+  background: ${(props) =>
+    props.$active ? 'rgba(255, 255, 255, 0.2)' : 'transparent'};
+  color: ${(props) => (props.$active ? 'white' : 'rgba(255, 255, 255, 0.6)')};
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+`;
+
+export default V1Header;

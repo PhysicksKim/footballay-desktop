@@ -26,7 +26,6 @@ const TeamStatisticsContentsStyle = styled.div`
   padding-top: 5px;
   padding-bottom: 20px;
 
-  pointer-events: all;
   -webkit-app-region: no-drag;
 
   ${scrollbarStyle}
@@ -44,13 +43,13 @@ const pushIfExist = (
   awayStat: number | undefined,
   title: string,
   items: JSX.Element[],
-  key: string,
+  key: string
 ) => {
   if (homeStat !== undefined && awayStat !== undefined) {
     items.push(
       <TeamStatisticsItem key={key}>
         <TeamStatItem title={title} homeStat={homeStat} awayStat={awayStat} />
-      </TeamStatisticsItem>,
+      </TeamStatisticsItem>
     );
   }
 };
@@ -70,42 +69,42 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       awayStats?.ballPossession,
       '볼 점유율',
       items,
-      'ball-possession',
+      'ball-possession'
     );
     pushIfExist(
       homeStats?.totalPasses,
       awayStats?.totalPasses,
       '패스 수',
       items,
-      'passes',
+      'passes'
     );
     pushIfExist(
       homeStats?.shotsOnGoal,
       awayStats?.shotsOnGoal,
       '유효슈팅',
       items,
-      'shots-on-goal',
+      'shots-on-goal'
     );
     pushIfExist(
       homeStats?.totalShots,
       awayStats?.totalShots,
       '슈팅 수',
       items,
-      'shots',
+      'shots'
     );
     pushIfExist(
       homeStats?.cornerKicks,
       awayStats?.cornerKicks,
       '코너킥',
       items,
-      'corner-kicks',
+      'corner-kicks'
     );
     pushIfExist(
       homeStats?.goalkeeperSaves,
       awayStats?.goalkeeperSaves,
       '선방',
       items,
-      'saves',
+      'saves'
     );
     pushIfExist(homeStats?.fouls, awayStats?.fouls, '파울', items, 'fouls');
     pushIfExist(
@@ -113,21 +112,21 @@ const TeamStatisticsContents: React.FC<TeamStatisticsContentsProps> = ({
       awayStats?.offsides,
       '오프사이드',
       items,
-      'offsides',
+      'offsides'
     );
     pushIfExist(
       homeStats?.yellowCards,
       awayStats?.yellowCards,
       '경고',
       items,
-      'yellow-cards',
+      'yellow-cards'
     );
     pushIfExist(
       homeStats?.redCards,
       awayStats?.redCards,
       '퇴장',
       items,
-      'red-cards',
+      'red-cards'
     );
     // 다른 통계 항목들도 여기에 추가할 수 있음
 

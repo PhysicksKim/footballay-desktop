@@ -9,22 +9,44 @@ import {
 } from '@app/v1/store/fixtureDetailSlice';
 
 export class V1DataController {
+  private static instance: V1DataController | null = null;
   private fixtureUid?: string;
   private pollTimer?: ReturnType<typeof setInterval>;
-  private readonly intervalMs: number;
+  private intervalMs: number;
+  private dispatch: AppDispatch;
 
-  constructor(
-    private dispatch: AppDispatch,
-    intervalMs = 5000
-  ) {
+  private constructor(dispatch: AppDispatch, intervalMs = 13000) {
+    this.dispatch = dispatch;
     this.intervalMs = intervalMs;
   }
 
+  static getInstance(dispatch: AppDispatch, intervalMs?: number): V1DataController {
+    if (!V1DataController.instance) {
+      V1DataController.instance = new V1DataController(dispatch, intervalMs);
+    } else {
+      // Update dispatch in case it changed
+      V1DataController.instance.dispatch = dispatch;
+      if (intervalMs !== undefined) {
+        V1DataController.instance.intervalMs = intervalMs;
+      }
+    }
+    return V1DataController.instance;
+  }
+
+  static resetInstance() {
+    if (V1DataController.instance) {
+      V1DataController.instance.stop();
+      V1DataController.instance = null;
+    }
+  }
+
   setFixtureUid(fixtureUid?: string) {
+    // Stop previous polling before switching fixtures
+    this.stop();
+    
     this.fixtureUid = fixtureUid;
     this.dispatch(setTargetFixture(fixtureUid));
     if (!fixtureUid) {
-      this.stop();
       return;
     }
     this.dispatch(loadV1FixtureInfo(fixtureUid));
@@ -59,4 +81,4 @@ export class V1DataController {
 export const createV1DataController = (
   dispatch: AppDispatch,
   intervalMs?: number
-) => new V1DataController(dispatch, intervalMs);
+) => V1DataController.getInstance(dispatch, intervalMs);
