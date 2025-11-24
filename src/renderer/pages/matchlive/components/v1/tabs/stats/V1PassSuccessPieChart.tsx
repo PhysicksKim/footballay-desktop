@@ -164,5 +164,4 @@ const PassSuccessTitle = styled.div`
 const ChartWrapper = styled.div`
   margin: 0 1rem;
   width: 30%;
-  user-select: none;
 `;

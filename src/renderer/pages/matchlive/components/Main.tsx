@@ -84,11 +84,6 @@ const ContentAreaContainer = styled.div<{
     opacity 0.5s ease-in-out,
     transform 0.5s ease-in-out;
 
-  /* & > * {
-    pointer-events: ${(props) =>
-    props.$tabname === props.$active ? 'all' : 'none'};
-  } */
-
   // teamstat 탭에 대해서만 적용
   // active 시 1 translate(0,0)
   // inactive 시 opa 0, scale 1.05 translate(0, -10px)
@@ -111,10 +106,7 @@ const SwitchTabButton = styled.div`
     box-shadow 0.2s ease;
 
   cursor: pointer;
-  -webkit-app-region: no-drag;
-  user-select: none;
   pointer-events: all;
-  z-index: 1;
 
   &:hover {
     background-color: #ffffff4b;

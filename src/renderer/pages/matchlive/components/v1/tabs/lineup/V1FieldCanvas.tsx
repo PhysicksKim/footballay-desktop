@@ -12,7 +12,6 @@ const FootballFieldCanvasStyle = styled.canvas`
   left: 0;
   z-index: -9999;
   border-radius: ${GlobalBorderRadiusPx}px;
-  -webkit-app-region: drag;
 `;
 
 const V1FieldCanvas: React.FC = () => {
@@ -42,7 +41,7 @@ const V1FieldCanvas: React.FC = () => {
           outLineOffset,
           outLineOffset,
           width - outLineOffset * 2,
-          height - outLineOffset * 2,
+          height - outLineOffset * 2
         );
 
         // 하프라인
@@ -63,7 +62,7 @@ const V1FieldCanvas: React.FC = () => {
           (width - penaltyBoxWidth) / 2,
           outLineOffset,
           penaltyBoxWidth,
-          penaltyBoxHeight,
+          penaltyBoxHeight
         );
 
         // 패널티 박스 (아래쪽)
@@ -71,7 +70,7 @@ const V1FieldCanvas: React.FC = () => {
           (width - penaltyBoxWidth) / 2,
           height - penaltyBoxHeight - outLineOffset,
           penaltyBoxWidth,
-          penaltyBoxHeight,
+          penaltyBoxHeight
         );
 
         // 골대 (위쪽)
@@ -81,7 +80,7 @@ const V1FieldCanvas: React.FC = () => {
           (width - goalWidth) / 2,
           -goalDepth + outLineOffset,
           goalWidth,
-          goalDepth,
+          goalDepth
         );
 
         // 골대 (아래쪽)
@@ -89,7 +88,7 @@ const V1FieldCanvas: React.FC = () => {
           (width - goalWidth) / 2,
           height - outLineOffset,
           goalWidth,
-          goalDepth,
+          goalDepth
         );
 
         // 패널티 아크 (위쪽)
@@ -100,7 +99,7 @@ const V1FieldCanvas: React.FC = () => {
           penaltyBoxHeight / 2,
           Math.PI * 0,
           Math.PI * 1,
-          false,
+          false
         );
         ctx.stroke();
 
@@ -112,7 +111,7 @@ const V1FieldCanvas: React.FC = () => {
           penaltyBoxHeight / 2,
           Math.PI * 1,
           Math.PI * 0,
-          false,
+          false
         );
         ctx.stroke();
       }
@@ -129,4 +128,3 @@ const V1FieldCanvas: React.FC = () => {
 };
 
 export default V1FieldCanvas;
-

@@ -44,7 +44,7 @@ const V1FixtureList = ({
 
   const formattedDate = parseISO(selectedDate);
   const yearMonth = format(formattedDate, 'yyyy.MM');
-  const dayOfWeek = format(formattedDate, 'dd EEE', { locale: ko });
+  const dayOfWeek = format(formattedDate, 'dd EEE', { locale: ko }) + '요일';
   const dayName = format(formattedDate, 'EEE', { locale: ko });
 
   const getDayColor = () => {

@@ -4,11 +4,11 @@
   width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
-  // pointer-events: none;
+  user-select: none;
 
-  // & > * {
-  //   pointer-events: all;
-  // }
+  & > * {
+    user-select: none;
+  }
 }
 
 .contents-area {

@@ -103,11 +103,11 @@ const Container = styled.div<{ $isActive: boolean }>`
   flex: 1;
   width: 100%;
   min-height: 0;
-  padding: 32px;
+  padding: clamp(8px, 4vw, 32px);
   box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
-  user-select: auto;
   transition: opacity 0.3s ease;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
@@ -143,11 +143,10 @@ const EmptyMessage = styled.div`
 `;
 
 const EventsContent = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: clamp(8px, 2vw, 16px);
 `;
 
 const Title = styled.h2`
@@ -162,16 +161,16 @@ const Title = styled.h2`
 const EventsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
 `;
 
 const EventCardContainer = styled.div`
   background: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
-  padding: 16px;
+  padding: clamp(8px, 2vw, 16px);
   display: flex;
-  gap: 16px;
+  gap: clamp(4px, 2vw, 16px);
   align-items: flex-start;
   transition: all 0.2s ease;
 
@@ -182,19 +181,22 @@ const EventCardContainer = styled.div`
 `;
 
 const EventTime = styled.div`
-  font-size: 16px;
+  font-size: clamp(12px, 2vw, 16px);
   font-weight: 700;
   color: #333;
-  min-width: 50px;
+  min-width: 0;
+  width: fit-content;
   text-align: right;
   padding-top: 2px;
+  flex-shrink: 0;
 `;
 
 const EventContent = styled.div`
   flex: 1;
   display: flex;
-  gap: 12px;
+  gap: clamp(4px, 1.5vw, 12px);
   align-items: flex-start;
+  min-width: 0;
 `;
 
 const EventIcon = styled.div`
@@ -237,14 +239,15 @@ const EventComments = styled.div`
 `;
 
 const TeamBadge = styled.div`
-  padding: 4px 12px;
+  padding: 4px clamp(4px, 1.5vw, 12px);
   background: #eee;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: clamp(10px, 1.5vw, 12px);
   font-weight: 600;
   color: #444;
   white-space: nowrap;
   align-self: flex-start;
+  flex-shrink: 0;
 `;
 
 export default V1EventsTab;

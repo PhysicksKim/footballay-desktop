@@ -12,7 +12,10 @@ const commonBoxShadow = css`
   box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
 `;
 
-export const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
+export const LineupTabContainer = styled.div<{
+  $isModalOpen: boolean;
+  $isActive: boolean;
+}>`
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -23,15 +26,25 @@ export const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
   align-items: center;
   padding-top: 12px;
   padding-bottom: 5px;
-  /* user-select: none; */
+  /* -webkit-app-region: drag;
+  pointer-events: auto;
+  cursor: auto; */
 
-  // Modal이 열렸을 때 모든 자식 요소의 drag 비활성화
-  ${({ $isModalOpen }) =>
-    $isModalOpen &&
+  /**
+   * 라인업 위에 다른 모달이 떴을 때 스크롤이 가능하려면, 
+  * 아래처럼 active조건에 따라서 drag 속성을 변경해줘야 합니다.
+   */
+  ${({ $isActive }) =>
+    $isActive
+      ? `
+      -webkit-app-region: drag;
+      pointer-events: all;
+      cursor: auto;
     `
-      & * {
-        -webkit-app-region: no-drag !important;
-      }
+      : `
+      -webkit-app-region: no-drag;
+      pointer-events: none;
+      cursor: default;
     `}
 `;
 
@@ -43,13 +56,9 @@ export const TeamContainer = styled.div<{ $isAway?: boolean }>`
   height: 50%;
   box-sizing: border-box;
   overflow: hidden;
-  flex-direction: ${({ $isAway: isAway }) => {
-    return isAway ? 'column-reverse' : 'column';
-  }};
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: visible;
-  /* -webkit-app-region: drag; */
 `;
 
 export const TeamName = styled.h2`
@@ -59,12 +68,15 @@ export const TeamName = styled.h2`
   position: absolute;
 `;
 
-export const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
+export const GridLine = styled.div<{
+  $height: number;
+  $isAway?: boolean;
+  $idx: number;
+}>`
   position: relative;
   width: 100%;
   height: ${(props) => props.$height}%;
   display: flex;
-  /* -webkit-app-region: drag; */
 `;
 
 const textShadowColor = 'rgba(31, 18, 105, 0.863)';
@@ -103,16 +115,9 @@ export const GridPlayer = styled.div<{
   width: ${(props) => props.$width}%;
   height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
-  /* -webkit-app-region: drag; */
 
   opacity: 0;
-  /* transition: opacity 0.8s ease-in-out; */
   animation: ${fadeIn} 0.5s ease-in-out forwards;
-
-  // 자식들은 클릭이 가능하도록 no-drag 설정
-  & > * {
-    -webkit-app-region: no-drag;
-  }
 
   .player-number-photo-box {
     top: 0;
@@ -122,7 +127,6 @@ export const GridPlayer = styled.div<{
     align-items: center;
     height: ${(props) => props.$lineHeight - 20}px;
 
-    user-select: none;
     cursor: pointer;
 
     img {
@@ -530,9 +534,6 @@ const PlayerStatisticsContainer = styled.div`
   margin-top: 2px;
   width: 100%;
   height: 100%;
-
-  user-select: none;
-  -webkit-app-region: no-drag;
 `;
 
 const StatisticsListSection = styled.div`
@@ -596,10 +597,12 @@ export const PlayerModalOverlayStyle = styled.div<{ $isOpen: boolean }>`
   justify-content: center;
   align-items: center;
   z-index: 999;
-  -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
   opacity: 0;
   cursor: pointer;
+
+  -webkit-app-region: ${({ $isOpen }) => ($isOpen ? 'no-drag' : 'drag')};
+  pointer-events: ${({ $isOpen }) => ($isOpen ? 'all' : 'none')};
 
   &.modal-enter,
   &.modal-enter-active {
@@ -633,7 +636,6 @@ export const PlayerModalContentStyle = styled.div`
   padding: 20px;
   border-radius: 10px;
   z-index: 999;
-  -webkit-app-region: no-drag;
   transition: opacity 0.1s ease-in-out;
   opacity: 1;
   cursor: default;

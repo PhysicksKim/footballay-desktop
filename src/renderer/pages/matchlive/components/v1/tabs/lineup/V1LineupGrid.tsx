@@ -1,6 +1,5 @@
 import React from 'react';
 import { V1ViewLineup, V1ViewPlayer } from './types';
-import { PlayerStatistics } from '@src/renderer/pages/app/v1/types/api';
 import {
   GridLine,
   GridPlayer,
@@ -13,6 +12,7 @@ import {
   PlayerName,
 } from './V1LineupStyled';
 import RetryableImage from '../../../common/RetryableImage';
+import styled from 'styled-components';
 
 const getFinalPlayer = (player: V1ViewPlayer): V1ViewPlayer => {
   let currentPlayer = player;
@@ -31,6 +31,12 @@ interface V1LineupGridProps {
   handlePlayerClick: (player: V1ViewPlayer) => void;
 }
 
+const PlayerNumberPhotoBox = styled.div`
+  -webkit-app-region: no-drag;
+  pointer-events: all;
+  cursor: auto;
+`;
+
 const V1LineupGrid: React.FC<V1LineupGridProps> = ({
   lineup,
   isAway,
@@ -39,18 +45,22 @@ const V1LineupGrid: React.FC<V1LineupGridProps> = ({
   showPhoto,
   handlePlayerClick,
 }) => {
+  /**
+   * away일 때만 배열을 reverse하여 아래에 있는 선수가 더 위에 그려지도록 함
+   *
+   * z-index 사용시 앞에 모달이 떠있어도 이벤트를 삼키는 문제가 자주 발생합니다
+   * 그러므로 배열을 reverse하여 아래에 있는 선수가 더 위에 그려지도록 합니다
+   */
+  const orderedLines = isAway ? [...lineup.players].reverse() : lineup.players;
+
   return (
     <>
-      {lineup.players.map((linePlayers, lineIndex) => (
+      {orderedLines.map((linePlayers, lineIndex) => (
         <GridLine
           key={`line-${lineIndex}`}
           $height={100 / lineup.players.length}
           $isAway={isAway}
-          style={{
-            // z-index ensures lower rows (closer to center) render above upper rows
-            // This prevents rating boxes from being covered by player names in rows above
-            zIndex: lineIndex,
-          }}
+          $idx={lineIndex}
         >
           {linePlayers.map((player, index) => {
             const leftPosition = isAway
@@ -72,9 +82,11 @@ const V1LineupGrid: React.FC<V1LineupGridProps> = ({
                   $width={100 / linePlayers.length}
                   $playerSize={playerSize}
                   $lineHeight={lineHeight}
-                  onClick={() => handlePlayerClick(finalPlayer)}
                 >
-                  <div className="player-number-photo-box">
+                  <PlayerNumberPhotoBox
+                    className="player-number-photo-box"
+                    onClick={() => handlePlayerClick(finalPlayer)}
+                  >
                     {photoExistAndShowPhoto ? (
                       <RetryableImage
                         src={finalPlayer.photo!}
@@ -113,7 +125,7 @@ const V1LineupGrid: React.FC<V1LineupGridProps> = ({
                     {finalPlayer.statistics?.rating && (
                       <RatingBox rating={finalPlayer.statistics.rating} />
                     )}
-                  </div>
+                  </PlayerNumberPhotoBox>
 
                   <PlayerName
                     name={finalPlayer.koreanName || finalPlayer.name}

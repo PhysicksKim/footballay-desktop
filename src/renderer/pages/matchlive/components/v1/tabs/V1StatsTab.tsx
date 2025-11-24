@@ -188,11 +188,11 @@ const Container = styled.div<{ $isActive: boolean }>`
   flex: 1;
   width: 100%;
   min-height: 0;
-  padding: 32px;
+  padding: clamp(8px, 4vw, 32px);
   box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
-  user-select: auto;
   transition: opacity 0.3s ease;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
@@ -228,17 +228,16 @@ const EmptyMessage = styled.div`
 `;
 
 const StatsContent = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(12px, 3vw, 24px);
 `;
 
 const TeamNames = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 clamp(4px, 2vw, 16px);
   margin-bottom: 8px;
 `;
 
@@ -253,10 +252,10 @@ const StatsSection = styled.div`
   background: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
-  padding: 20px;
+  padding: clamp(8px, 3vw, 20px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: clamp(8px, 2vw, 16px);
 `;
 
 const SectionTitle = styled.div`
@@ -272,13 +271,13 @@ const SectionTitle = styled.div`
 
 const StatRowContainer = styled.div`
   display: grid;
-  grid-template-columns: 60px 1fr 60px;
+  grid-template-columns: minmax(30px, 60px) 1fr minmax(30px, 60px);
   align-items: center;
-  gap: 16px;
+  gap: clamp(4px, 2vw, 16px);
 `;
 
 const StatValue = styled.div`
-  font-size: 16px;
+  font-size: clamp(12px, 2vw, 16px);
   font-weight: 700;
   color: #111;
   text-align: center;

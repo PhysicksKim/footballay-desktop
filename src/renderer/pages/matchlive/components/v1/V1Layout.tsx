@@ -62,7 +62,7 @@ const V1Layout = () => {
     <LayoutContainer>
       {/* Lineup is always rendered in background */}
       <LineupBackground $isBlurred={activeTab !== 'lineup'}>
-        <V1LineupTab isActive={true} />
+        <V1LineupTab isActive={activeTab === 'lineup'} />
       </LineupBackground>
 
       {/* Stats and Events tabs overlay with header */}
@@ -73,10 +73,16 @@ const V1Layout = () => {
             onTabChange={setActiveTab}
             $isAbsolute={false}
           />
-          <TabPane $active={activeTab === 'stats'}>
+          <TabPane
+            $active={activeTab === 'stats'}
+            $isActive={activeTab === 'stats'}
+          >
             <V1StatsTab isActive={activeTab === 'stats'} />
           </TabPane>
-          <TabPane $active={activeTab === 'events'}>
+          <TabPane
+            $active={activeTab === 'events'}
+            $isActive={activeTab === 'events'}
+          >
             <V1EventsTab isActive={activeTab === 'events'} />
           </TabPane>
         </TabsContainer>
@@ -92,7 +98,6 @@ const LayoutContainer = styled.div`
   width: 100%;
   height: 100%;
   background: transparent;
-  z-index: 1;
 `;
 
 const LineupBackground = styled.div<{ $isBlurred: boolean }>`
@@ -101,7 +106,6 @@ const LineupBackground = styled.div<{ $isBlurred: boolean }>`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
   filter: ${(props) => (props.$isBlurred ? 'blur(8px)' : 'none')};
   transition: filter 0.3s ease;
 `;
@@ -110,17 +114,12 @@ const TabsContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  z-index: 2;
   display: grid;
   grid-template-rows: auto 1fr;
   overflow: hidden;
-
-  & > * {
-    pointer-events: all;
-  }
 `;
 
-const TabPane = styled.div<{ $active: boolean }>`
+const TabPane = styled.div<{ $active: boolean; $isActive: boolean }>`
   grid-row: 2;
   grid-column: 1;
   opacity: ${(props) => (props.$active ? 1 : 0)};
@@ -128,6 +127,8 @@ const TabPane = styled.div<{ $active: boolean }>`
   display: flex;
   flex-direction: column;
   min-height: 0;
+  visibility: ${({ $isActive }) => ($isActive ? 'visible' : 'hidden')};
+  pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'none')};
 `;
 
 export default V1Layout;

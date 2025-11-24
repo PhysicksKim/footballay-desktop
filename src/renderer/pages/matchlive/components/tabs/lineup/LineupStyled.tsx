@@ -21,7 +21,6 @@ const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
   align-items: center;
   padding-top: 12px;
   padding-bottom: 5px;
-  user-select: none;
 
   // Modal이 열렸을 때 모든 자식 요소의 drag 비활성화
   ${({ $isModalOpen }) =>
@@ -47,7 +46,6 @@ const TeamContainer = styled.div<{ $isAway?: boolean }>`
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: visible;
-  /* -webkit-app-region: drag; */
 `;
 
 const TeamName = styled.h2`
@@ -62,7 +60,6 @@ const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
   width: 100%;
   height: ${(props) => props.$height}%;
   display: flex;
-  /* -webkit-app-region: drag; */
 `;
 
 const textShadowColor = 'rgba(31, 18, 105, 0.863)';
@@ -101,7 +98,6 @@ const GridPlayer = styled.div<{
   width: ${(props) => props.$width}%;
   height: ${(props) => props.$lineHeight}px;
   transform: translateX(-50%);
-  /* -webkit-app-region: drag; */
 
   opacity: 0;
   /* transition: opacity 0.8s ease-in-out; */
@@ -119,8 +115,6 @@ const GridPlayer = styled.div<{
     flex-direction: column-reverse;
     align-items: center;
     height: ${(props) => props.$lineHeight - 20}px;
-
-    user-select: none;
 
     img {
       height: 100%;
@@ -538,7 +532,6 @@ const PlayerStatisticsContainer = styled.div`
   width: 100%;
   height: 100%;
 
-  user-select: none;
   -webkit-app-region: no-drag;
 `;
 

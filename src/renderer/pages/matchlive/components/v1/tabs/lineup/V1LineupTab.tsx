@@ -43,7 +43,6 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
   );
   const showPhoto = true;
 
-  // Get team logos from info state by matching teamUid
   const getTeamLogo = (teamUid: string): string | undefined => {
     if (!info) return undefined;
     if (info.home.teamUid === teamUid) return info.home.logo;
@@ -51,7 +50,6 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
     return undefined;
   };
 
-  // Create stats map
   const statsMap = useMemo(() => {
     const map = new Map<string, PlayerStatistics>();
     if (statsResponse) {
@@ -82,8 +80,10 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
     const handleResize = () => {
       if (!containerRef.current || !processedHome || !processedAway) return;
 
+      /**
+       * 각 팀은 경기장 크기 절반만큼 차지합니다
+       */
       const containerHeight = containerRef.current.clientHeight;
-      // Each team container takes 50% height
       const teamHeight = containerHeight / 2;
 
       const MIN_GRID_COUNT = 5;
@@ -92,14 +92,14 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
 
       const hLineHeight = teamHeight / homeRows;
       const aLineHeight = teamHeight / awayRows;
+      /**
+       * 두 팀 중에서 라인 높이가 더 작은팀에 맞춥니다
+       * 예를 들어 4줄(키퍼 + 4-3-3) 팀과 5줄(키퍼 + 4-2-3-1) 팀이 있을 때, 5줄 팀에 맞춥니다
+       */
+      const finalLineHeight = Math.min(hLineHeight, aLineHeight);
 
-      // Use the smaller line height to keep consistency between teams if desired,
-      // or just calculate player size based on minimum to ensure they fit.
-      // Legacy logic: minGridPlayerHeight = Math.min(homeGridPlayerHeight, awayGridPlayerHeight)
-      const minLineHeight = Math.min(hLineHeight, aLineHeight);
-
-      setLineHeight(minLineHeight);
-      setPlayerSize(minLineHeight);
+      setLineHeight(finalLineHeight);
+      setPlayerSize(finalLineHeight);
     };
 
     const debouncedResize = debounce(handleResize, 150);
@@ -128,14 +128,14 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
   const isModalOpen = !!selectedPlayer;
 
   if (!lineup || !processedHome || !processedAway) {
-    return null; // Or loading state
+    return null;
   }
 
   return (
     <LineupTabContainer
       ref={containerRef}
       $isModalOpen={isModalOpen}
-      style={{ display: isActive ? 'flex' : 'none' }}
+      $isActive={isActive}
     >
       <V1FieldCanvas />
 
@@ -144,7 +144,10 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
         <TeamLogoName className="team-name__home">
           <div className="team-logo">
             {getTeamLogo(processedHome.teamUid) && (
-              <RetryableImage src={getTeamLogo(processedHome.teamUid)!} alt={processedHome.teamName} />
+              <RetryableImage
+                src={getTeamLogo(processedHome.teamUid)!}
+                alt={processedHome.teamName}
+              />
             )}
           </div>
           <div className="team-name">{processedHome.teamName}</div>
@@ -163,12 +166,15 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
       {/* Away Team */}
       <TeamContainer $isAway={true}>
         <TeamLogoName className="team-name__away">
-           <div className="team-logo">
-             {getTeamLogo(processedAway.teamUid) && (
-               <RetryableImage src={getTeamLogo(processedAway.teamUid)!} alt={processedAway.teamName} />
-             )}
-           </div>
-           <div className="team-name">{processedAway.teamName}</div>
+          <div className="team-logo">
+            {getTeamLogo(processedAway.teamUid) && (
+              <RetryableImage
+                src={getTeamLogo(processedAway.teamUid)!}
+                alt={processedAway.teamName}
+              />
+            )}
+          </div>
+          <div className="team-name">{processedAway.teamName}</div>
         </TeamLogoName>
 
         <V1LineupGrid

@@ -164,7 +164,6 @@ const CommonStatisticItem = styled.div`
 
   border-bottom: 1px solid #dad8d8;
 
-  user-select: none;
   -webkit-app-region: no-drag;
 
   /*
