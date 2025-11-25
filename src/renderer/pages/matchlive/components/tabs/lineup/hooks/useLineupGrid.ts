@@ -212,30 +212,39 @@ export const useLineupGrid = (
   homeLineup: StartLineup | undefined,
   awayLineup: StartLineup | undefined,
   events: EventInfo[] = [],
-  playerStatisticsMap: Map<string, PlayerStatistics> // Map matchPlayerUid -> Stats
+  playerStatisticsMap: Map<string, PlayerStatistics>, // Map matchPlayerUid -> Stats
+  filterEventSequences: Set<number> = new Set() // Filtered event sequences to exclude
 ) => {
   const [processedHome, setProcessedHome] = useState<ViewLineup | null>(null);
   const [processedAway, setProcessedAway] = useState<ViewLineup | null>(null);
 
   useEffect(() => {
     if (homeLineup) {
+      // Filter events inside useEffect to avoid creating new array on every render
+      const filteredEvents = events.filter(
+        (event) => !filterEventSequences.has(event.sequence)
+      );
       let processed = processTeamLineup(homeLineup, playerStatisticsMap);
-      processed = applyEventsToLineup(processed, events);
+      processed = applyEventsToLineup(processed, filteredEvents);
       setProcessedHome(processed);
     } else {
       setProcessedHome(null);
     }
-  }, [homeLineup, events, playerStatisticsMap]);
+  }, [homeLineup, events, filterEventSequences, playerStatisticsMap]);
 
   useEffect(() => {
     if (awayLineup) {
+      // Filter events inside useEffect to avoid creating new array on every render
+      const filteredEvents = events.filter(
+        (event) => !filterEventSequences.has(event.sequence)
+      );
       let processed = processTeamLineup(awayLineup, playerStatisticsMap);
-      processed = applyEventsToLineup(processed, events);
+      processed = applyEventsToLineup(processed, filteredEvents);
       setProcessedAway(processed);
     } else {
       setProcessedAway(null);
     }
-  }, [awayLineup, events, playerStatisticsMap]);
+  }, [awayLineup, events, filterEventSequences, playerStatisticsMap]);
 
   return {
     processedHome,

@@ -9,6 +9,7 @@ import {
   setFixtureStatistics,
 } from '@matchlive/store/slices/fixtureSlice';
 import { loadColorOption } from '@matchlive/store/slices/colorOptionSlice';
+import { setFilterEvents } from '@matchlive/store/slices/control/eventFilterSlice';
 import { LiveOutboundMessage } from '@src/types/ipc/LiveChannels';
 import { AppDispatch } from '@matchlive/store/store';
 
@@ -26,19 +27,22 @@ const FixtureIpc = () => {
             break;
           case 'live.fixture.live-status':
             dispatch(setFixtureLiveStatus(message.payload));
-            break;
+        break;
           case 'live.fixture.lineup':
             dispatch(setFixtureLineup(message.payload));
-            break;
+        break;
           case 'live.fixture.events':
             dispatch(setFixtureEvents(message.payload));
-            break;
+        break;
           case 'live.fixture.statistics':
             dispatch(setFixtureStatistics(message.payload));
-            break;
+        break;
+          case 'live.event-filter.update':
+            dispatch(setFilterEvents(message.payload));
+        break;
           default:
-            break;
-        }
+        break;
+      }
       }
     );
 

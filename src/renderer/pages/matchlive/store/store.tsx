@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import fixtureReducer from './slices/fixtureSlice';
 import colorOptionSlice from './slices/colorOptionSlice';
+import eventFilterReducer from './slices/control/eventFilterSlice';
 
 const store = configureStore({
   reducer: {
     fixture: fixtureReducer,
     colorOption: colorOptionSlice,
+    eventFilter: eventFilterReducer,
   },
 });
 

@@ -1,4 +1,5 @@
 import {
+  EventInfo,
   FixtureEventsResponse,
   FixtureInfoResponse,
   FixtureLineupResponse,
@@ -11,7 +12,8 @@ export type LiveOutboundMessage =
   | { type: 'live.fixture.live-status'; payload?: FixtureLiveStatusResponse }
   | { type: 'live.fixture.lineup'; payload?: FixtureLineupResponse }
   | { type: 'live.fixture.events'; payload?: FixtureEventsResponse }
-  | { type: 'live.fixture.statistics'; payload?: FixtureStatisticsResponse };
+  | { type: 'live.fixture.statistics'; payload?: FixtureStatisticsResponse }
+  | { type: 'live.event-filter.update'; payload: EventInfo[] };
 
 export type LiveInboundMessage =
   | { type: 'live.request.full-sync' }

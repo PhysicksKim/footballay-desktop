@@ -335,8 +335,7 @@ const TeamColorBar = styled.div<{ $color: string; $side: 'left' | 'right' }>`
   height: 100%;
   background-color: ${({ $color }) => $color};
   ${({ $color }) =>
-    $color &&
-    $color.toLowerCase().replace('#', '') === 'ffffff'
+    $color && $color.toLowerCase().replace('#', '') === 'ffffff'
       ? 'box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.5);'
       : ''}
 `;
@@ -405,4 +404,3 @@ const StatBarFill = styled.div<{ $percent: number; $color: string }>`
 `;
 
 export default StatsTab;
-

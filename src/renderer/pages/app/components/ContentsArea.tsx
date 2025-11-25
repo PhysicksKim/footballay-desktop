@@ -5,6 +5,7 @@ import FixtureSelectTab from './tabs/fixture/FixtureSelectTab';
 
 import '@app/styles/ContentsArea.scss';
 import SettingsTab from './tabs/settings/SettingsTab';
+import MatchliveControlTab from './tabs/control/MatchliveControlTab';
 
 const ContentsArea = () => {
   return (
@@ -12,6 +13,7 @@ const ContentsArea = () => {
       <Routes>
         <Route path="/" element={<FixtureSelectTab />} />
         <Route path="/settings" element={<SettingsTab />} />
+        <Route path="/control" element={<MatchliveControlTab />} />
         <Route path="/v1/fixtures" element={<FixtureSelectTab />} />
       </Routes>
     </div>

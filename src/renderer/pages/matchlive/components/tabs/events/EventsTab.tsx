@@ -66,6 +66,9 @@ const EventCard = ({ event }: { event: EventInfo }) => {
 
 const EventsTab = ({ isActive }: EventsTabProps) => {
   const events = useSelector((state: RootState) => state.fixture.events);
+  const filterEvents = useSelector(
+    (state: RootState) => state.eventFilter.filterEvents
+  );
 
   if (!events || events.events.length === 0) {
     return (
@@ -75,8 +78,16 @@ const EventsTab = ({ isActive }: EventsTabProps) => {
     );
   }
 
+  // Filter out filtered events
+  const filteredEventSequences = new Set(
+    filterEvents.map((event) => event.sequence)
+  );
+  const unfilteredEvents = events.events.filter(
+    (event) => !filteredEventSequences.has(event.sequence)
+  );
+
   // Sort events by elapsed time (descending - most recent first)
-  const sortedEvents = [...events.events].sort((a, b) => {
+  const sortedEvents = [...unfilteredEvents].sort((a, b) => {
     const aTime = a.elapsed + (a.extraTime || 0);
     const bTime = b.elapsed + (b.extraTime || 0);
     return bTime - aTime;

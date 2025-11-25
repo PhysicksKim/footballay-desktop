@@ -21,6 +21,9 @@ const useMatchliveBridge = () => {
   const statistics = useSelector(
     (state: RootState) => state.v1.fixtureDetail.statistics
   );
+  const filterEvents = useSelector(
+    (state: RootState) => state.eventFilter.filterEvents
+  );
 
   const send = useCallback((message: LiveOutboundMessage) => {
     window.electron.ipcRenderer.send('live:to-matchlive', message);
@@ -53,6 +56,10 @@ const useMatchliveBridge = () => {
   useEffect(() => {
     send({ type: 'live.fixture.statistics', payload: statistics });
   }, [statistics, send]);
+
+  useEffect(() => {
+    send({ type: 'live.event-filter.update', payload: filterEvents });
+  }, [filterEvents, send]);
 
   useEffect(() => {
     const unsubscribe = window.electron.ipcRenderer.on(

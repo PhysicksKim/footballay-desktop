@@ -40,9 +40,10 @@
     box-sizing: border-box;
 
     .side-navigation-area {
+      padding-top: 20px;
+      padding-bottom: 20px;
       background-color: $theme-dark-blue;
 
-      width: 140px;
       // height 밑에 2px 만큼 부족해서 더해줌. 왜인지 모름
       height: calc(100vh - #{$top-bar-height} + 2px);
       box-sizing: border-box;

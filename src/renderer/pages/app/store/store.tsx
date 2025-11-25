@@ -10,6 +10,7 @@ import {
   loadV1Preferences,
   v1PreferencesReducer,
 } from './slices/settings/v1PreferencesSlice';
+import eventFilterReducer from './slices/control/eventFilterSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     featureFlags: featureFlagsReducer,
     v1: v1Reducer,
     v1Preferences: v1PreferencesReducer,
+    eventFilter: eventFilterReducer,
   },
 });
 

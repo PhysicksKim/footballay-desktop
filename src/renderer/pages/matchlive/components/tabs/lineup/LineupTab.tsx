@@ -67,13 +67,22 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
     return map;
   }, [statsResponse]);
 
+  const filterEvents = useSelector(
+    (state: RootState) => state.eventFilter.filterEvents
+  );
+
+  const filterEventSequences = useMemo(() => {
+    return new Set(filterEvents.map((event) => event.sequence));
+  }, [filterEvents]);
+
   const events = eventsResponse?.events || [];
 
   const { processedHome, processedAway } = useLineupGrid(
     lineup?.lineup.home,
     lineup?.lineup.away,
     events,
-    statsMap
+    statsMap,
+    filterEventSequences
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
