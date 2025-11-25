@@ -1,5 +1,11 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFutbol,
+  faSquare,
+  faArrowsRotate,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { RootState } from '@matchlive/store/store';
 import { EventInfo } from '@app/v1/types/api';
@@ -8,16 +14,66 @@ interface EventsTabProps {
   isActive: boolean;
 }
 
+const translateEventType = (type: string, detail?: string): string => {
+  const typeLowerCase = type.toLowerCase();
+  const detailLowerCase = (detail || '').toLowerCase();
+
+  switch (typeLowerCase) {
+    case 'goal':
+      return '골';
+    case 'card':
+      if (detailLowerCase.includes('yellow')) {
+        return '경고';
+      }
+      if (detailLowerCase.includes('red')) {
+        return '퇴장';
+      }
+      return '카드';
+    case 'subst':
+      return '교체';
+    default:
+      return type;
+  }
+};
+
+const getPlayerLabel = (type: string): string => {
+  const typeLowerCase = type.toLowerCase();
+  switch (typeLowerCase) {
+    case 'goal':
+      return '득점';
+    case 'subst':
+      return '교체 투입';
+    case 'card':
+      return '';
+    default:
+      return '선수';
+  }
+};
+
+const getAssistLabel = (type: string): string | null => {
+  const typeLowerCase = type.toLowerCase();
+  switch (typeLowerCase) {
+    case 'goal':
+      return '도움';
+    case 'subst':
+      return '교체 아웃';
+    case 'card':
+      return null;
+    default:
+      return '관련';
+  }
+};
+
 const getEventIcon = (type: string) => {
   switch (type.toLowerCase()) {
     case 'goal':
-      return '⚽';
+      return faFutbol;
     case 'card':
-      return '🟨';
+      return faSquare;
     case 'subst':
-      return '🔄';
+      return faArrowsRotate;
     default:
-      return '•';
+      return faSquare;
   }
 };
 
@@ -37,6 +93,8 @@ const getEventColor = (type: string, detail?: string) => {
 const EventCard = ({ event }: { event: EventInfo }) => {
   const icon = getEventIcon(event.type);
   const color = getEventColor(event.type, event.detail);
+  const playerLabel = getPlayerLabel(event.type);
+  const assistLabel = getAssistLabel(event.type);
 
   return (
     <EventCardContainer>
@@ -45,14 +103,19 @@ const EventCard = ({ event }: { event: EventInfo }) => {
         {event.extraTime ? `+${event.extraTime}` : ''}
       </EventTime>
       <EventContent>
-        <EventIcon style={{ color }}>{icon}</EventIcon>
+        <EventIcon style={{ color }}>
+          <FontAwesomeIcon icon={icon} />
+        </EventIcon>
         <EventDetails>
-          <EventType style={{ color }}>{event.detail || event.type}</EventType>
+          <EventType style={{ color }}>
+            {translateEventType(event.type, event.detail)}
+          </EventType>
           <EventPlayer>
+            {playerLabel && `${playerLabel}: `}
             {event.player?.koreanName || event.player?.name || ''}
-            {event.assist && (
+            {event.assist && assistLabel && (
               <AssistInfo>
-                (도움: {event.assist.koreanName || event.assist.name})
+                ({assistLabel}: {event.assist.koreanName || event.assist.name})
               </AssistInfo>
             )}
           </EventPlayer>
@@ -262,4 +325,3 @@ const TeamBadge = styled.div`
 `;
 
 export default EventsTab;
-
