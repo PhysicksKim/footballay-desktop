@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import { V1Urls } from '@app/constants/V1Urls';
 import { appEnv } from '@app/config/environment';
 
@@ -24,10 +24,12 @@ httpClient.interceptors.request.use((config) => {
     : `/${config.url ?? ''}`;
   config.url = normalizedUrl;
 
-  config.headers = {
-    'X-Footballay-Env': appEnv,
-    ...config.headers,
-  };
+  const headers =
+    config.headers instanceof AxiosHeaders
+      ? config.headers
+      : new AxiosHeaders(config.headers);
+  headers.set('X-Footballay-Env', appEnv);
+  config.headers = headers;
 
   return config;
 });

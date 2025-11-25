@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import Urls from '@src/renderer/pages/app/constants/Urls';
+import Urls from '@app/deprecated/v0/constants/Urls';
 import axios from 'axios';
 
 export const validatePreferenceKey = createAsyncThunk<

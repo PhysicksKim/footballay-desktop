@@ -2,9 +2,9 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 import { decode } from 'html-entities';
 
-import { ApiResponse } from '@app/types/api';
-import Urls from '@app/constants/Urls';
-import { isoStringToYearMonthDay } from '@app/common/DateUtils';
+import { ApiResponse } from '@app/deprecated/v0/types/api';
+import Urls from '@app/deprecated/v0/constants/Urls';
+import { isoStringToYearMonthDay } from '@app/deprecated/v0/common/DateUtils';
 
 export interface FetchFixtureListParams {
   leagueId: number;

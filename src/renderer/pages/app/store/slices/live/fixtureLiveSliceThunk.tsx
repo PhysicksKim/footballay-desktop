@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import Urls from '@app/constants/Urls';
+import Urls from '@app/deprecated/v0/constants/Urls';
 import {
   FixtureInfo,
   FixtureLiveStatus,

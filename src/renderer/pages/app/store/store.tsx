@@ -11,6 +11,7 @@ import {
   v1PreferencesReducer,
 } from './slices/settings/v1PreferencesSlice';
 import eventFilterReducer from './slices/control/eventFilterSlice';
+import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
 
 const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ const store = configureStore({
     v1: v1Reducer,
     v1Preferences: v1PreferencesReducer,
     eventFilter: eventFilterReducer,
+    fixtureLive: fixtureLiveReducer,
   },
 });
 
