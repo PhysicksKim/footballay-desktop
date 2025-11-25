@@ -10,7 +10,7 @@ import {
   setupappWindowIpcMainHandlers,
   setupCommonWindowIpcHandlers,
   setupMatchliveIpcMainHandlers,
-  setupV1IpcHandlers,
+  setupLiveIpcHandlers,
 } from './ipcManager';
 
 export const __filename = fileURLToPath(import.meta.url);
@@ -106,7 +106,7 @@ app
     setupCommonWindowIpcHandlers();
     setupappWindowIpcMainHandlers();
     setupMatchliveIpcMainHandlers();
-    setupV1IpcHandlers();
+    setupLiveIpcHandlers();
     new CustomElectronStoreIpc();
     const windowManager = WindowManager.getInstance();
     const appWindow = await windowManager.createappWindow();

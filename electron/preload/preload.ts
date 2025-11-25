@@ -22,8 +22,8 @@ export type Channels =
   | 'to-app'
   | 'to-matchlive'
   | 'to-updatechecker'
-  | 'v1:to-matchlive'
-  | 'v1:request-data';
+  | 'live:to-matchlive'
+  | 'live:request-data';
 
 const PRINT_IPC_MESSAGES = false;
 

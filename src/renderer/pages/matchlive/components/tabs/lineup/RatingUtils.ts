@@ -21,3 +21,4 @@ const getRatingColor = (floatRating: number | string) => {
 };
 
 export default getRatingColor;
+

@@ -2,12 +2,12 @@ import { useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '@app/store/store';
-import { V1InboundMessage, V1OutboundMessage } from '@src/types/ipc/V1Channels';
+import {
+  LiveInboundMessage,
+  LiveOutboundMessage,
+} from '@src/types/ipc/LiveChannels';
 
 const useMatchliveBridge = () => {
-  const developerMode = useSelector(
-    (state: RootState) => state.featureFlags.developerMode
-  );
   const info = useSelector((state: RootState) => state.v1.fixtureDetail.info);
   const liveStatus = useSelector(
     (state: RootState) => state.v1.fixtureDetail.liveStatus
@@ -22,50 +22,44 @@ const useMatchliveBridge = () => {
     (state: RootState) => state.v1.fixtureDetail.statistics
   );
 
-  const send = useCallback((message: V1OutboundMessage) => {
-    window.electron.ipcRenderer.send('v1:to-matchlive', message);
+  const send = useCallback((message: LiveOutboundMessage) => {
+    window.electron.ipcRenderer.send('live:to-matchlive', message);
   }, []);
 
   const sendFullSync = useCallback(() => {
-    send({ type: 'v1.fixture.info', payload: info });
-    send({ type: 'v1.fixture.live-status', payload: liveStatus });
-    send({ type: 'v1.fixture.lineup', payload: lineup });
-    send({ type: 'v1.fixture.events', payload: events });
-    send({ type: 'v1.fixture.statistics', payload: statistics });
+    send({ type: 'live.fixture.info', payload: info });
+    send({ type: 'live.fixture.live-status', payload: liveStatus });
+    send({ type: 'live.fixture.lineup', payload: lineup });
+    send({ type: 'live.fixture.events', payload: events });
+    send({ type: 'live.fixture.statistics', payload: statistics });
   }, [info, liveStatus, lineup, events, statistics, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
-    send({ type: 'v1.fixture.info', payload: info });
-  }, [developerMode, info, send]);
+    send({ type: 'live.fixture.info', payload: info });
+  }, [info, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
-    send({ type: 'v1.fixture.live-status', payload: liveStatus });
-  }, [developerMode, liveStatus, send]);
+    send({ type: 'live.fixture.live-status', payload: liveStatus });
+  }, [liveStatus, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
-    send({ type: 'v1.fixture.lineup', payload: lineup });
-  }, [developerMode, lineup, send]);
+    send({ type: 'live.fixture.lineup', payload: lineup });
+  }, [lineup, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
-    send({ type: 'v1.fixture.events', payload: events });
-  }, [developerMode, events, send]);
+    send({ type: 'live.fixture.events', payload: events });
+  }, [events, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
-    send({ type: 'v1.fixture.statistics', payload: statistics });
-  }, [developerMode, statistics, send]);
+    send({ type: 'live.fixture.statistics', payload: statistics });
+  }, [statistics, send]);
 
   useEffect(() => {
-    if (!developerMode) return;
     const unsubscribe = window.electron.ipcRenderer.on(
-      'v1:request-data',
-      (message: V1InboundMessage) => {
+      'live:request-data',
+      (message: LiveInboundMessage) => {
         if (!message) return;
-        if (message.type === 'v1.request.full-sync') {
+        if (message.type === 'live.request.full-sync') {
           sendFullSync();
         }
       }
@@ -75,8 +69,7 @@ const useMatchliveBridge = () => {
         unsubscribe();
       }
     };
-  }, [developerMode, sendFullSync]);
+  }, [sendFullSync]);
 };
 
 export default useMatchliveBridge;
-

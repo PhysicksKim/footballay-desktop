@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, MouseEvent } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 interface ModalProps {
@@ -61,19 +61,19 @@ const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       document.addEventListener(
         'mousedown',
-        handleMouseDown as unknown as EventListener,
+        handleMouseDown as unknown as EventListener
       );
     } else {
       document.removeEventListener(
         'mousedown',
-        handleMouseDown as unknown as EventListener,
+        handleMouseDown as unknown as EventListener
       );
     }
 
     return () => {
       document.removeEventListener(
         'mousedown',
-        handleMouseDown as unknown as EventListener,
+        handleMouseDown as unknown as EventListener
       );
     };
   }, [isOpen]);
@@ -86,7 +86,7 @@ const Modal: React.FC<ModalProps> = ({
       unmountOnExit
       nodeRef={nodeRef}
     >
-      <StyledOverlay ref={nodeRef}>
+      <StyledOverlay ref={nodeRef} $isOpen={isOpen}>
         <StyledContent ref={modalContentRef}>{children}</StyledContent>
       </StyledOverlay>
     </CSSTransition>

@@ -132,28 +132,28 @@ export const setupMatchliveIpcMainHandlers = () => {
   });
 };
 
-export const setupV1IpcHandlers = () => {
-  ipcMain.on('v1:to-matchlive', (event, data) => {
+export const setupLiveIpcHandlers = () => {
+  ipcMain.on('live:to-matchlive', (event, data) => {
     const nowMatchliveWindow = WindowManager.getInstance().matchliveWindow;
     if (!nowMatchliveWindow || nowMatchliveWindow.isDestroyed()) {
       return;
     }
     try {
-      nowMatchliveWindow.webContents.send('v1:to-matchlive', data);
+      nowMatchliveWindow.webContents.send('live:to-matchlive', data);
     } catch (e) {
-      log.error('v1:to-matchlive ipc error message', e);
+      log.error('live:to-matchlive ipc error message', e);
     }
   });
 
-  ipcMain.on('v1:request-data', (event, data) => {
+  ipcMain.on('live:request-data', (event, data) => {
     const appWindow = WindowManager.getInstance().appWindow;
     if (!appWindow) {
       return;
     }
     try {
-      appWindow.webContents.send('v1:request-data', data);
+      appWindow.webContents.send('live:request-data', data);
     } catch (e) {
-      log.error('v1:request-data ipc error message', e);
+      log.error('live:request-data ipc error message', e);
     }
   });
 };

@@ -1,16 +1,21 @@
 import { faArrowUp, faFutbol, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css, keyframes } from 'styled-components';
-import { Goal, ViewPlayer } from '@src/types/FixtureIpc';
 import React from 'react';
-import { PlayerStatisticsList, ProfileSection } from './PlayerStatisticsStyled';
+import { PlayerStatisticsList, ProfileSection } from './PlayerStatistics';
 import getRatingColor from './RatingUtils';
+import { ViewPlayer } from './types';
+
+const GlobalBorderRadiusPx = 30;
 
 const commonBoxShadow = css`
   box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
 `;
 
-const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
+export const LineupTabContainer = styled.div<{
+  $isModalOpen: boolean;
+  $isActive: boolean;
+}>`
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -21,18 +26,29 @@ const LineupTabContainer = styled.div<{ $isModalOpen: boolean }>`
   align-items: center;
   padding-top: 12px;
   padding-bottom: 5px;
+  /* -webkit-app-region: drag;
+  pointer-events: auto;
+  cursor: auto; */
 
-  // Modal이 열렸을 때 모든 자식 요소의 drag 비활성화
-  ${({ $isModalOpen }) =>
-    $isModalOpen &&
+  /**
+   * 라인업 위에 다른 모달이 떴을 때 스크롤이 가능하려면, 
+  * 아래처럼 active조건에 따라서 drag 속성을 변경해줘야 합니다.
+   */
+  ${({ $isActive }) =>
+    $isActive
+      ? `
+      -webkit-app-region: drag;
+      pointer-events: all;
+      cursor: auto;
     `
-      & * {
-        -webkit-app-region: no-drag !important;
-      }
+      : `
+      -webkit-app-region: no-drag;
+      pointer-events: none;
+      cursor: default;
     `}
 `;
 
-const TeamContainer = styled.div<{ $isAway?: boolean }>`
+export const TeamContainer = styled.div<{ $isAway?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,22 +56,23 @@ const TeamContainer = styled.div<{ $isAway?: boolean }>`
   height: 50%;
   box-sizing: border-box;
   overflow: hidden;
-  flex-direction: ${({ $isAway: isAway }) => {
-    return isAway ? 'column-reverse' : 'column';
-  }};
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: visible;
 `;
 
-const TeamName = styled.h2`
+export const TeamName = styled.h2`
   font-size: 14px;
   font-weight: bold;
   margin: 10px 0;
   position: absolute;
 `;
 
-const GridLine = styled.div<{ $height: number; $isAway?: boolean }>`
+export const GridLine = styled.div<{
+  $height: number;
+  $isAway?: boolean;
+  $idx: number;
+}>`
   position: relative;
   width: 100%;
   height: ${(props) => props.$height}%;
@@ -81,7 +98,7 @@ const fadeIn = keyframes`
   }
 `;
 
-const GridPlayer = styled.div<{
+export const GridPlayer = styled.div<{
   $top: number;
   $left: number;
   $width: number;
@@ -100,13 +117,7 @@ const GridPlayer = styled.div<{
   transform: translateX(-50%);
 
   opacity: 0;
-  /* transition: opacity 0.8s ease-in-out; */
   animation: ${fadeIn} 0.5s ease-in-out forwards;
-
-  // 자식들은 클릭이 가능하도록 no-drag 설정
-  & > * {
-    -webkit-app-region: no-drag;
-  }
 
   .player-number-photo-box {
     top: 0;
@@ -116,18 +127,14 @@ const GridPlayer = styled.div<{
     align-items: center;
     height: ${(props) => props.$lineHeight - 20}px;
 
+    cursor: pointer;
+
     img {
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
       object-position: top;
       background-color: white;
-      /**
-      이미지를 드래그할 때 브라우저의 기본 동작으로 인해
-      이미지가 마우스 커서를 따라 이동하는 현상이 발생합니다.
-      이러한 동작을 방지하기 위해 -webkit-user-drag: none; 속성을 적용하여
-      사용자가 이미지를 드래그할 수 없도록 설정하였습니다.
-       */
       -webkit-user-drag: none;
       ${commonBoxShadow}
     }
@@ -171,7 +178,7 @@ const GridPlayer = styled.div<{
   }
 `;
 
-const TeamLogoName = styled.div`
+export const TeamLogoName = styled.div<{ $color?: string | null }>`
   position: absolute;
   left: 0;
   width: auto;
@@ -186,7 +193,7 @@ const TeamLogoName = styled.div`
   margin-left: 18px;
   margin-top: 12px;
   margin-bottom: 12px;
-  padding-right: 5px;
+  padding-right: ${({ $color }) => ($color ? '9px' : '5px')};
 
   &.team-name__home {
     top: 8px;
@@ -221,6 +228,18 @@ const TeamLogoName = styled.div`
     text-align: center;
     padding-right: 3px;
   }
+
+  .color-bar {
+    position: relative;
+    width: 6px;
+    height: 70%;
+    margin-top: 3px;
+    margin-right: 4px;
+    margin-bottom: 1px;
+    border: 1px solid #ffffff;
+    background-color: ${({ $color }) => $color || 'transparent'};
+    border-radius: 0;
+  }
 `;
 
 const SubInMarkWrapper = styled.div<{
@@ -251,13 +270,13 @@ const SubIndicatorInner = styled.div`
   height: 70%;
   border-radius: 50%;
   background-color: #0d5df1;
-  color: #ffffff; /* 필요에 따라 색상을 조정 */
+  color: #ffffff;
 `;
 
-const SubInMark: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
-  showPhoto,
-  photoSize,
-}) => {
+export const SubInMark: React.FC<{
+  showPhoto: boolean;
+  photoSize?: number;
+}> = ({ showPhoto, photoSize }) => {
   return (
     <SubInMarkWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       <SubIndicatorInner>
@@ -295,10 +314,10 @@ const CardInner = styled.div<{ color: string; $borderColor: string }>`
   border-radius: 25%;
 `;
 
-const CardYellow: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
-  showPhoto,
-  photoSize,
-}) => {
+export const CardYellow: React.FC<{
+  showPhoto: boolean;
+  photoSize?: number;
+}> = ({ showPhoto, photoSize }) => {
   return (
     <CardWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       <CardInner color="#f1f10d" $borderColor="#969617" />
@@ -306,7 +325,7 @@ const CardYellow: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
   );
 };
 
-const CardRed: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
+export const CardRed: React.FC<{ showPhoto: boolean; photoSize?: number }> = ({
   showPhoto,
   photoSize,
 }) => {
@@ -335,12 +354,6 @@ const GoalMarkWrapper = styled.div<{
   border-radius: 40%;
 `;
 
-/**
- * index 는 index+1 번째 골을 나타냅니다. 예를 들어 index=1 은 2번째 골을 나타냅니다.  <br>
- * index 로 명명한 이유는 LineupPlayer 가 Goal 객체를 배열로 가지고 있기 때문에, Goal 배열의 index 를 바탕으로 멀티골을 표시하기 때문입니다.  <br>
- * index 만큼 이동한 위치에 겹쳐서 골을 나타냅니다. <br>
- * OwnGoal 의 경우 빨간색으로 나타냅니다. <br>
- */
 const GoalIndicatorInner = styled.div<{ $index: number; $isOwnGoal: boolean }>`
   display: flex;
   position: absolute;
@@ -354,26 +367,26 @@ const GoalIndicatorInner = styled.div<{ $index: number; $isOwnGoal: boolean }>`
   ${commonBoxShadow}
 `;
 
-const GoalMark: React.FC<{
-  goal: Goal[];
+export const GoalMark: React.FC<{
+  goal: { minute: number; ownGoal: boolean }[];
   showPhoto: boolean;
   photoSize?: number;
 }> = ({ goal, showPhoto, photoSize }) => {
   return (
     <GoalMarkWrapper $showPhoto={showPhoto} $photoSize={photoSize}>
       {goal
-        .map((goal, index) => {
+        .map((goalItem, index) => {
           return (
             <GoalIndicatorInner
-              key={`${index}_${goal.minute}`}
+              key={`${index}_${goalItem.minute}`}
               $index={index}
-              $isOwnGoal={goal.ownGoal}
+              $isOwnGoal={goalItem.ownGoal}
             >
               <FontAwesomeIcon
                 icon={faFutbol}
                 style={{
                   scale: '1.15',
-                  color: goal.ownGoal ? '#961d1d' : 'black',
+                  color: goalItem.ownGoal ? '#961d1d' : 'black',
                 }}
               />
             </GoalIndicatorInner>
@@ -413,7 +426,7 @@ const PlayerNumberInner = styled.div<{ $number: number }>`
   font-weight: 700;
 `;
 
-const PlayerNumber: React.FC<{ number: number }> = ({ number }) => {
+export const PlayerNumber: React.FC<{ number: number }> = ({ number }) => {
   return (
     <PlayerNumberWrapper $number={number}>
       <PlayerNumberInner $number={number}>{number}</PlayerNumberInner>
@@ -432,7 +445,7 @@ const PlayerNameSpan = styled.span<{ $fontsize: number }>`
   font-weight: 700;
 `;
 
-const PlayerName: React.FC<{ name: string; fontSize: number }> = ({
+export const PlayerName: React.FC<{ name: string; fontSize: number }> = ({
   name,
   fontSize,
 }) => {
@@ -462,27 +475,11 @@ const HomeMarkerWrapper = styled.div`
   margin-left: 3px;
 `;
 
-const HomeMarker: React.FC = () => {
+export const HomeMarker: React.FC = () => {
   return (
     <HomeMarkerWrapper>
       <HomeMarkerInner>H</HomeMarkerInner>
     </HomeMarkerWrapper>
-  );
-};
-
-const RatingBox: React.FC<{ rating: string }> = ({ rating }) => {
-  const floatRating = parseFloat(rating);
-  const formattedRating = floatRating.toFixed(1);
-  const ratingColor = getRatingColor(floatRating);
-
-  const outstandingPlayerMark =
-    floatRating > 8.5 ? OutstandingPlayerMark : null;
-
-  return (
-    <RatingWrapper $ratingColor={ratingColor}>
-      {formattedRating}
-      {outstandingPlayerMark}
-    </RatingWrapper>
   );
 };
 
@@ -502,7 +499,7 @@ const RatingWrapper = styled.div<{ $ratingColor: string }>`
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(35%, -12%);
+  transform: translate(35%, 0%);
   font-size: 0.8rem;
   font-weight: 500;
   min-width: 1.9rem;
@@ -518,6 +515,24 @@ const RatingWrapper = styled.div<{ $ratingColor: string }>`
   ${commonBoxShadow}
 `;
 
+export const RatingBox: React.FC<{ rating: string }> = ({ rating }) => {
+  const floatRating = parseFloat(rating);
+  if (isNaN(floatRating)) return null;
+
+  const formattedRating = floatRating.toFixed(1);
+  const ratingColor = getRatingColor(floatRating);
+
+  const outstandingPlayerMark =
+    floatRating > 8.5 ? OutstandingPlayerMark : null;
+
+  return (
+    <RatingWrapper $ratingColor={ratingColor}>
+      {formattedRating}
+      {outstandingPlayerMark}
+    </RatingWrapper>
+  );
+};
+
 const PlayerStatisticsContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -531,8 +546,6 @@ const PlayerStatisticsContainer = styled.div`
   margin-top: 2px;
   width: 100%;
   height: 100%;
-
-  -webkit-app-region: no-drag;
 `;
 
 const StatisticsListSection = styled.div`
@@ -553,7 +566,7 @@ const NoPlayerStatistics = styled.div`
   font-weight: 500;
 `;
 
-const PlayerStatisticsContent: React.FC<{
+export const PlayerStatisticsContent: React.FC<{
   player: ViewPlayer;
 }> = ({ player }) => {
   const stats = player.statistics;
@@ -562,19 +575,19 @@ const PlayerStatisticsContent: React.FC<{
       {/* 프로필 영역 */}
       <ProfileSection
         name={player.name}
-        koreanName={player.koreanName}
-        photo={player.photo}
-        goals={stats?.statistics?.goals ? stats.statistics.goals : 0}
-        assists={stats?.statistics?.assists ? stats.statistics.assists : 0}
-        rating={stats?.statistics.rating ? stats.statistics.rating : ''}
+        koreanName={player.koreanName || null}
+        photo={player.photo || ''}
+        goals={stats?.goals || 0}
+        assists={stats?.assists || 0}
+        rating={stats?.rating || ''}
       />
 
       {/* PlayerStatisticsList가 표시될 영역 */}
       <StatisticsListSection>
         {stats ? (
           <PlayerStatisticsList
-            stats={stats.statistics}
-            position={stats.player.position}
+            stats={stats}
+            position={player.position || ''}
           />
         ) : (
           <NoPlayerStatistics>아직 통계 정보가 없습니다</NoPlayerStatistics>
@@ -584,20 +597,59 @@ const PlayerStatisticsContent: React.FC<{
   );
 };
 
-export {
-  LineupTabContainer,
-  TeamContainer,
-  TeamName,
-  GridLine,
-  GridPlayer,
-  TeamLogoName,
-  SubInMark,
-  CardYellow,
-  CardRed,
-  GoalMark,
-  PlayerNumber,
-  PlayerName,
-  HomeMarker,
-  RatingBox,
-  PlayerStatisticsContent,
-};
+export const PlayerModalOverlayStyle = styled.div<{ $isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 27, 44, 0.473);
+  border-radius: ${GlobalBorderRadiusPx}px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: opacity 0.1s ease-in-out;
+  opacity: 0;
+  cursor: pointer;
+
+  -webkit-app-region: ${({ $isOpen }) => ($isOpen ? 'no-drag' : 'drag')};
+  pointer-events: ${({ $isOpen }) => ($isOpen ? 'all' : 'none')};
+
+  &.modal-enter,
+  &.modal-enter-active {
+    opacity: 0;
+  }
+
+  &.modal-enter-done {
+    opacity: 1;
+  }
+
+  &.modal-exit {
+    opacity: 1;
+  }
+
+  &.modal-exit-active,
+  &.modal-exit-done {
+    opacity: 0;
+  }
+`;
+
+export const PlayerModalContentStyle = styled.div`
+  background-color: #f5faff; // ThemeColors.popWindow.background
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  max-width: 400px;
+  max-height: 550px;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 999;
+  transition: opacity 0.1s ease-in-out;
+  opacity: 1;
+  cursor: default;
+  overflow: hidden;
+`;

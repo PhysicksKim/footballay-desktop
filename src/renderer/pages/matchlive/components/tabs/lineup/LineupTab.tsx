@@ -1,254 +1,213 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/store';
-import FootballFieldCanvas from './FootballFieldCanvas';
-import { TeamLineups, ViewPlayer } from '@src/types/FixtureIpc';
-import { debounce } from 'lodash';
+import { RootState } from '@src/renderer/pages/matchlive/store/store';
+import { PlayerStatistics } from '@src/renderer/pages/app/v1/types/api';
+import { useLineupGrid } from './hooks/useLineupGrid';
+import { ViewPlayer } from './types';
+import LineupGrid from './LineupGrid';
+import FieldCanvas from './FieldCanvas';
+import Modal from '@matchlive/components/common/Modal';
 import {
-  HomeMarker,
   LineupTabContainer,
-  PlayerStatisticsContent,
   TeamContainer,
   TeamLogoName,
-} from './LineupStyled';
-import LineupView, {
   PlayerModalContentStyle,
   PlayerModalOverlayStyle,
-} from './LineupView';
-import { ViewLineup } from '@src/types/FixtureIpc';
-import styled from 'styled-components';
-import Modal from '../../common/Modal';
-import RetryableImage from '../../common/RetryableImage';
+  PlayerStatisticsContent,
+} from './LineupStyled';
+import RetryableImage from '@matchlive/components/common/RetryableImage';
+import { selectDisplayColor } from '@matchlive/utils/ColorUtils';
 
-export interface LineupTabProps {
-  applyEvents?: boolean;
+interface LineupTabProps {
   isActive: boolean;
 }
 
-const LineupTab: React.FC<LineupTabProps> = ({
-  applyEvents = true,
-  isActive,
-}) => {
-  const lineup = useSelector(
-    (state: RootState) => state.fixture.lineup
-  )?.lineup;
+const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  wait: number
+) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+const LineupTab = ({ isActive }: LineupTabProps) => {
+  const lineup = useSelector((state: RootState) => state.fixture.lineup);
   const info = useSelector((state: RootState) => state.fixture.info);
-  const events = useSelector((state: RootState) => state.fixture.events);
-  const showPhoto = useSelector((state: RootState) => state.options.showPhoto);
-  const processedLineup = useSelector(
-    (state: RootState) => state.fixtureProcessedData.lineup
+  const eventsResponse = useSelector(
+    (state: RootState) => state.fixture.events
+  );
+  const statsResponse = useSelector(
+    (state: RootState) => state.fixture.statistics
+  );
+  const useAlternativeColorStrategy = useSelector(
+    (state: RootState) => state.colorOption.useAlternativeColorStrategy
+  );
+  const showPhoto = true;
+
+  const getTeamLogo = (teamUid: string): string | undefined => {
+    if (!info) return undefined;
+    if (info.home.teamUid === teamUid) return info.home.logo;
+    if (info.away.teamUid === teamUid) return info.away.logo;
+    return undefined;
+  };
+
+  const statsMap = useMemo(() => {
+    const map = new Map<string, PlayerStatistics>();
+    if (statsResponse) {
+      statsResponse.home.playerStatistics.forEach((p) =>
+        map.set(p.player.matchPlayerUid, p.statistics)
+      );
+      statsResponse.away.playerStatistics.forEach((p) =>
+        map.set(p.player.matchPlayerUid, p.statistics)
+      );
+    }
+    return map;
+  }, [statsResponse]);
+
+  const events = eventsResponse?.events || [];
+
+  const { processedHome, processedAway } = useLineupGrid(
+    lineup?.lineup.home,
+    lineup?.lineup.away,
+    events,
+    statsMap
   );
 
-  const homeTeamContainerRef = useRef<HTMLDivElement>(null);
-  const awayTeamContainerRef = useRef<HTMLDivElement>(null);
-  const [homeGridPlayerHeight, setHomeGridPlayerHeight] = useState(0);
-  const [awayGridPlayerHeight, setAwayGridPlayerHeight] = useState(0);
-  const lineupRef = useRef<TeamLineups | null | undefined>(lineup);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
+  const [playerSize, setPlayerSize] = useState(0);
 
-  // Modal manage
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlayer, setSelectedPlayerStatistics] =
-    useState<ViewPlayer | null>(null); // 선택된 선수의 통계 정보 관리
-  const modalCloseTimoutRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    const handleResize = () => {
+      if (!containerRef.current || !processedHome || !processedAway) return;
 
-  const handlePlayerClick = (finalPlayer: ViewPlayer) => {
-    if (!finalPlayer) {
-      return;
-    }
+      /**
+       * 각 팀은 경기장 크기 절반만큼 차지합니다
+       */
+      const containerHeight = containerRef.current.clientHeight;
+      const teamHeight = containerHeight / 2;
 
-    setModalOpen(true);
-    if (modalCloseTimoutRef.current) {
-      clearTimeout(modalCloseTimoutRef.current);
-    }
-    setSelectedPlayerStatistics(finalPlayer);
+      const MIN_GRID_COUNT = 5;
+      const homeRows = Math.max(MIN_GRID_COUNT, processedHome.players.length);
+      const awayRows = Math.max(MIN_GRID_COUNT, processedAway.players.length);
+
+      const hLineHeight = teamHeight / homeRows;
+      const aLineHeight = teamHeight / awayRows;
+      /**
+       * 두 팀 중에서 라인 높이가 더 작은팀에 맞춥니다
+       * 예를 들어 4줄(키퍼 + 4-3-3) 팀과 5줄(키퍼 + 4-2-3-1) 팀이 있을 때, 5줄 팀에 맞춥니다
+       */
+      const finalLineHeight = Math.min(hLineHeight, aLineHeight);
+
+      setLineHeight(finalLineHeight);
+      setPlayerSize(finalLineHeight);
+    };
+
+    const debouncedResize = debounce(handleResize, 150);
+    window.addEventListener('resize', debouncedResize);
+
+    // Call once to set initial size
+    handleResize();
+
+    return () => window.removeEventListener('resize', debouncedResize);
+  }, [processedHome, processedAway, isActive]);
+  // Added isActive to trigger resize when tab becomes active
+
+  // Modal Logic
+  const [selectedPlayer, setSelectedPlayer] = useState<ViewPlayer | null>(null);
+
+  const handlePlayerClick = (player: ViewPlayer) => {
+    setSelectedPlayer(player);
   };
 
   const closeModal = () => {
-    setModalOpen(false);
-    modalCloseTimoutRef.current = setTimeout(() => {
-      setSelectedPlayerStatistics(null);
-    }, 500);
+    setSelectedPlayer(null);
   };
 
-  useEffect(() => {
-    if (!isActive) {
-      closeModal();
-    }
-  }, [isActive]);
+  const isModalOpen = !!selectedPlayer;
 
-  const [processedHomeLineup, setProcessedHomeLineup] =
-    useState<ViewLineup | null>(null);
-  const [processedAwayLineup, setProcessedAwayLineup] =
-    useState<ViewLineup | null>(null);
+  // Get display colors for teams
+  const homeDisplayColor = selectDisplayColor(lineup?.lineup.home.playerColor, {
+    useAlternativeStrategy: useAlternativeColorStrategy,
+  });
+  const awayDisplayColor = selectDisplayColor(lineup?.lineup.away.playerColor, {
+    isAway: true,
+    homeColor: homeDisplayColor || undefined,
+    useAlternativeStrategy: useAlternativeColorStrategy,
+  });
 
-  const updatePlayerSize = debounce(() => {
-    const _lineup = lineupRef.current;
-    if (!_lineup || !_lineup.away || !_lineup.home) {
-      return;
-    }
-
-    const MIN_GRID_COUNT = 5; // 4-3-3 같은 경우 GRID COUNT 4인데, 이러면 너무 선수가 커보임
-
-    const homeLineupGridCount = Math.max(
-      MIN_GRID_COUNT,
-      _lineup.home.formation.split('-').length + 1
-    );
-    const awayLineupGridCount = Math.max(
-      MIN_GRID_COUNT,
-      _lineup.away.formation.split('-').length + 1
-    );
-
-    if (homeTeamContainerRef.current) {
-      const height =
-        homeTeamContainerRef.current.clientHeight / homeLineupGridCount;
-      setHomeGridPlayerHeight(height);
-    }
-    if (awayTeamContainerRef.current) {
-      const height =
-        awayTeamContainerRef.current.clientHeight / awayLineupGridCount;
-      setAwayGridPlayerHeight(height);
-    }
-  }, 150);
-
-  const updateStoredWindowSize = debounce(() => {
-    const height = window.innerHeight;
-    const width = window.innerWidth;
-    window.electronStore.set('matchlive_window_height', height);
-    window.electronStore.set('matchlive_window_width', width);
-  }, 150);
-
-  const resizeEventListner = () => {
-    updatePlayerSize();
-    updateStoredWindowSize();
-  };
-
-  useEffect(() => {
-    lineupRef.current = lineup;
-  }, [lineup]);
-
-  useEffect(() => {
-    updatePlayerSize();
-  }, [lineupRef.current]);
-
-  useEffect(() => {
-    window.addEventListener('resize', resizeEventListner);
-    return () => {
-      window.removeEventListener('resize', resizeEventListner);
-    };
-  }, []);
-
-  useEffect(() => {
-    setProcessedHomeLineup(processedLineup.home);
-    setProcessedAwayLineup(processedLineup.away);
-  }, [processedLineup]);
-
-  const playerSize = Math.min(homeGridPlayerHeight, awayGridPlayerHeight);
-  const minGridPlayerHeight = Math.min(
-    homeGridPlayerHeight,
-    awayGridPlayerHeight
-  );
-
-  /*
-  개발용 플래그, 선수 통계 Modal 창 항시 띄워두기 위한 플래그 
-  */
-  const MODAL_TEST_MODE = false;
-  useEffect(() => {
-    if (!MODAL_TEST_MODE) {
-      return;
-    }
-    console.log(
-      `
-      DEV MODE: Opening Player Statistics Modal.
-      Set opacity of 'PlayerModalOverlayStyle' to 1 to display modal.
-      Because CSSTransition className appending does not work when hot reloading,
-      you need to manually set the opacity to 1 to see the modal.
-      `
-    );
-    if (!lineup || !lineup.home || !lineup.away || !processedHomeLineup) {
-      return;
-    }
-
-    const firstPlayerFORDEBUG = processedHomeLineup.players
-      .flat()
-      .find((player) => player.position === 'F');
-    if (!firstPlayerFORDEBUG) {
-      return;
-    }
-    handlePlayerClick(firstPlayerFORDEBUG);
-  }, [processedHomeLineup]);
+  if (!lineup || !processedHome || !processedAway) {
+    return null;
+  }
 
   return (
-    <>
+    <LineupTabContainer
+      ref={containerRef}
+      $isModalOpen={isModalOpen}
+      $isActive={isActive}
+    >
+      <FieldCanvas />
+
+      {/* Home Team */}
+      <TeamContainer $isAway={false}>
+        <LineupGrid
+          lineup={processedHome}
+          isAway={false}
+          playerSize={playerSize}
+          lineHeight={lineHeight}
+          showPhoto={showPhoto}
+          handlePlayerClick={handlePlayerClick}
+        />
+        <TeamLogoName className="team-name__home" $color={homeDisplayColor}>
+          {homeDisplayColor && <div className="color-bar" />}
+          <div className="team-logo">
+            {getTeamLogo(processedHome.teamUid) && (
+              <RetryableImage
+                src={getTeamLogo(processedHome.teamUid)!}
+                alt={processedHome.teamName}
+              />
+            )}
+          </div>
+          <div className="team-name">{processedHome.teamName}</div>
+        </TeamLogoName>
+      </TeamContainer>
+
+      {/* Away Team */}
+      <TeamContainer $isAway={true}>
+        <LineupGrid
+          lineup={processedAway}
+          isAway={true}
+          playerSize={playerSize}
+          lineHeight={lineHeight}
+          showPhoto={showPhoto}
+          handlePlayerClick={handlePlayerClick}
+        />
+        <TeamLogoName className="team-name__away" $color={awayDisplayColor}>
+          {awayDisplayColor && <div className="color-bar" />}
+          <div className="team-logo">
+            {getTeamLogo(processedAway.teamUid) && (
+              <RetryableImage
+                src={getTeamLogo(processedAway.teamUid)!}
+                alt={processedAway.teamName}
+              />
+            )}
+          </div>
+          <div className="team-name">{processedAway.teamName}</div>
+        </TeamLogoName>
+      </TeamContainer>
+
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         $StyledOverlay={PlayerModalOverlayStyle}
         $StyledContent={PlayerModalContentStyle}
       >
-        {selectedPlayer ? (
-          <PlayerStatisticsContent player={selectedPlayer} />
-        ) : (
-          <p>통계 정보가 없습니다.</p>
-        )}
+        {selectedPlayer && <PlayerStatisticsContent player={selectedPlayer} />}
       </Modal>
-      <LineupTabContainer $isModalOpen={isModalOpen}>
-        <TeamContainer ref={homeTeamContainerRef}>
-          {processedHomeLineup && (
-            <LineupView
-              lineup={processedHomeLineup}
-              isAway={false}
-              playerSize={playerSize}
-              lineHeight={minGridPlayerHeight}
-              showPhoto={showPhoto}
-              isModalOpen={isModalOpen}
-              closeModal={closeModal}
-              selectedPlayerStatistics={
-                selectedPlayer?.statistics ? selectedPlayer.statistics : null
-              }
-              handlePlayerClick={handlePlayerClick}
-            />
-          )}
-          {info && (
-            <TeamLogoName className="team-name-logo-box team-name__home">
-              <div className="team-logo">
-                <RetryableImage src={info.home.logo} alt={info.home.name} />
-              </div>
-              <div className="team-name">
-                {info.home.koreanName || info.home.name}
-              </div>
-              <HomeMarker />
-            </TeamLogoName>
-          )}
-        </TeamContainer>
-        <TeamContainer ref={awayTeamContainerRef} $isAway>
-          {processedAwayLineup && (
-            <LineupView
-              lineup={processedAwayLineup}
-              isAway={true}
-              playerSize={playerSize}
-              lineHeight={minGridPlayerHeight}
-              showPhoto={showPhoto}
-              isModalOpen={isModalOpen}
-              closeModal={closeModal}
-              selectedPlayerStatistics={
-                selectedPlayer?.statistics ? selectedPlayer.statistics : null
-              }
-              handlePlayerClick={handlePlayerClick}
-            />
-          )}
-          {info && (
-            <TeamLogoName className="team-name-logo-box team-name__away">
-              <div className="team-logo">
-                <RetryableImage src={info.away.logo} alt={info.away.name} />
-              </div>
-              <div className="team-name">
-                {info.away.koreanName || info.away.name}
-              </div>
-            </TeamLogoName>
-          )}
-        </TeamContainer>
-      </LineupTabContainer>
-    </>
+    </LineupTabContainer>
   );
 };
 

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import { createGlobalStyle } from 'styled-components';
 import '@src/renderer/global/style/Fonts.css';
-import '@app/common/AxiosConfig';
+import '@app/deprecated/v0/common/AxiosConfig';
 
 const GlobalStyle = createGlobalStyle`
   body {
