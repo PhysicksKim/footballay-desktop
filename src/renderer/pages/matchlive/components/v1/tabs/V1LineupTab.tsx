@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/renderer/pages/matchlive/store/store';
 import { PlayerStatistics } from '@src/renderer/pages/app/v1/types/api';
-import { useV1LineupGrid } from './hooks/useV1LineupGrid';
-import { V1ViewPlayer } from './types';
-import V1LineupGrid from './V1LineupGrid';
-import V1FieldCanvas from './V1FieldCanvas';
-import V1Modal from '../../common/V1Modal';
+import { useV1LineupGrid } from './lineup/hooks/useV1LineupGrid';
+import { V1ViewPlayer } from './lineup/types';
+import V1LineupGrid from './lineup/V1LineupGrid';
+import V1FieldCanvas from './lineup/V1FieldCanvas';
+import V1Modal from '../common/V1Modal';
 import {
   LineupTabContainer,
   TeamContainer,
@@ -14,8 +14,9 @@ import {
   PlayerModalContentStyle,
   PlayerModalOverlayStyle,
   PlayerStatisticsContent,
-} from './V1LineupStyled';
-import RetryableImage from '../../common/RetryableImage';
+} from './lineup/V1LineupStyled';
+import RetryableImage from '../common/RetryableImage';
+import { selectDisplayColor } from '@matchlive/utils/V1ColorUtils';
 
 interface V1LineupTabProps {
   isActive: boolean;
@@ -40,6 +41,9 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
   );
   const statsResponse = useSelector(
     (state: RootState) => state.v1Fixture.statistics
+  );
+  const useAlternativeColorStrategy = useSelector(
+    (state: RootState) => state.v1ColorOption.useAlternativeColorStrategy
   );
   const showPhoto = true;
 
@@ -127,6 +131,16 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
 
   const isModalOpen = !!selectedPlayer;
 
+  // Get display colors for teams
+  const homeDisplayColor = selectDisplayColor(lineup?.lineup.home.playerColor, {
+    useAlternativeStrategy: useAlternativeColorStrategy,
+  });
+  const awayDisplayColor = selectDisplayColor(lineup?.lineup.away.playerColor, {
+    isAway: true,
+    homeColor: homeDisplayColor || undefined,
+    useAlternativeStrategy: useAlternativeColorStrategy,
+  });
+
   if (!lineup || !processedHome || !processedAway) {
     return null;
   }
@@ -141,7 +155,8 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
 
       {/* Home Team */}
       <TeamContainer $isAway={false}>
-        <TeamLogoName className="team-name__home">
+        <TeamLogoName className="team-name__home" $color={homeDisplayColor}>
+          {homeDisplayColor && <div className="color-bar" />}
           <div className="team-logo">
             {getTeamLogo(processedHome.teamUid) && (
               <RetryableImage
@@ -165,7 +180,8 @@ const V1LineupTab = ({ isActive }: V1LineupTabProps) => {
 
       {/* Away Team */}
       <TeamContainer $isAway={true}>
-        <TeamLogoName className="team-name__away">
+        <TeamLogoName className="team-name__away" $color={awayDisplayColor}>
+          {awayDisplayColor && <div className="color-bar" />}
           <div className="team-logo">
             {getTeamLogo(processedAway.teamUid) && (
               <RetryableImage

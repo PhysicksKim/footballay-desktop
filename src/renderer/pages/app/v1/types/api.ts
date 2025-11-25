@@ -1,8 +1,15 @@
+export interface PlayerColor {
+  primary: string | null;
+  number: string | null;
+  border: string | null;
+}
+
 export interface TeamInfo {
   teamUid: string;
   name: string;
   koreanName?: string;
   logo?: string;
+  playerColor?: PlayerColor;
 }
 
 export interface AvailableLeagueResponse {
@@ -79,6 +86,7 @@ export interface StartLineup {
   formation?: string;
   players: LineupPlayer[];
   substitutes: LineupPlayer[];
+  playerColor?: PlayerColor;
 }
 
 export interface FixtureLineupResponse {

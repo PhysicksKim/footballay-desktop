@@ -178,7 +178,7 @@ export const GridPlayer = styled.div<{
   }
 `;
 
-export const TeamLogoName = styled.div`
+export const TeamLogoName = styled.div<{ $color?: string | null }>`
   position: absolute;
   left: 0;
   width: auto;
@@ -193,7 +193,7 @@ export const TeamLogoName = styled.div`
   margin-left: 18px;
   margin-top: 12px;
   margin-bottom: 12px;
-  padding-right: 5px;
+  padding-right: ${({ $color }) => ($color ? '9px' : '5px')};
 
   &.team-name__home {
     top: 8px;
@@ -227,6 +227,18 @@ export const TeamLogoName = styled.div`
     color: white;
     text-align: center;
     padding-right: 3px;
+  }
+
+  .color-bar {
+    position: relative;
+    width: 6px;
+    height: 70%;
+    margin-top: 3px;
+    margin-right: 4px;
+    margin-bottom: 1px;
+    border: 1px solid #ffffff;
+    background-color: ${({ $color }) => $color || 'transparent'};
+    border-radius: 0;
   }
 `;
 

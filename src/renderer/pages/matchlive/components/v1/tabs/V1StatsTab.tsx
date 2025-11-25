@@ -4,6 +4,11 @@ import styled from 'styled-components';
 import { RootState } from '@matchlive/store/store';
 import { TeamStatistics } from '@app/v1/types/api';
 import V1PassSuccessPieChart from './stats/V1PassSuccessPieChart';
+import {
+  selectHomeColor,
+  selectAwayColor,
+  selectDisplayColor,
+} from '@matchlive/utils/V1ColorUtils';
 
 interface V1StatsTabProps {
   isActive: boolean;
@@ -14,6 +19,8 @@ interface StatRowProps {
   homeValue?: number;
   awayValue?: number;
   isPercentage?: boolean;
+  homeColor: string;
+  awayColor: string;
 }
 
 const StatRow = ({
@@ -21,6 +28,8 @@ const StatRow = ({
   homeValue,
   awayValue,
   isPercentage,
+  homeColor,
+  awayColor,
 }: StatRowProps) => {
   const home = homeValue ?? 0;
   const away = awayValue ?? 0;
@@ -34,8 +43,8 @@ const StatRow = ({
       <StatBarSection>
         <StatLabel>{label}</StatLabel>
         <StatBar>
-          <StatBarFill $percent={homePercent} $side="home" />
-          <StatBarFill $percent={awayPercent} $side="away" />
+          <StatBarFill $percent={homePercent} $color={homeColor} />
+          <StatBarFill $percent={awayPercent} $color={awayColor} />
         </StatBar>
       </StatBarSection>
       <StatValue>{isPercentage ? `${away}%` : away}</StatValue>
@@ -46,6 +55,9 @@ const StatRow = ({
 const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
   const statistics = useSelector(
     (state: RootState) => state.v1Fixture.statistics
+  );
+  const useAlternativeColorStrategy = useSelector(
+    (state: RootState) => state.v1ColorOption.useAlternativeColorStrategy
   );
 
   if (!statistics) {
@@ -58,6 +70,27 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
 
   const homeStats = statistics.home.teamStatistics;
   const awayStats = statistics.away.teamStatistics;
+
+  // Get colors for charts and bars (always use alternative strategy for bars)
+  const homeColor = selectHomeColor(statistics.home.team.playerColor);
+  const awayColor = selectAwayColor(
+    statistics.away.team.playerColor,
+    homeColor
+  );
+
+  // Get display colors for color bars (respects user option)
+  const homeDisplayColor = selectDisplayColor(
+    statistics.home.team.playerColor,
+    { useAlternativeStrategy: useAlternativeColorStrategy }
+  );
+  const awayDisplayColor = selectDisplayColor(
+    statistics.away.team.playerColor,
+    {
+      isAway: true,
+      homeColor: homeDisplayColor || undefined,
+      useAlternativeStrategy: useAlternativeColorStrategy,
+    }
+  );
 
   // Calculate pass accuracy percentage for pie chart
   const homePassAccuracy =
@@ -78,12 +111,22 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
     <Container $isActive={isActive}>
       <StatsContent>
         <TeamNames>
-          <TeamName>
-            {statistics.home.team.koreanName || statistics.home.team.name}
-          </TeamName>
-          <TeamName>
-            {statistics.away.team.koreanName || statistics.away.team.name}
-          </TeamName>
+          <TeamNameWrapper>
+            {homeDisplayColor && (
+              <TeamColorBar $color={homeDisplayColor} $side="left" />
+            )}
+            <TeamName>
+              {statistics.home.team.koreanName || statistics.home.team.name}
+            </TeamName>
+          </TeamNameWrapper>
+          <TeamNameWrapper>
+            <TeamName>
+              {statistics.away.team.koreanName || statistics.away.team.name}
+            </TeamName>
+            {awayDisplayColor && (
+              <TeamColorBar $color={awayDisplayColor} $side="right" />
+            )}
+          </TeamNameWrapper>
         </TeamNames>
 
         {/* Pass Success Pie Chart */}
@@ -91,6 +134,8 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
           <V1PassSuccessPieChart
             homePassSuccess={homePassAccuracy}
             awayPassSuccess={awayPassAccuracy}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
         </StatsSection>
 
@@ -102,46 +147,64 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
             homeValue={homeStats.ballPossession}
             awayValue={awayStats.ballPossession}
             isPercentage
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="전체 슈팅"
             homeValue={homeStats.totalShots}
             awayValue={awayStats.totalShots}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="유효 슈팅"
             homeValue={homeStats.shotsOnGoal}
             awayValue={awayStats.shotsOnGoal}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="코너킥"
             homeValue={homeStats.cornerKicks}
             awayValue={awayStats.cornerKicks}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="오프사이드"
             homeValue={homeStats.offsides}
             awayValue={awayStats.offsides}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="파울"
             homeValue={homeStats.fouls}
             awayValue={awayStats.fouls}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="옐로카드"
             homeValue={homeStats.yellowCards}
             awayValue={awayStats.yellowCards}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="레드카드"
             homeValue={homeStats.redCards}
             awayValue={awayStats.redCards}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="세이브"
             homeValue={homeStats.goalkeeperSaves}
             awayValue={awayStats.goalkeeperSaves}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
         </StatsSection>
 
@@ -152,31 +215,43 @@ const V1StatsTab = ({ isActive }: V1StatsTabProps) => {
             label="빗나간 슈팅"
             homeValue={homeStats.shotsOffGoal}
             awayValue={awayStats.shotsOffGoal}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="차단된 슈팅"
             homeValue={homeStats.blockedShots}
             awayValue={awayStats.blockedShots}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="박스 안 슈팅"
             homeValue={homeStats.shotsInsideBox}
             awayValue={awayStats.shotsInsideBox}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="박스 밖 슈팅"
             homeValue={homeStats.shotsOutsideBox}
             awayValue={awayStats.shotsOutsideBox}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="전체 패스"
             homeValue={homeStats.totalPasses}
             awayValue={awayStats.totalPasses}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
           <StatRow
             label="성공한 패스"
             homeValue={homeStats.passesAccurate}
             awayValue={awayStats.passesAccurate}
+            homeColor={homeColor}
+            awayColor={awayColor}
           />
         </StatsSection>
       </StatsContent>
@@ -241,11 +316,30 @@ const TeamNames = styled.div`
   margin-bottom: 8px;
 `;
 
+const TeamNameWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+`;
+
 const TeamName = styled.div`
   font-size: 18px;
   font-weight: 800;
   color: #fff;
   text-shadow: none;
+`;
+
+const TeamColorBar = styled.div<{ $color: string; $side: 'left' | 'right' }>`
+  position: absolute;
+  ${({ $side }) => ($side === 'left' ? 'left: -8px;' : 'right: -8px;')}
+  width: 4px;
+  height: 100%;
+  background-color: ${({ $color }) => $color};
+  ${({ $color }) =>
+    $color &&
+    $color.toLowerCase().replace('#', '') === 'ffffff'
+      ? 'box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.5);'
+      : ''}
 `;
 
 const StatsSection = styled.div`
@@ -304,13 +398,10 @@ const StatBar = styled.div`
   overflow: hidden;
 `;
 
-const StatBarFill = styled.div<{ $percent: number; $side: 'home' | 'away' }>`
+const StatBarFill = styled.div<{ $percent: number; $color: string }>`
   height: 100%;
   width: ${(props) => props.$percent}%;
-  background: ${(props) =>
-    props.$side === 'home'
-      ? '#3b82f6' // Solid Blue
-      : '#ef4444'}; // Solid Red
+  background: ${(props) => props.$color};
   transition: width 0.5s ease;
 `;
 

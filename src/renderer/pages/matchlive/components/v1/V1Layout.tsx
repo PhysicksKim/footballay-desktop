@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import V1Header from './V1Header';
-import V1LineupTab from './tabs/lineup/V1LineupTab';
+import V1LineupTab from './tabs/V1LineupTab';
 import V1StatsTab from './tabs/V1StatsTab';
 import V1EventsTab from './tabs/V1EventsTab';
 

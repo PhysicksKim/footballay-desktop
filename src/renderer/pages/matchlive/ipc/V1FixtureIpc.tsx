@@ -8,10 +8,12 @@ import {
   setV1FixtureLiveStatus,
   setV1FixtureStatistics,
 } from '@matchlive/store/slices/v1FixtureSlice';
+import { loadV1ColorOption } from '@matchlive/store/slices/v1ColorOptionSlice';
 import { V1OutboundMessage } from '@src/types/ipc/V1Channels';
+import { AppDispatch } from '@matchlive/store/store';
 
 const V1FixtureIpc = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const unsubscribe = window.electron.ipcRenderer.on(
@@ -54,7 +56,10 @@ const V1FixtureIpc = () => {
     window.electron.ipcRenderer.send('v1:request-data', {
       type: 'v1.request.full-sync',
     });
-  }, []);
+
+    // Load color option from Electron Store
+    dispatch(loadV1ColorOption());
+  }, [dispatch]);
 
   return null;
 };

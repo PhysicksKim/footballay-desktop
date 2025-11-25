@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import {
   PieChart,
   Pie,
@@ -9,11 +8,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import styled from 'styled-components';
-import { RootState } from '@matchlive/store/store';
 
 interface V1PassSuccessPieChartProps {
   homePassSuccess: number;
   awayPassSuccess: number;
+  homeColor: string;
+  awayColor: string;
 }
 
 const PIE_BACKGROUND_FILL = '#aaaaaa';
@@ -21,10 +21,11 @@ const PIE_BACKGROUND_FILL = '#aaaaaa';
 const V1PassSuccessPieChart: React.FC<V1PassSuccessPieChartProps> = ({
   homePassSuccess,
   awayPassSuccess,
+  homeColor,
+  awayColor,
 }) => {
-  const teamColors = useSelector((state: RootState) => state.teamColor);
-  const HOME_COLOR = teamColors.homeColor;
-  const AWAY_COLOR = teamColors.awayColor;
+  const HOME_COLOR = homeColor;
+  const AWAY_COLOR = awayColor;
 
   const homeData = [
     { name: '성공', value: homePassSuccess },
