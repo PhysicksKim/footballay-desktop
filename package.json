@@ -15,7 +15,10 @@
   "scripts": {
     "start": "vite",
     "start:prod-api": "cross-env UNABLE_WEBSECURITY=1 dotenv -e .env.production -- vite --mode development",
-    "build": "tsc && vite build && electron-builder",
+    "build": "npm run build:prod",
+    "build:dev": "dotenv -e .env.dev -- npm run build:base",
+    "build:prod": "dotenv -e .env.prod -- npm run build:base",
+    "build:base": "tsc && vite build && electron-builder",
     "preview": "vite preview",
     "pretest": "vite build --mode=test",
     "test": "vitest run",
