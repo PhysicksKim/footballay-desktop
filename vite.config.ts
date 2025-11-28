@@ -1,4 +1,4 @@
-import { rmSync } from 'node:fs';
+import { rmSync, existsSync, readFileSync } from 'node:fs';
 import path, { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -14,6 +14,24 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+
+  // Load .env.secret if exists (dev server only)
+  if (isServe) {
+    const secretPath = resolve(__dirname, '.env.secret');
+    if (existsSync(secretPath)) {
+      const secretContent = readFileSync(secretPath, 'utf-8');
+      secretContent.split('\n').forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...valueParts] = trimmed.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            process.env[key.trim()] = value;
+          }
+        }
+      });
+    }
+  }
 
   return {
     resolve: {

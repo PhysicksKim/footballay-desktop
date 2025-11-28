@@ -1,6 +1,7 @@
 import axios, { AxiosHeaders } from 'axios';
 import { V1Urls } from '@app/constants/V1Urls';
 import { appEnv } from '@app/config/environment';
+import store from '@app/store/store';
 
 const sanitizeBaseUrl = (base: string) => {
   if (!base) return '';
@@ -29,6 +30,26 @@ httpClient.interceptors.request.use((config) => {
       ? config.headers
       : new AxiosHeaders(config.headers);
   headers.set('X-Footballay-Env', appEnv);
+
+  // Cloudflare Access headers for dev environment
+  if (appEnv === 'dev') {
+    // Priority 1: Use env vars (dev server with .env.secret)
+    let clientId = import.meta.env.VITE_CF_ACCESS_CLIENT_ID;
+    let clientSecret = import.meta.env.VITE_CF_ACCESS_CLIENT_SECRET;
+
+    // Priority 2: Use Redux state (build:dev with Settings tab input)
+    if (!clientId || !clientSecret) {
+      const state = store.getState();
+      clientId = state.cfAccess?.clientId;
+      clientSecret = state.cfAccess?.clientSecret;
+    }
+
+    if (clientId && clientSecret) {
+      headers.set('CF-Access-Client-Id', clientId);
+      headers.set('CF-Access-Client-Secret', clientSecret);
+    }
+  }
+
   config.headers = headers;
 
   return config;

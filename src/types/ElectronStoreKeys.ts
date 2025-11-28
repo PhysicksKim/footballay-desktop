@@ -7,6 +7,8 @@ export type AppWindowStoreKey =
   | 'preference.key'
   | 'preference.isValid'
   | 'settings.developerMode'
-  | 'settings.timezone';
+  | 'settings.timezone'
+  | 'settings.cfAccess.clientId'
+  | 'settings.cfAccess.clientSecret';
 
 export type ElectronStoreKeys = MatchliveStoreKey | AppWindowStoreKey;

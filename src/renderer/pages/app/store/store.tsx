@@ -10,8 +10,13 @@ import {
   loadV1Preferences,
   v1PreferencesReducer,
 } from './slices/settings/v1PreferencesSlice';
+import {
+  cfAccessReducer,
+  loadCfAccessCredentials,
+} from './slices/settings/cfAccessSlice';
 import eventFilterReducer from './slices/control/eventFilterSlice';
 import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
+import { appEnv } from '@app/config/environment';
 
 const store = configureStore({
   reducer: {
@@ -19,6 +24,7 @@ const store = configureStore({
     featureFlags: featureFlagsReducer,
     v1: v1Reducer,
     v1Preferences: v1PreferencesReducer,
+    cfAccess: cfAccessReducer,
     eventFilter: eventFilterReducer,
     fixtureLive: fixtureLiveReducer,
   },
@@ -30,6 +36,9 @@ const store = configureStore({
 const initDispatchActions = () => {
   store.dispatch(loadFeatureFlags());
   store.dispatch(loadV1Preferences());
+  if (appEnv === 'dev') {
+    store.dispatch(loadCfAccessCredentials());
+  }
 };
 initDispatchActions();
 

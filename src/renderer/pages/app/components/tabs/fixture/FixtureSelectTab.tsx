@@ -148,5 +148,5 @@ const Container = styled.div`
   box-sizing: border-box;
   color: white;
   overflow: hidden;
+  padding-bottom: 20px;
 `;
-

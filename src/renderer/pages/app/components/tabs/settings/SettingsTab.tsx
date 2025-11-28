@@ -8,13 +8,20 @@ import {
   selectTimezoneStatus,
   updateTimezonePreference,
 } from '@app/store/slices/settings/v1PreferencesSlice';
+import {
+  selectCfAccessClientId,
+  selectCfAccessClientSecret,
+  selectCfAccessStatus,
+  saveCfAccessCredentials,
+} from '@app/store/slices/settings/cfAccessSlice';
 import { appEnv, getEnvLabel } from '@app/config/environment';
 
 const statusLabelMap: Record<string, string> = {
   idle: '대기 중',
   loading: '불러오는 중',
-  saving: '저장 중',
-  error: '오류',
+  saving: '인증 확인 중',
+  success: '인증 성공',
+  error: '인증 실패',
 };
 
 const SettingsTab = () => {
@@ -23,13 +30,38 @@ const SettingsTab = () => {
   const timezoneStatus = useSelector(selectTimezoneStatus);
   const [timezoneInput, setTimezoneInput] = React.useState<string>(timezone);
 
+  const cfClientId = useSelector(selectCfAccessClientId);
+  const cfClientSecret = useSelector(selectCfAccessClientSecret);
+  const cfStatus = useSelector(selectCfAccessStatus);
+  const [cfClientIdInput, setCfClientIdInput] =
+    React.useState<string>(cfClientId);
+  const [cfClientSecretInput, setCfClientSecretInput] =
+    React.useState<string>(cfClientSecret);
+
   React.useEffect(() => {
     setTimezoneInput(timezone);
   }, [timezone]);
 
+  React.useEffect(() => {
+    setCfClientIdInput(cfClientId);
+  }, [cfClientId]);
+
+  React.useEffect(() => {
+    setCfClientSecretInput(cfClientSecret);
+  }, [cfClientSecret]);
+
   const handleTimezoneSave = () => {
     if (!timezoneInput.trim()) return;
     dispatch(updateTimezonePreference(timezoneInput));
+  };
+
+  const handleCfAccessSave = () => {
+    dispatch(
+      saveCfAccessCredentials({
+        clientId: cfClientIdInput.trim(),
+        clientSecret: cfClientSecretInput.trim(),
+      })
+    );
   };
 
   const envLabel = getEnvLabel();
@@ -55,6 +87,43 @@ const SettingsTab = () => {
           상태: {statusLabelMap[timezoneStatus] ?? timezoneStatus}
         </StatusText>
       </Section>
+
+      {appEnv === 'dev' && (
+        <Section>
+          <Title>Cloudflare Access (Dev 전용)</Title>
+          <Description>
+            개발 서버 접근을 위한 Cloudflare Zero Trust 서비스 토큰입니다. 빌드
+            버전에서만 설정이 필요하며, dev 서버 실행 시에는 .env.secret에서
+            자동으로 로드됩니다.
+          </Description>
+          <CfInputGroup>
+            <Label>Client ID</Label>
+            <CfInput
+              type="text"
+              value={cfClientIdInput}
+              onChange={(event) => setCfClientIdInput(event.target.value)}
+              placeholder="your-client-id.access"
+            />
+          </CfInputGroup>
+          <CfInputGroup>
+            <Label>Client Secret</Label>
+            <CfInput
+              type="password"
+              value={cfClientSecretInput}
+              onChange={(event) => setCfClientSecretInput(event.target.value)}
+              placeholder="your-secret-here"
+            />
+          </CfInputGroup>
+          <TimezoneInputRow>
+            <SaveButton type="button" onClick={handleCfAccessSave}>
+              저장
+            </SaveButton>
+          </TimezoneInputRow>
+          <StatusText $status={cfStatus}>
+            상태: {statusLabelMap[cfStatus] ?? cfStatus}
+          </StatusText>
+        </Section>
+      )}
 
       <Section>
         <Title>환경 정보</Title>
@@ -101,7 +170,11 @@ const Description = styled.p`
 
 const StatusText = styled.span<{ $status: string }>`
   font-size: 13px;
-  color: ${({ $status }) => ($status === 'error' ? '#ff7676' : '#b0b0b0')};
+  color: ${({ $status }) => {
+    if ($status === 'error') return '#ff7676';
+    if ($status === 'success') return '#76ff76';
+    return '#b0b0b0';
+  }};
 `;
 
 const TimezoneInputRow = styled.div`
@@ -114,6 +187,26 @@ const TimezoneInputRow = styled.div`
 const TimezoneInput = styled.input`
   flex: 1;
   min-width: 180px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  font-size: 14px;
+`;
+
+const CfInputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const Label = styled.label`
+  font-size: 13px;
+  color: #c9c9c9;
+`;
+
+const CfInput = styled.input`
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -158,4 +251,3 @@ const SaveButton = styled.button`
 `;
 
 export default SettingsTab;
-

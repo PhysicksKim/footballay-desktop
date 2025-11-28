@@ -39,3 +39,6 @@ yarn.lock
 .mock/**
 
 docs/**
+
+secret
+.env.secret
