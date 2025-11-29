@@ -65,6 +65,23 @@ export const setupCommonWindowIpcHandlers = () => {
     log.info(data);
   });
 
+  // Log IPC handlers for renderer processes
+  ipcMain.handle('log:info', async (event, ...args) => {
+    log.info(...args);
+  });
+
+  ipcMain.handle('log:warn', async (event, ...args) => {
+    log.warn(...args);
+  });
+
+  ipcMain.handle('log:error', async (event, ...args) => {
+    log.error(...args);
+  });
+
+  ipcMain.handle('log:debug', async (event, ...args) => {
+    log.debug(...args);
+  });
+
   // Provide app version to renderer on demand
   ipcMain.handle('get-app-version', async () => {
     try {

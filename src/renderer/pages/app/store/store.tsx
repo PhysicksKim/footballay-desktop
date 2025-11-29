@@ -17,6 +17,7 @@ import {
 import eventFilterReducer from './slices/control/eventFilterSlice';
 import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
 import { appEnv } from '@app/config/environment';
+import { injectStore } from '@app/v1/api/httpClient';
 
 const store = configureStore({
   reducer: {
@@ -29,6 +30,9 @@ const store = configureStore({
     fixtureLive: fixtureLiveReducer,
   },
 });
+
+// Inject store into httpClient to avoid circular dependency
+injectStore(store);
 
 /**
  * 초기에 로드 해야할 것들을 여기서 처리합니다.

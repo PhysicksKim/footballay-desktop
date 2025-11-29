@@ -72,8 +72,16 @@ const electronHandler = {
   },
 };
 
+const electronLog = {
+  info: (...args: any[]) => ipcRenderer.invoke('log:info', ...args),
+  warn: (...args: any[]) => ipcRenderer.invoke('log:warn', ...args),
+  error: (...args: any[]) => ipcRenderer.invoke('log:error', ...args),
+  debug: (...args: any[]) => ipcRenderer.invoke('log:debug', ...args),
+};
+
 contextBridge.exposeInMainWorld('electron', electronHandler);
 contextBridge.exposeInMainWorld('electronStore', electronStore);
+contextBridge.exposeInMainWorld('electronLog', electronLog);
 contextBridge.exposeInMainWorld('getVersion', async () => {
   try {
     const v = await ipcRenderer.invoke('get-app-version');
@@ -85,3 +93,4 @@ contextBridge.exposeInMainWorld('getVersion', async () => {
 
 export type ElectronHandler = typeof electronHandler;
 export type ElectronStore = typeof electronStore;
+export type ElectronLog = typeof electronLog;

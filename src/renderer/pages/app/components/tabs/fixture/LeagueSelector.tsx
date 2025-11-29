@@ -7,12 +7,16 @@ interface LeagueSelectorProps {
   leagues: AvailableLeagueResponse[];
   selectedLeagueUid?: string;
   onSelectLeague: (leagueUid: string) => void;
+  onRefresh?: () => void;
+  loading?: boolean;
 }
 
 const LeagueSelector = ({
   leagues,
   selectedLeagueUid,
   onSelectLeague,
+  onRefresh,
+  loading,
 }: LeagueSelectorProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
@@ -51,13 +55,13 @@ const LeagueSelector = ({
 
   useEffect(() => {
     if (!emblaApi) return;
-    
+
     const handleResize = () => {
       emblaApi.reInit();
     };
 
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -75,7 +79,18 @@ const LeagueSelector = ({
 
   return (
     <LeagueBox>
-      <LeagueBoxTitle>리그</LeagueBoxTitle>
+      <LeagueBoxTitleRow>
+        <LeagueBoxTitle>리그</LeagueBoxTitle>
+        {onRefresh && (
+          <RefreshButton
+            onClick={onRefresh}
+            disabled={loading}
+            title="리그 목록 새로고침"
+          >
+            ↻
+          </RefreshButton>
+        )}
+      </LeagueBoxTitleRow>
       <EmblaViewport ref={emblaRef}>
         <EmblaContainer>
           {leagues.map((league) => (
@@ -126,12 +141,58 @@ const LeagueBox = styled.div`
   padding: 10px 40px 10px 30px;
 `;
 
+const LeagueBoxTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 10px;
+`;
+
 const LeagueBoxTitle = styled.div`
   font-size: 24px;
   font-weight: bold;
   margin-top: 5px;
-  margin-left: 10px;
   color: white;
+`;
+
+const RefreshButton = styled.button`
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    transform: rotate(180deg);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 const EmblaViewport = styled.div`
@@ -211,4 +272,3 @@ const NavButton = styled.button<{ $direction: 'prev' | 'next' }>`
   ${({ $direction }) =>
     $direction === 'prev' ? 'left: -10px;' : 'right: 0px;'}
 `;
-

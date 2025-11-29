@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { parseISO, format } from 'date-fns';
 
 import { RootState, useAppDispatch } from '@app/store/store';
-import { loadV1Leagues } from '@app/v1/store/leaguesSlice';
+import { loadV1Leagues, resetLeaguesStatus } from '@app/v1/store/leaguesSlice';
+import { appEnv } from '@app/config/environment';
 import {
   clearFixtures,
   loadV1Fixtures,
@@ -35,6 +36,9 @@ const FixtureSelectTab = () => {
   const selectedLeague = useSelector(
     (state: RootState) => state.v1.fixtures.selectedLeagueUid
   );
+  const cfAccessStatus = useSelector(
+    (state: RootState) => state.cfAccess.status
+  );
 
   const timezonePreference = useSelector(selectTimezone);
   const [selectedDate, setSelectedDate] = useState<string>(() =>
@@ -48,10 +52,13 @@ const FixtureSelectTab = () => {
   const dataControllerRef = useRef<ReturnType<typeof createV1DataController>>();
 
   useEffect(() => {
-    if (leaguesStatus === 'idle') {
+    // dev 환경에서는 CF Access 토큰 로드 완료 후에만 리그 조회
+    const canLoadLeagues = appEnv !== 'dev' || cfAccessStatus !== 'loading';
+
+    if (leaguesStatus === 'idle' && canLoadLeagues) {
       dispatch(loadV1Leagues());
     }
-  }, [leaguesStatus, dispatch]);
+  }, [leaguesStatus, cfAccessStatus, dispatch]);
 
   useEffect(() => {
     setRequestTimezone(timezonePreference || DEFAULT_TIMEZONE);
@@ -109,6 +116,11 @@ const FixtureSelectTab = () => {
     requestFixtures(leagueUid, selectedDate, 'nearest');
   };
 
+  const handleRefreshLeagues = () => {
+    dispatch(resetLeaguesStatus());
+    dispatch(loadV1Leagues());
+  };
+
   /**
    * 날짜 변경 요청을 처리합니다.
    * 로컬 상태를 먼저 업데이트하지 않고 리덕스 액션만 디스패치하여
@@ -125,6 +137,8 @@ const FixtureSelectTab = () => {
         leagues={leagues}
         selectedLeagueUid={selectedLeague}
         onSelectLeague={handleSelectLeague}
+        onRefresh={handleRefreshLeagues}
+        loading={leaguesStatus === 'loading'}
       />
       <FixtureList
         fixtures={fixtures}

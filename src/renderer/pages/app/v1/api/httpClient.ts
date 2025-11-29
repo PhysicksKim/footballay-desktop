@@ -1,7 +1,14 @@
 import axios, { AxiosHeaders } from 'axios';
 import { V1Urls } from '@app/constants/V1Urls';
 import { appEnv } from '@app/config/environment';
-import store from '@app/store/store';
+
+// Store injection to avoid circular dependency
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _store: any = null;
+
+export const injectStore = (store: any) => {
+  _store = store;
+};
 
 const sanitizeBaseUrl = (base: string) => {
   if (!base) return '';
@@ -39,9 +46,11 @@ httpClient.interceptors.request.use((config) => {
 
     // Priority 2: Use Redux state (build:dev with Settings tab input)
     if (!clientId || !clientSecret) {
-      const state = store.getState();
-      clientId = state.cfAccess?.clientId;
-      clientSecret = state.cfAccess?.clientSecret;
+      if (_store) {
+        const state = _store.getState();
+        clientId = state.cfAccess?.clientId;
+        clientSecret = state.cfAccess?.clientSecret;
+      }
     }
 
     if (clientId && clientSecret) {
@@ -58,7 +67,7 @@ httpClient.interceptors.request.use((config) => {
 httpClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('V1 API error', error);
+    console.error('V1 API error:', error?.message ?? error);
     return Promise.reject(error);
   }
 );

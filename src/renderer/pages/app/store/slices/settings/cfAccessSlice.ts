@@ -34,7 +34,7 @@ export const loadCfAccessCredentials = createAsyncThunk(
         clientSecret: typeof clientSecret === 'string' ? clientSecret : '',
       };
     } catch (error) {
-      console.error('Failed to load CF Access credentials', error);
+      console.error('Failed to load CF Access credentials:', error);
       return { clientId: '', clientSecret: '' };
     }
   }
@@ -46,6 +46,7 @@ export const saveCfAccessCredentials = createAsyncThunk(
     // 1. 입력된 credentials로 health 엔드포인트 검증
     // dev 서버: https://dev.footballay.com/health (/api prefix 없음)
     const healthUrl = `${V1Urls.domainUrl}/health`;
+
     const response = await axios.get(healthUrl, {
       headers: {
         'CF-Access-Client-Id': credentials.clientId,

@@ -1,4 +1,4 @@
-import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from 'electron';
+import { ipcMain } from 'electron';
 import Store from 'electron-store';
 
 export default class CustomElectronStoreIpc {

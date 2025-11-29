@@ -15,18 +15,20 @@ const initialState: V1LeaguesState = {
   status: 'idle',
 };
 
-export const loadV1Leagues = createAsyncThunk(
-  'v1/leagues/load',
-  async () => {
-    const leagues = await fetchAvailableLeagues();
-    return leagues;
-  }
-);
+export const loadV1Leagues = createAsyncThunk('v1/leagues/load', async () => {
+  const leagues = await fetchAvailableLeagues();
+  return leagues;
+});
 
 const v1LeaguesSlice = createSlice({
   name: 'v1/leagues',
   initialState,
-  reducers: {},
+  reducers: {
+    resetLeaguesStatus: (state) => {
+      state.status = 'idle';
+      state.error = undefined;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadV1Leagues.pending, (state) => {
@@ -44,5 +46,5 @@ const v1LeaguesSlice = createSlice({
   },
 });
 
+export const { resetLeaguesStatus } = v1LeaguesSlice.actions;
 export const v1LeaguesReducer = v1LeaguesSlice.reducer;
-

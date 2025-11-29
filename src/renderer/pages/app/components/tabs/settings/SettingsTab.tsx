@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { useSelector } from 'react-redux';
-
 import { RootState, useAppDispatch } from '@app/store/store';
 import {
   selectTimezone,
@@ -15,6 +14,7 @@ import {
   saveCfAccessCredentials,
 } from '@app/store/slices/settings/cfAccessSlice';
 import { appEnv, getEnvLabel } from '@app/config/environment';
+import { scrollbarStyle } from '@app/components/common/scrollbarStyle';
 
 const statusLabelMap: Record<string, string> = {
   idle: '대기 중',
@@ -146,6 +146,9 @@ const Container = styled.div`
   gap: 32px;
   padding: 30px;
   color: white;
+  overflow-y: auto;
+
+  ${scrollbarStyle}
 `;
 
 const Section = styled.section`
