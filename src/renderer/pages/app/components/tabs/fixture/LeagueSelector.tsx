@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import useEmblaCarousel from 'embla-carousel-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronLeft,
+  faChevronRight,
+  faRotateRight,
+} from '@fortawesome/free-solid-svg-icons';
 import { AvailableLeagueResponse } from '@app/v1/types/api';
 
 interface LeagueSelectorProps {
@@ -87,43 +93,45 @@ const LeagueSelector = ({
             disabled={loading}
             title="리그 목록 새로고침"
           >
-            ↻
+            <FontAwesomeIcon icon={faRotateRight} spin={loading} />
           </RefreshButton>
         )}
       </LeagueBoxTitleRow>
-      <EmblaViewport ref={emblaRef}>
-        <EmblaContainer>
-          {leagues.map((league) => (
-            <LeagueCard
-              key={league.uid}
-              $selected={selectedLeagueUid === league.uid}
-              onClick={() => handleLeagueClick(league.uid)}
-            >
-              <LeagueLogo
-                draggable="false"
-                src={league.logo}
-                alt={league.name}
-              />
-              <LeagueName>{league.nameKo ?? league.name}</LeagueName>
-            </LeagueCard>
-          ))}
-        </EmblaContainer>
-      </EmblaViewport>
+      <CarouselWrapper>
+        <EmblaViewport ref={emblaRef}>
+          <EmblaContainer>
+            {leagues.map((league) => (
+              <LeagueCard
+                key={league.uid}
+                $selected={selectedLeagueUid === league.uid}
+                onClick={() => handleLeagueClick(league.uid)}
+              >
+                <LeagueLogo
+                  draggable="false"
+                  src={league.logo}
+                  alt={league.name}
+                />
+                <LeagueName>{league.nameKo ?? league.name}</LeagueName>
+              </LeagueCard>
+            ))}
+          </EmblaContainer>
+        </EmblaViewport>
 
-      <NavButton
-        $direction="prev"
-        onClick={scrollPrev}
-        disabled={!prevBtnEnabled}
-      >
-        {'<'}
-      </NavButton>
-      <NavButton
-        $direction="next"
-        onClick={scrollNext}
-        disabled={!nextBtnEnabled}
-      >
-        {'>'}
-      </NavButton>
+        <NavButton
+          $direction="prev"
+          onClick={scrollPrev}
+          disabled={!prevBtnEnabled}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </NavButton>
+        <NavButton
+          $direction="next"
+          onClick={scrollNext}
+          disabled={!nextBtnEnabled}
+        >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </NavButton>
+      </CarouselWrapper>
     </LeagueBox>
   );
 };
@@ -156,43 +164,40 @@ const LeagueBoxTitle = styled.div`
 `;
 
 const RefreshButton = styled.button`
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border: none;
-  color: white;
-  font-size: 18px;
-  width: 32px;
-  height: 32px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  margin: 0;
+  padding: 0;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background-color 0.15s,
-    transform 0.15s;
+  transition: all 0.2s ease;
+  margin-top: 8px;
 
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
   }
 
   &:active:not(:disabled) {
-    transform: rotate(180deg);
+    transform: scale(0.95);
   }
 
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    animation: spin 1s linear infinite;
   }
+`;
 
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+const CarouselWrapper = styled.div`
+  position: relative;
+  width: 100%;
 `;
 
 const EmblaViewport = styled.div`
@@ -220,17 +225,20 @@ const LeagueCard = styled.div<{ $selected: boolean }>`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.13s;
+  transition: all 0.2s ease;
   background-color: ${({ $selected }) =>
-    $selected ? 'rgba(151, 176, 245, 0.35)' : 'rgba(255, 255, 255, 0.15)'};
+    $selected ? 'rgba(151, 176, 245, 0.35)' : 'rgba(255, 255, 255, 0.1)'};
+  border: 1px solid
+    ${({ $selected }) =>
+      $selected ? 'rgba(151, 176, 245, 0.5)' : 'transparent'};
 
   &:hover {
     background-color: ${({ $selected }) =>
-      $selected ? 'rgba(124, 156, 204, 0.20)' : 'rgba(255, 255, 255, 0.20)'};
+      $selected ? 'rgba(124, 156, 204, 0.3)' : 'rgba(255, 255, 255, 0.2)'};
   }
 
   box-shadow: ${({ $selected }) =>
-    $selected ? 'inset 0 0 0 3px rgba(59, 119, 209, 0.5)' : ''};
+    $selected ? '0 4px 12px rgba(59, 119, 209, 0.3)' : 'none'};
 `;
 
 const LeagueLogo = styled.img`
@@ -239,6 +247,7 @@ const LeagueLogo = styled.img`
   object-fit: contain;
   margin-bottom: 10px;
   margin-top: 5px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 `;
 
 const LeagueName = styled.div`
@@ -249,26 +258,40 @@ const LeagueName = styled.div`
   text-overflow: ellipsis;
   max-width: 100%;
   padding: 0 5px;
+  font-weight: 500;
 `;
 
 const NavButton = styled.button<{ $direction: 'prev' | 'next' }>`
   position: absolute;
-  top: 60%;
+  top: 50%;
   transform: translateY(-50%);
-  ${({ $direction }) => ($direction === 'prev' ? 'left: 0;' : 'right: 0;')}
-  background-color: rgba(178, 184, 190, 0.274);
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  z-index: 1;
+  ${({ $direction }) =>
+    $direction === 'prev' ? 'left: -15px;' : 'right: -5px;'}
+
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
 
-  &:disabled {
-    opacity: 0.12;
-    cursor: not-allowed;
+  background-color: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: white;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(50, 50, 50, 0.8);
   }
 
-  ${({ $direction }) =>
-    $direction === 'prev' ? 'left: -10px;' : 'right: 0px;'}
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
 `;
