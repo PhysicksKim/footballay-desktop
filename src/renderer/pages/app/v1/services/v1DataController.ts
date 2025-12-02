@@ -20,7 +20,10 @@ export class V1DataController {
     this.intervalMs = intervalMs;
   }
 
-  static getInstance(dispatch: AppDispatch, intervalMs?: number): V1DataController {
+  static getInstance(
+    dispatch: AppDispatch,
+    intervalMs?: number
+  ): V1DataController {
     if (!V1DataController.instance) {
       V1DataController.instance = new V1DataController(dispatch, intervalMs);
     } else {
@@ -43,7 +46,7 @@ export class V1DataController {
   setFixtureUid(fixtureUid?: string) {
     // Stop previous polling before switching fixtures
     this.stop();
-    
+
     this.fixtureUid = fixtureUid;
     this.dispatch(setTargetFixture(fixtureUid));
     if (!fixtureUid) {
@@ -73,6 +76,7 @@ export class V1DataController {
   private pollLiveData() {
     if (!this.fixtureUid) return;
     this.dispatch(loadV1FixtureLiveStatus(this.fixtureUid));
+    this.dispatch(loadV1FixtureLineup(this.fixtureUid));
     this.dispatch(loadV1FixtureEvents(this.fixtureUid));
     this.dispatch(loadV1FixtureStatistics(this.fixtureUid));
   }
