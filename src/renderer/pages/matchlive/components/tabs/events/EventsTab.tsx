@@ -20,6 +20,9 @@ const translateEventType = (type: string, detail?: string): string => {
 
   switch (typeLowerCase) {
     case 'goal':
+      if (detailLowerCase.includes('own')) {
+        return '자책골';
+      }
       return '골';
     case 'card':
       if (detailLowerCase.includes('yellow')) {
@@ -85,6 +88,9 @@ const getEventColor = (type: string, detail?: string) => {
     return '#fbbf24';
   }
   if (type.toLowerCase() === 'goal') {
+    if (detail?.toLowerCase().includes('own')) {
+      return '#961d1d';
+    }
     return '#10b981';
   }
   return '#666';

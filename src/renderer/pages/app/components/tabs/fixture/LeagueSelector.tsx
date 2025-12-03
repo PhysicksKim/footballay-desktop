@@ -100,20 +100,22 @@ const LeagueSelector = ({
       <CarouselWrapper>
         <EmblaViewport ref={emblaRef}>
           <EmblaContainer>
-            {leagues.map((league) => (
-              <LeagueCard
-                key={league.uid}
-                $selected={selectedLeagueUid === league.uid}
-                onClick={() => handleLeagueClick(league.uid)}
-              >
-                <LeagueLogo
-                  draggable="false"
-                  src={league.logo}
-                  alt={league.name}
-                />
-                <LeagueName>{league.nameKo ?? league.name}</LeagueName>
-              </LeagueCard>
-            ))}
+            {[...leagues]
+              .sort((a, b) => a.uid.localeCompare(b.uid))
+              .map((league) => (
+                <LeagueCard
+                  key={league.uid}
+                  $selected={selectedLeagueUid === league.uid}
+                  onClick={() => handleLeagueClick(league.uid)}
+                >
+                  <LeagueLogo
+                    draggable="false"
+                    src={league.logo}
+                    alt={league.name}
+                  />
+                  <LeagueName>{league.nameKo ?? league.name}</LeagueName>
+                </LeagueCard>
+              ))}
           </EmblaContainer>
         </EmblaViewport>
 
