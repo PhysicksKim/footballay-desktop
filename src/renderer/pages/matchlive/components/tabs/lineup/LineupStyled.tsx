@@ -5,8 +5,7 @@ import React from 'react';
 import { PlayerStatisticsList, ProfileSection } from './PlayerStatistics';
 import getRatingColor from './RatingUtils';
 import { ViewPlayer } from './types';
-
-const GlobalBorderRadiusPx = 30;
+import { GlobalBorderRadiusPx } from '@matchlive/components/common/StyleConstant';
 
 const commonBoxShadow = css`
   box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.308);
@@ -26,6 +25,7 @@ export const LineupTabContainer = styled.div<{
   align-items: center;
   padding-top: 12px;
   padding-bottom: 5px;
+  border-radius: ${GlobalBorderRadiusPx}px;
   /* -webkit-app-region: drag;
   pointer-events: auto;
   cursor: auto; */

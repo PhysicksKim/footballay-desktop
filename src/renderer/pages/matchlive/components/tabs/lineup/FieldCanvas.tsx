@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { GlobalBorderRadiusPx } from '@matchlive/components/common/StyleConstant';
 import styled from 'styled-components';
-
-// Copied from legacy consts.ts
-const GlobalBorderRadiusPx = 30;
 
 const FootballFieldCanvasStyle = styled.canvas`
   width: 100%;

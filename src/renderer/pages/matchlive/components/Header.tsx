@@ -102,12 +102,7 @@ const HeaderContainer = styled.div<{ $isAbsolute: boolean }>`
   left: ${(props) => (props.$isAbsolute ? '0' : 'auto')};
   right: ${(props) => (props.$isAbsolute ? '0' : 'auto')};
   padding: 16px clamp(12px, 4vw, 24px) 12px;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.4) 100%
-  );
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); */
   z-index: ${(props) => (props.$isAbsolute ? '100' : '1')};
   animation: ${fadeIn} 0.3s ease forwards;
   opacity: 0;
@@ -115,6 +110,7 @@ const HeaderContainer = styled.div<{ $isAbsolute: boolean }>`
   flex-direction: column;
   align-items: center;
   min-width: 0; /* 컨테이너 자체도 줄어들 수 있게 */
+  background: rgba(0, 0, 0, 0.4);
 
   -webkit-app-region: drag;
   pointer-events: none;
@@ -244,4 +240,3 @@ const TabButton = styled.button<{ $active: boolean }>`
 `;
 
 export default Header;
-

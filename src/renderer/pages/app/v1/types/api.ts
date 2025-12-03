@@ -115,17 +115,51 @@ export interface FixtureEventsResponse {
 }
 
 export interface PlayerStatistics {
+  // 기본 정보
   minutesPlayed?: number;
   position?: string;
   rating?: string;
   captain?: boolean;
   substitute?: boolean;
+
+  // 슈팅/골
   shotsTotal?: number;
   shotsOn?: number;
   goals?: number;
+  goalsConceded?: number;
   assists?: number;
+  saves?: number;
+
+  // 패스
+  passesTotal?: number;
+  passesKey?: number;
+  passesAccuracy?: number;
+
+  // 수비
+  tacklesTotal?: number;
+  interceptions?: number;
+
+  // 듀얼/드리블
+  duelsTotal?: number;
+  duelsWon?: number;
+  dribblesAttempts?: number;
+  dribblesSuccess?: number;
+
+  // 파울/카드
+  foulsCommitted?: number;
+  foulsDrawn?: number;
   yellowCards?: number;
   redCards?: number;
+
+  // 페널티
+  penaltiesScored?: number;
+  penaltiesMissed?: number;
+  penaltiesSaved?: number;
+}
+
+export interface XgEntry {
+  elapsed: number;
+  xg: string;
 }
 
 export interface TeamStatistics {
@@ -144,6 +178,9 @@ export interface TeamStatistics {
   goalkeeperSaves?: number;
   totalPasses?: number;
   passesAccurate?: number;
+  passesAccuracyPercentage?: number;
+  goalsPrevented?: number;
+  xg?: XgEntry[];
 }
 
 export interface PlayerWithStatistics {

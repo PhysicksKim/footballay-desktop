@@ -86,22 +86,107 @@ const calculatePassesAccuracyPercentString = (
 };
 
 /**
- * V1 API PlayerStatistics has limited fields compared to legacy API.
- * Available fields: minutesPlayed, position, rating, captain, substitute,
- * shotsTotal, shotsOn, goals, assists, yellowCards, redCards
- *
- * Missing fields that legacy had: passesTotal, passesAccuracy, dribbles,
- * fouls, tackles, duels, interceptions, etc.
- *
- * These detailed stats may be available in TeamStatistics, but are not
- * provided at the individual player level in V1 API.
+ * 선수 통계를 그룹화하여 배열로 반환합니다.
+ * 주요 스탯을 상단에, 유사한 스탯을 근처에 배치합니다.
+ * 골과 어시스트는 ProfileSection에서 이미 표시되므로 제외합니다.
  */
 const statisticsArray = (stats: PlayerStatistics, position: PositionString) => {
-  return [
+  const isGoalkeeper = position === 'G';
+
+  // 0 이상인 값만 필터링하는 헬퍼 함수
+  const filterNonZero = (statItems: { data: number; name: string }[]) => {
+    return statItems.filter((item) => item.data > 0);
+  };
+
+  if (isGoalkeeper) {
+    // 골키퍼 우선 표시 항목 (항상 표시)
+    const goalkeeperPrimaryStats = [
+      { data: stats.saves || 0, name: '세이브' },
+      { data: stats.goalsConceded || 0, name: '실점' },
+      { data: stats.passesTotal || 0, name: '패스' },
+      { data: stats.passesAccuracy || 0, name: '패스성공' },
+      { data: stats.passesKey || 0, name: '슈팅으로 이어진 패스' },
+      { data: stats.duelsTotal || 0, name: '볼 경합' },
+      { data: stats.duelsWon || 0, name: '볼 경합 승리' },
+      { data: stats.yellowCards || 0, name: '옐로카드' },
+      { data: stats.foulsCommitted || 0, name: '파울' },
+      { data: stats.foulsDrawn || 0, name: '당한 파울' },
+    ];
+
+    // 골키퍼 이외 항목 (0 이상인 경우에만 표시)
+    const goalkeeperSecondaryStats = filterNonZero([
+      { data: stats.shotsTotal || 0, name: '슈팅' },
+      { data: stats.shotsOn || 0, name: '유효슈팅' },
+      { data: stats.tacklesTotal || 0, name: '태클' },
+      { data: stats.interceptions || 0, name: '인터셉트' },
+      { data: stats.dribblesAttempts || 0, name: '드리블시도' },
+      { data: stats.dribblesSuccess || 0, name: '드리블성공' },
+      { data: stats.redCards || 0, name: '레드카드' },
+      { data: stats.penaltiesSaved || 0, name: 'PK세이브' },
+    ]);
+
+    return [...goalkeeperPrimaryStats, ...goalkeeperSecondaryStats];
+  }
+
+  // 비골키퍼 스탯 (골과 어시스트 제외)
+  // 슈팅 관련
+  const shootingStats = [
     { data: stats.shotsTotal || 0, name: '슈팅' },
     { data: stats.shotsOn || 0, name: '유효슈팅' },
-    { data: stats.goals || 0, name: '골' },
-    { data: stats.assists || 0, name: '어시스트' },
+  ];
+
+  // 패스 관련
+  const passStats = [
+    { data: stats.passesTotal || 0, name: '패스' },
+    { data: stats.passesAccuracy || 0, name: '패스성공' },
+    { data: stats.passesKey || 0, name: '슈팅으로 이어진 패스' },
+  ];
+
+  // 수비 관련
+  const defenseStats = [
+    { data: stats.tacklesTotal || 0, name: '태클' },
+    { data: stats.interceptions || 0, name: '인터셉트' },
+  ];
+
+  // 듀얼/드리블 관련
+  const duelDribbleStats = [
+    { data: stats.duelsTotal || 0, name: '볼 경합' },
+    { data: stats.duelsWon || 0, name: '볼 경합 승리' },
+    { data: stats.dribblesAttempts || 0, name: '드리블시도' },
+    { data: stats.dribblesSuccess || 0, name: '드리블성공' },
+  ];
+
+  // 파울 관련
+  const foulStats = [
+    { data: stats.foulsCommitted || 0, name: '파울' },
+    { data: stats.foulsDrawn || 0, name: '당한 파울' },
+  ];
+
+  // 카드 관련
+  const cardStats = [
+    { data: stats.yellowCards || 0, name: '옐로카드' },
+    { data: stats.redCards || 0, name: '레드카드' },
+  ];
+
+  // 페널티 (0 이상인 경우에만 표시)
+  const penaltyStats =
+    stats.penaltiesScored !== undefined &&
+    stats.penaltiesMissed !== undefined &&
+    (stats.penaltiesScored > 0 || stats.penaltiesMissed > 0)
+      ? [
+          { data: stats.penaltiesScored || 0, name: 'PK득점' },
+          { data: stats.penaltiesMissed || 0, name: 'PK실축' },
+        ]
+      : [];
+
+  return [
+    ...shootingStats,
+    ...passStats,
+    ...defenseStats,
+    ...duelDribbleStats,
+    ...foulStats,
+    ...cardStats,
+    ...penaltyStats,
   ];
 };
 

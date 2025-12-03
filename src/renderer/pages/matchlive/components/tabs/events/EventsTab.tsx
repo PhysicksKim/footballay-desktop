@@ -189,8 +189,6 @@ const Container = styled.div<{ $isActive: boolean }>`
   overflow-x: hidden;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
   transition: opacity 0.3s ease;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
   color: #fff;
 
   &::-webkit-scrollbar {

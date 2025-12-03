@@ -2,12 +2,25 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { RootState } from '@matchlive/store/store';
+import { XgEntry } from '@src/renderer/pages/app/v1/types/api';
 import PassSuccessPieChart from './PassSuccessPieChart';
 import {
   selectHomeColor,
   selectAwayColor,
   selectDisplayColor,
 } from '@matchlive/utils/ColorUtils';
+
+/**
+ * XG 배열에서 가장 큰 elapsed 값의 xg를 반환합니다.
+ * 숫자로 변환하여 반환합니다.
+ */
+const getLatestXg = (xgArray?: XgEntry[]): number | undefined => {
+  if (!xgArray || xgArray.length === 0) return undefined;
+  const latestEntry = xgArray.reduce((max, entry) =>
+    entry.elapsed > max.elapsed ? entry : max
+  );
+  return parseFloat(latestEntry.xg);
+};
 
 interface StatsTabProps {
   isActive: boolean;
@@ -18,6 +31,7 @@ interface StatRowProps {
   homeValue?: number;
   awayValue?: number;
   isPercentage?: boolean;
+  isDecimal?: boolean;
   homeColor: string;
   awayColor: string;
 }
@@ -27,6 +41,7 @@ const StatRow = ({
   homeValue,
   awayValue,
   isPercentage,
+  isDecimal,
   homeColor,
   awayColor,
 }: StatRowProps) => {
@@ -36,9 +51,15 @@ const StatRow = ({
   const homePercent = total > 0 ? (home / total) * 100 : 50;
   const awayPercent = total > 0 ? (away / total) * 100 : 50;
 
+  const formatValue = (value: number) => {
+    if (isPercentage) return `${value}%`;
+    if (isDecimal) return value.toFixed(2);
+    return value;
+  };
+
   return (
     <StatRowContainer>
-      <StatValue>{isPercentage ? `${home}%` : home}</StatValue>
+      <StatValue>{formatValue(home)}</StatValue>
       <StatBarSection>
         <StatLabel>{label}</StatLabel>
         <StatBar>
@@ -46,7 +67,7 @@ const StatRow = ({
           <StatBarFill $percent={awayPercent} $color={awayColor} />
         </StatBar>
       </StatBarSection>
-      <StatValue>{isPercentage ? `${away}%` : away}</StatValue>
+      <StatValue>{formatValue(away)}</StatValue>
     </StatRowContainer>
   );
 };
@@ -92,19 +113,26 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
   );
 
   // Calculate pass accuracy percentage for pie chart
+  // API에서 passesAccuracyPercentage를 제공하면 사용하고, 아니면 계산
   const homePassAccuracy =
-    homeStats.totalPasses && homeStats.totalPasses > 0
+    homeStats.passesAccuracyPercentage ??
+    (homeStats.totalPasses && homeStats.totalPasses > 0
       ? Math.round(
           ((homeStats.passesAccurate || 0) / homeStats.totalPasses) * 100
         )
-      : 0;
+      : 0);
 
   const awayPassAccuracy =
-    awayStats.totalPasses && awayStats.totalPasses > 0
+    awayStats.passesAccuracyPercentage ??
+    (awayStats.totalPasses && awayStats.totalPasses > 0
       ? Math.round(
           ((awayStats.passesAccurate || 0) / awayStats.totalPasses) * 100
         )
-      : 0;
+      : 0);
+
+  // XG 값 계산 (가장 큰 elapsed의 xg)
+  const homeXg = getLatestXg(homeStats.xg);
+  const awayXg = getLatestXg(awayStats.xg);
 
   return (
     <Container $isActive={isActive}>
@@ -149,6 +177,16 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
             homeColor={homeColor}
             awayColor={awayColor}
           />
+          {(homeXg !== undefined || awayXg !== undefined) && (
+            <StatRow
+              label="xG"
+              homeValue={homeXg}
+              awayValue={awayXg}
+              isDecimal
+              homeColor={homeColor}
+              awayColor={awayColor}
+            />
+          )}
           <StatRow
             label="전체 슈팅"
             homeValue={homeStats.totalShots}
@@ -252,6 +290,24 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
             homeColor={homeColor}
             awayColor={awayColor}
           />
+          <StatRow
+            label="패스 성공률"
+            homeValue={homePassAccuracy}
+            awayValue={awayPassAccuracy}
+            isPercentage
+            homeColor={homeColor}
+            awayColor={awayColor}
+          />
+          {(homeStats.goalsPrevented !== undefined ||
+            awayStats.goalsPrevented !== undefined) && (
+            <StatRow
+              label="골 방지"
+              homeValue={homeStats.goalsPrevented}
+              awayValue={awayStats.goalsPrevented}
+              homeColor={homeColor}
+              awayColor={awayColor}
+            />
+          )}
         </StatsSection>
       </StatsContent>
     </Container>
@@ -268,8 +324,6 @@ const Container = styled.div<{ $isActive: boolean }>`
   overflow-x: hidden;
   opacity: ${(props) => (props.$isActive ? 1 : 0)};
   transition: opacity 0.3s ease;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
   color: #fff;
 
   &::-webkit-scrollbar {

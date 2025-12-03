@@ -5,6 +5,7 @@ import Header from './Header';
 import LineupTab from './tabs/lineup/LineupTab';
 import StatsTab from './tabs/stats/StatsTab';
 import EventsTab from './tabs/events/EventsTab';
+import { GlobalBorderRadiusPx } from './common/StyleConstant';
 
 export type ActiveTab = 'lineup' | 'stats' | 'events';
 
@@ -85,6 +86,7 @@ const Layout = () => {
           >
             <EventsTab isActive={activeTab === 'events'} />
           </TabPane>
+          <BottomShadow />
         </TabsContainer>
       ) : null}
     </LayoutContainer>
@@ -98,6 +100,8 @@ const LayoutContainer = styled.div`
   width: 100%;
   height: 100%;
   background: transparent;
+  border-radius: ${GlobalBorderRadiusPx}px;
+  overflow: hidden;
 `;
 
 const LineupBackground = styled.div<{ $isBlurred: boolean }>`
@@ -106,7 +110,9 @@ const LineupBackground = styled.div<{ $isBlurred: boolean }>`
   left: 0;
   width: 100%;
   height: 100%;
-  filter: ${(props) => (props.$isBlurred ? 'blur(8px)' : 'none')};
+  border-radius: ${GlobalBorderRadiusPx}px;
+  overflow: hidden;
+  filter: ${(props) => (props.$isBlurred ? 'blur(8px)' : 'blur(0px)')};
   transition: filter 0.3s ease;
 `;
 
@@ -123,13 +129,21 @@ const TabPane = styled.div<{ $active: boolean; $isActive: boolean }>`
   grid-row: 2;
   grid-column: 1;
   opacity: ${(props) => (props.$active ? 1 : 0)};
-  transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
   min-height: 0;
   visibility: ${({ $isActive }) => ($isActive ? 'visible' : 'hidden')};
   pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'none')};
+  background: rgba(0, 0, 0, 0.4);
+`;
+
+const BottomShadow = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
 `;
 
 export default Layout;
-
