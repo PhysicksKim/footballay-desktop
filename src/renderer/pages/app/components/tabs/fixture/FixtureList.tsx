@@ -33,11 +33,50 @@ const FixtureList = ({
 }: FixtureListProps) => {
   // 내부적으로 표시할 날짜 상태 관리
   const [internalDate, setInternalDate] = React.useState(selectedDate);
+  const listBoxRef = React.useRef<HTMLDivElement>(null);
+  const previousScrollTopRef = React.useRef<number>(0);
+  const previousFixturesLengthRef = React.useRef<number>(0);
 
   // selectedDate prop이 변경되면 내부 상태 동기화
   React.useEffect(() => {
     setInternalDate(selectedDate);
+    // 날짜가 변경되면 스크롤 위치 초기화
+    previousScrollTopRef.current = 0;
+    previousFixturesLengthRef.current = 0;
   }, [selectedDate]);
+
+  // 스크롤 위치 저장 (사용자가 스크롤할 때)
+  const handleScroll = React.useCallback(() => {
+    if (listBoxRef.current) {
+      previousScrollTopRef.current = listBoxRef.current.scrollTop;
+    }
+  }, []);
+
+  // fixtures 업데이트 시 스크롤 위치 복원 (polling으로 인한 업데이트인 경우)
+  React.useEffect(() => {
+    if (!loading && listBoxRef.current && fixtures.length > 0) {
+      // 날짜나 리그 변경이 아닌 경우 (fixtures 개수가 비슷하고 loading이 false)
+      // 즉, polling으로 인한 업데이트로 판단
+      const isPollingUpdate =
+        previousFixturesLengthRef.current > 0 &&
+        Math.abs(fixtures.length - previousFixturesLengthRef.current) <= 2;
+
+      if (isPollingUpdate && previousScrollTopRef.current > 0) {
+        // requestAnimationFrame으로 DOM 업데이트 후 스크롤 복원
+        requestAnimationFrame(() => {
+          if (listBoxRef.current) {
+            listBoxRef.current.scrollTop = previousScrollTopRef.current;
+          }
+        });
+      }
+
+      previousFixturesLengthRef.current = fixtures.length;
+    } else if (loading || fixtures.length === 0) {
+      // 로딩 중이거나 경기가 없으면 스크롤 위치 초기화
+      previousScrollTopRef.current = 0;
+      previousFixturesLengthRef.current = 0;
+    }
+  }, [fixtures, loading]);
 
   const handlePrevious = () => {
     // 이전/다음 버튼은 실제 데이터 기준인 selectedDate를 사용 (깜빡임 방지)
@@ -110,7 +149,7 @@ const FixtureList = ({
         </ControlBar>
       </Header>
 
-      <ListBox>
+      <ListBox ref={listBoxRef} onScroll={handleScroll}>
         {loading ? (
           <Message>
             <LoadingIcon icon={faCircleNotch} spin />
