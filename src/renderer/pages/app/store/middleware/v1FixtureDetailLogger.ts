@@ -26,7 +26,8 @@ export const v1FixtureDetailLogger: Middleware<
   if (loadV1FixtureInfo.fulfilled.match(action)) {
     const payload = action.payload;
     log.info('info:updated', {
-      fixtureUid: payload?.fixtureUid ?? state.v1.fixtureDetail.targetFixtureUid,
+      fixtureUid:
+        payload?.fixtureUid ?? state.v1.fixtureDetail.targetFixtureUid,
     });
   } else if (loadV1FixtureLiveStatus.fulfilled.match(action)) {
     const payload = action.payload;
@@ -48,9 +49,10 @@ export const v1FixtureDetailLogger: Middleware<
   } else if (loadV1FixtureEvents.fulfilled.match(action)) {
     const payload = action.payload;
     const events = payload?.events ?? [];
-    const lastSeq = events.length ? events[events.length - 1].sequence : null;
+    const lastSeq = events.length ? events[events.length - 1]?.sequence : null;
     log.info('events:updated', {
-      fixtureUid: payload?.fixtureUid ?? state.v1.fixtureDetail.targetFixtureUid,
+      fixtureUid:
+        payload?.fixtureUid ?? state.v1.fixtureDetail.targetFixtureUid,
       length: events.length,
       lastSeq,
     });
@@ -66,4 +68,3 @@ export const v1FixtureDetailLogger: Middleware<
 
   return result;
 };
-

@@ -242,7 +242,8 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   min-width: 0;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: visible;
   padding-left: 30px;
   padding-right: 20px;
@@ -325,6 +326,7 @@ const CalendarIcon = styled(FontAwesomeIcon)`
 
 const ListBox = styled.div`
   flex: 1;
+  min-height: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.05);
   padding: 17px 20px;
