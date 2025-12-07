@@ -298,7 +298,8 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
             homeColor={homeColor}
             awayColor={awayColor}
           />
-          {(homeStats.goalsPrevented !== undefined ||
+          {/* Goals Prevented 값은 현재 Data Provider에서 정상적으로 제공되지 않는 것으로 보입니다 */}
+          {/* {(homeStats.goalsPrevented !== undefined ||
             awayStats.goalsPrevented !== undefined) && (
             <StatRow
               label="골 방지"
@@ -307,7 +308,7 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
               homeColor={homeColor}
               awayColor={awayColor}
             />
-          )}
+          )} */}
         </StatsSection>
       </StatsContent>
     </Container>

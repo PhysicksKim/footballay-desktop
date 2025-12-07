@@ -6,6 +6,9 @@ import {
   LiveInboundMessage,
   LiveOutboundMessage,
 } from '@src/types/ipc/LiveChannels';
+import { getLogger } from '@app/utils/logger';
+
+const log = getLogger('app:v1:ipc-send');
 
 const useMatchliveBridge = () => {
   const info = useSelector((state: RootState) => state.v1.fixtureDetail.info);
@@ -27,6 +30,24 @@ const useMatchliveBridge = () => {
 
   const send = useCallback((message: LiveOutboundMessage) => {
     window.electron.ipcRenderer.send('live:to-matchlive', message);
+    try {
+      const payload: any = message.payload;
+      const len =
+        payload?.events && Array.isArray(payload.events)
+          ? payload.events.length
+          : undefined;
+      const lastSeq =
+        payload?.events && payload.events.length
+          ? payload.events[payload.events.length - 1]?.sequence
+          : undefined;
+      log.info('send', {
+        type: message.type,
+        len,
+        lastSeq,
+      });
+    } catch (_) {
+      // ignore
+    }
   }, []);
 
   const sendFullSync = useCallback(() => {

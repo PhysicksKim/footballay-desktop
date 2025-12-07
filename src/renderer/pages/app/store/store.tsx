@@ -18,6 +18,7 @@ import eventFilterReducer from './slices/control/eventFilterSlice';
 import fixtureLiveReducer from './slices/live/fixtureLiveSlice';
 import { appEnv } from '@app/config/environment';
 import { injectStore } from '@app/v1/api/httpClient';
+import { v1FixtureDetailLogger } from './middleware/v1FixtureDetailLogger';
 
 const store = configureStore({
   reducer: {
@@ -29,6 +30,8 @@ const store = configureStore({
     eventFilter: eventFilterReducer,
     fixtureLive: fixtureLiveReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(v1FixtureDetailLogger),
 });
 
 // Inject store into httpClient to avoid circular dependency

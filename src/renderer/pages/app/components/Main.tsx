@@ -6,8 +6,10 @@ import SideNavigation from '@app/components/SideNavigation';
 import MatchliveBridge from '@app/components/processing/MatchliveBridge';
 
 import '@app/styles/Main.scss';
+import { getLogger } from '@app/utils/logger';
 
-window.electron.ipcRenderer.send('loginfo', 'app window started');
+const log = getLogger('app:main');
+log.info('app window started');
 
 const Main = () => {
   return (

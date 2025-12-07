@@ -12,6 +12,9 @@ import { loadColorOption } from '@matchlive/store/slices/colorOptionSlice';
 import { setFilterEvents } from '@matchlive/store/slices/control/eventFilterSlice';
 import { LiveOutboundMessage } from '@src/types/ipc/LiveChannels';
 import { AppDispatch } from '@matchlive/store/store';
+import { getLogger } from '@matchlive/utils/logger';
+
+const log = getLogger('matchlive:ipc-recv');
 
 const FixtureIpc = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,28 +24,42 @@ const FixtureIpc = () => {
       'live:to-matchlive',
       (message: LiveOutboundMessage) => {
         if (!message) return;
+        try {
+          const payload: any = message.payload;
+          const len =
+            payload?.events && Array.isArray(payload.events)
+              ? payload.events.length
+              : undefined;
+          const lastSeq =
+            payload?.events && payload.events.length
+              ? payload.events[payload.events.length - 1]?.sequence
+              : undefined;
+          log.info('receive', { type: message.type, len, lastSeq });
+        } catch (_) {
+          // ignore
+        }
         switch (message.type) {
           case 'live.fixture.info':
             dispatch(setFixtureInfo(message.payload));
             break;
           case 'live.fixture.live-status':
             dispatch(setFixtureLiveStatus(message.payload));
-        break;
+            break;
           case 'live.fixture.lineup':
             dispatch(setFixtureLineup(message.payload));
-        break;
+            break;
           case 'live.fixture.events':
             dispatch(setFixtureEvents(message.payload));
-        break;
+            break;
           case 'live.fixture.statistics':
             dispatch(setFixtureStatistics(message.payload));
-        break;
+            break;
           case 'live.event-filter.update':
             dispatch(setFilterEvents(message.payload));
-        break;
+            break;
           default:
-        break;
-      }
+            break;
+        }
       }
     );
 

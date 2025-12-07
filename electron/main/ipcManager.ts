@@ -156,6 +156,20 @@ export const setupLiveIpcHandlers = () => {
       return;
     }
     try {
+      const payload: any = data?.payload;
+      const len =
+        payload?.events && Array.isArray(payload.events)
+          ? payload.events.length
+          : undefined;
+      const lastSeq =
+        payload?.events && payload.events.length
+          ? payload.events[payload.events.length - 1]?.sequence
+          : undefined;
+      log.info('live:to-matchlive forward', {
+        type: data?.type,
+        len,
+        lastSeq,
+      });
       nowMatchliveWindow.webContents.send('live:to-matchlive', data);
     } catch (e) {
       log.error('live:to-matchlive ipc error message', e);

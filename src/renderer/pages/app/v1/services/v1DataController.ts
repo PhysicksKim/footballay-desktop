@@ -7,6 +7,9 @@ import {
   loadV1FixtureStatistics,
   setTargetFixture,
 } from '@app/v1/store/fixtureDetailSlice';
+import { getLogger } from '@app/utils/logger';
+
+const log = getLogger('app:v1:polling');
 
 export class V1DataController {
   private static instance: V1DataController | null = null;
@@ -48,10 +51,12 @@ export class V1DataController {
     this.stop();
 
     this.fixtureUid = fixtureUid;
+    log.info('setFixtureUid', { fixtureUid });
     this.dispatch(setTargetFixture(fixtureUid));
     if (!fixtureUid) {
       return;
     }
+    log.info('initialFetch:start', { fixtureUid });
     this.dispatch(loadV1FixtureInfo(fixtureUid));
     this.dispatch(loadV1FixtureLineup(fixtureUid));
     this.dispatch(loadV1FixtureEvents(fixtureUid));
@@ -75,10 +80,12 @@ export class V1DataController {
 
   private pollLiveData() {
     if (!this.fixtureUid) return;
+    log.info('poll:start', { fixtureUid: this.fixtureUid });
     this.dispatch(loadV1FixtureLiveStatus(this.fixtureUid));
     this.dispatch(loadV1FixtureLineup(this.fixtureUid));
     this.dispatch(loadV1FixtureEvents(this.fixtureUid));
     this.dispatch(loadV1FixtureStatistics(this.fixtureUid));
+    log.info('poll:dispatched', { fixtureUid: this.fixtureUid });
   }
 }
 

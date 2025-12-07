@@ -6,11 +6,10 @@ import {
   LineupPlayer,
   PlayerWithStatistics,
 } from '@src/renderer/pages/app/v1/types/api';
-import {
-  ViewLineup,
-  ViewPlayer,
-  ViewPlayerEvents,
-} from '../types';
+import { ViewLineup, ViewPlayer, ViewPlayerEvents } from '../types';
+import { getLogger } from '@matchlive/utils/logger';
+
+const log = getLogger('matchlive:view-lineup');
 
 const createEmptyEvents = (): ViewPlayerEvents => ({
   subIn: false,
@@ -33,7 +32,7 @@ const processTeamLineup = (
       }
       // Grid format "Row:Col", e.g., "4:2". Row is 1-based index.
       const gridRowIndex = parseInt(player.grid.split(':')[0], 10) - 1;
-      
+
       if (!playersByGrid[gridRowIndex]) {
         playersByGrid[gridRowIndex] = [];
       }
@@ -87,11 +86,11 @@ const isPlayerOnField = (
   for (let i = 0; i < lineupGrid.length; i++) {
     const row = lineupGrid[i];
     if (!row) continue;
-    
+
     for (let j = 0; j < row.length; j++) {
       const rootPlayer = row[j];
       const current = getCurrentPlayer(rootPlayer);
-      
+
       if (current.matchPlayerUid === matchPlayerUid) {
         return { found: true, rootPlayer };
       }
@@ -102,13 +101,16 @@ const isPlayerOnField = (
 
 const updatePlayerGoal = (event: EventInfo, lineup: ViewLineup) => {
   if (!event.player) return;
-  
-  const { found, rootPlayer } = isPlayerOnField(event.player.matchPlayerUid, lineup.players);
-  
+
+  const { found, rootPlayer } = isPlayerOnField(
+    event.player.matchPlayerUid,
+    lineup.players
+  );
+
   if (found && rootPlayer) {
     const target = getCurrentPlayer(rootPlayer);
     const isOwnGoal = event.detail?.toLowerCase().includes('own') || false;
-    
+
     target.events.goal.push({
       minute: event.elapsed,
       ownGoal: isOwnGoal,
@@ -118,12 +120,15 @@ const updatePlayerGoal = (event: EventInfo, lineup: ViewLineup) => {
 
 const updatePlayerCard = (event: EventInfo, lineup: ViewLineup) => {
   if (!event.player || !event.detail) return;
-  
-  const { found, rootPlayer } = isPlayerOnField(event.player.matchPlayerUid, lineup.players);
-  
+
+  const { found, rootPlayer } = isPlayerOnField(
+    event.player.matchPlayerUid,
+    lineup.players
+  );
+
   if (found && rootPlayer) {
     const target = getCurrentPlayer(rootPlayer);
-    
+
     if (event.detail === 'Yellow Card') {
       target.events.yellow = true;
     } else if (event.detail === 'Red Card') {
@@ -161,15 +166,15 @@ const updatePlayerSubst = (event: EventInfo, lineup: ViewLineup) => {
   );
 
   if (substituteDetails && subOutPlayer) {
-     const subInViewPlayer: ViewPlayer = {
-       ...substituteDetails,
-       events: { ...createEmptyEvents(), subIn: true },
-       statistics: substituteDetails.statistics,
-       subInPlayer: null,
-       grid: subOutPlayer.grid, // Inherit grid position from subbed-out player
-     };
+    const subInViewPlayer: ViewPlayer = {
+      ...substituteDetails,
+      events: { ...createEmptyEvents(), subIn: true },
+      statistics: substituteDetails.statistics,
+      subInPlayer: null,
+      grid: subOutPlayer.grid, // Inherit grid position from subbed-out player
+    };
 
-     subOutPlayer.subInPlayer = subInViewPlayer;
+    subOutPlayer.subInPlayer = subInViewPlayer;
   }
 };
 
@@ -179,15 +184,15 @@ const applyEventsToLineup = (
 ): ViewLineup => {
   // Apply events to lineup (mutates lineup in place)
   // Note: This function is called after processTeamLineup, which creates a fresh structure
-  
+
   events.forEach((event) => {
     const eventType = event.type.toUpperCase();
-    
+
     // For non-GOAL events, only process events for this team
     if (event.team.teamUid !== lineup.teamUid && eventType !== 'GOAL') {
       return;
     }
-    
+
     if (!event.player) {
       return;
     }
@@ -227,6 +232,13 @@ export const useLineupGrid = (
       let processed = processTeamLineup(homeLineup, playerStatisticsMap);
       processed = applyEventsToLineup(processed, filteredEvents);
       setProcessedHome(processed);
+      log.info('applyEvents:home', {
+        teamUid: homeLineup.teamUid,
+        eventsLen: events.length,
+        filteredLen: filteredEvents.length,
+        lastSeq:
+          events.length > 0 ? events[events.length - 1].sequence : undefined,
+      });
     } else {
       setProcessedHome(null);
     }
@@ -241,6 +253,13 @@ export const useLineupGrid = (
       let processed = processTeamLineup(awayLineup, playerStatisticsMap);
       processed = applyEventsToLineup(processed, filteredEvents);
       setProcessedAway(processed);
+      log.info('applyEvents:away', {
+        teamUid: awayLineup.teamUid,
+        eventsLen: events.length,
+        filteredLen: filteredEvents.length,
+        lastSeq:
+          events.length > 0 ? events[events.length - 1].sequence : undefined,
+      });
     } else {
       setProcessedAway(null);
     }
@@ -251,4 +270,3 @@ export const useLineupGrid = (
     processedAway,
   };
 };
-
