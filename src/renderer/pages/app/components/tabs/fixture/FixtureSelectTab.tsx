@@ -36,6 +36,9 @@ const FixtureSelectTab = () => {
   const selectedLeague = useSelector(
     (state: RootState) => state.v1.fixtures.selectedLeagueUid
   );
+  const lastRequest = useSelector(
+    (state: RootState) => state.v1.fixtures.lastRequest
+  );
   const cfAccessStatus = useSelector(
     (state: RootState) => state.cfAccess.status
   );
@@ -50,6 +53,7 @@ const FixtureSelectTab = () => {
   );
 
   const dataControllerRef = useRef<ReturnType<typeof createV1DataController>>();
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // dev 환경에서는 CF Access 토큰 로드 완료 후에만 리그 조회
@@ -99,6 +103,57 @@ const FixtureSelectTab = () => {
       }
     }
   }, [fixtures, selectedDate]);
+
+  /**
+   * 경기 목록이 있고 리그가 선택되어 있으면 해당 날짜를 exact 모드로 1분마다 polling합니다.
+   * 경기 상태(스코어, 경과시간, available 등)를 자동 업데이트하기 위함입니다.
+   */
+  useEffect(() => {
+    // 기존 polling이 있으면 중지
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
+    // polling 시작 조건 확인
+    const shouldStartPolling =
+      fixtures.length > 0 && selectedLeague && lastRequest;
+
+    if (shouldStartPolling) {
+      const pollingDate = lastRequest.date;
+      const pollingLeagueUid = selectedLeague;
+      const pollingTimezone = lastRequest.timezone;
+
+      // 1분(60000ms)마다 exact 모드로 경기 목록을 다시 조회
+      pollingIntervalRef.current = setInterval(() => {
+        const timezone =
+          requestTimezone.trim() || timezonePreference || DEFAULT_TIMEZONE;
+        dispatch(
+          loadV1Fixtures({
+            leagueUid: pollingLeagueUid,
+            date: pollingDate,
+            mode: 'exact',
+            timezone: pollingTimezone || timezone,
+          })
+        );
+      }, 60000);
+    }
+
+    // cleanup: 컴포넌트 unmount 또는 조건 변경 시 polling 중지
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [
+    fixtures.length,
+    selectedLeague,
+    lastRequest,
+    dispatch,
+    requestTimezone,
+    timezonePreference,
+  ]);
 
   const requestFixtures = (
     leagueUid: string,

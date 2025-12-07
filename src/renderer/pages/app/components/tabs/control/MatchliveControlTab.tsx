@@ -99,9 +99,9 @@ const MatchliveControlTab = () => {
   };
 
   const unfilteredEvents = events?.events.filter(
-    (event) =>
+    (event: EventInfo) =>
       !filterEvents.some(
-        (filterEvent) => filterEvent.sequence === event.sequence
+        (filterEvent: EventInfo) => filterEvent.sequence === event.sequence
       )
   );
 

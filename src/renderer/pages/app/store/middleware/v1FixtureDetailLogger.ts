@@ -1,5 +1,4 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { RootState } from '../store';
 import { getLogger } from '@app/utils/logger';
 import {
   loadV1FixtureInfo,
@@ -15,10 +14,7 @@ const log = getLogger('app:v1:redux');
  * V1 Fixture Detail 관련 Redux 액션들을 로깅하는 middleware
  * reducer의 순수성을 유지하기 위해 로깅은 middleware에서 처리합니다.
  */
-export const v1FixtureDetailLogger: Middleware<
-  {}, // dispatch types
-  RootState
-> = (store) => (next) => (action) => {
+export const v1FixtureDetailLogger: Middleware = (store) => (next) => (action) => {
   const result = next(action);
   const state = store.getState();
 
