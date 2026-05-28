@@ -139,10 +139,10 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
   const isModalOpen = !!selectedPlayer;
 
   // Get display colors for teams
-  const homeDisplayColor = selectDisplayColor(lineup?.lineup.home.playerColor, {
+  const homeDisplayColor = selectDisplayColor(lineup?.lineup?.home?.playerColor, {
     useAlternativeStrategy: useAlternativeColorStrategy,
   });
-  const awayDisplayColor = selectDisplayColor(lineup?.lineup.away.playerColor, {
+  const awayDisplayColor = selectDisplayColor(lineup?.lineup?.away?.playerColor, {
     isAway: true,
     homeColor: homeDisplayColor || undefined,
     useAlternativeStrategy: useAlternativeColorStrategy,

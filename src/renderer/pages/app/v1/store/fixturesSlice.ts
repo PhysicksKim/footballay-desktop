@@ -49,8 +49,10 @@ const fixturesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loadV1Fixtures.pending, (state) => {
-        state.status = 'loading';
+      .addCase(loadV1Fixtures.pending, (state, action) => {
+        if (!action.meta.arg.isSilent) {
+          state.status = 'loading';
+        }
         state.error = undefined;
       })
       .addCase(loadV1Fixtures.fulfilled, (state, action) => {

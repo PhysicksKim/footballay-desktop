@@ -120,7 +120,7 @@ const FixtureSelectTab = () => {
       fixtures.length > 0 && selectedLeague && lastRequest;
 
     if (shouldStartPolling) {
-      const pollingDate = lastRequest.date;
+      const pollingDate = selectedDate;
       const pollingLeagueUid = selectedLeague;
       const pollingTimezone = lastRequest.timezone;
 
@@ -134,6 +134,7 @@ const FixtureSelectTab = () => {
             date: pollingDate,
             mode: 'exact',
             timezone: pollingTimezone || timezone,
+            isSilent: true,
           })
         );
       }, 60000);
@@ -153,6 +154,7 @@ const FixtureSelectTab = () => {
     dispatch,
     requestTimezone,
     timezonePreference,
+    selectedDate,
   ]);
 
   const requestFixtures = (

@@ -17,6 +17,7 @@ export interface FetchFixturesParams {
   date?: string;
   mode?: FixtureMode;
   timezone?: string;
+  isSilent?: boolean;
 }
 
 export const fetchAvailableLeagues = async () => {
