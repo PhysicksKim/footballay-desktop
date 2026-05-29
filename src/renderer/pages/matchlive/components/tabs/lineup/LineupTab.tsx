@@ -17,6 +17,7 @@ import {
 } from './LineupStyled';
 import RetryableImage from '@matchlive/components/common/RetryableImage';
 import { selectDisplayColor } from '@matchlive/utils/ColorUtils';
+import styled from 'styled-components';
 
 interface LineupTabProps {
   isActive: boolean;
@@ -56,11 +57,11 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
 
   const statsMap = useMemo(() => {
     const map = new Map<string, PlayerStatistics>();
-    if (statsResponse) {
-      statsResponse.home.playerStatistics.forEach((p) =>
+    if (statsResponse && statsResponse.home && statsResponse.away) {
+      statsResponse.home.playerStatistics?.forEach((p) =>
         map.set(p.player.matchPlayerUid, p.statistics)
       );
-      statsResponse.away.playerStatistics.forEach((p) =>
+      statsResponse.away.playerStatistics?.forEach((p) =>
         map.set(p.player.matchPlayerUid, p.statistics)
       );
     }
@@ -118,14 +119,11 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
     const debouncedResize = debounce(handleResize, 150);
     window.addEventListener('resize', debouncedResize);
 
-    // Call once to set initial size
     handleResize();
 
     return () => window.removeEventListener('resize', debouncedResize);
   }, [processedHome, processedAway, isActive]);
-  // Added isActive to trigger resize when tab becomes active
 
-  // Modal Logic
   const [selectedPlayer, setSelectedPlayer] = useState<ViewPlayer | null>(null);
 
   const handlePlayerClick = (player: ViewPlayer) => {
@@ -139,18 +137,20 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
   const isModalOpen = !!selectedPlayer;
 
   // Get display colors for teams
-  const homeDisplayColor = selectDisplayColor(lineup?.lineup?.home?.playerColor, {
-    useAlternativeStrategy: useAlternativeColorStrategy,
-  });
-  const awayDisplayColor = selectDisplayColor(lineup?.lineup?.away?.playerColor, {
-    isAway: true,
-    homeColor: homeDisplayColor || undefined,
-    useAlternativeStrategy: useAlternativeColorStrategy,
-  });
-
-  if (!lineup || !processedHome || !processedAway) {
-    return null;
-  }
+  const homeDisplayColor = selectDisplayColor(
+    lineup?.lineup?.home?.playerColor,
+    {
+      useAlternativeStrategy: useAlternativeColorStrategy,
+    }
+  );
+  const awayDisplayColor = selectDisplayColor(
+    lineup?.lineup?.away?.playerColor,
+    {
+      isAway: true,
+      homeColor: homeDisplayColor || undefined,
+      useAlternativeStrategy: useAlternativeColorStrategy,
+    }
+  );
 
   return (
     <LineupTabContainer
@@ -160,54 +160,61 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
     >
       <FieldCanvas />
 
-      {/* Home Team */}
-      <TeamContainer $isAway={false}>
-        <LineupGrid
-          lineup={processedHome}
-          isAway={false}
-          playerSize={playerSize}
-          lineHeight={lineHeight}
-          showPhoto={showPhoto}
-          handlePlayerClick={handlePlayerClick}
-        />
-        <TeamLogoName className="team-name__home" $color={homeDisplayColor}>
-          {homeDisplayColor && <div className="color-bar" />}
-          <div className="team-logo">
-            {getTeamLogo(processedHome.teamUid) && (
-              <RetryableImage
-                src={getTeamLogo(processedHome.teamUid)!}
-                alt={processedHome.teamName}
-              />
-            )}
-          </div>
-          <div className="team-name">{processedHome.teamName}</div>
-        </TeamLogoName>
-      </TeamContainer>
+      {lineup && processedHome && processedAway ? (
+        <>
+          {/* Home Team */}
+          <TeamContainer $isAway={false}>
+            <LineupGrid
+              lineup={processedHome}
+              isAway={false}
+              playerSize={playerSize}
+              lineHeight={lineHeight}
+              showPhoto={showPhoto}
+              handlePlayerClick={handlePlayerClick}
+            />
+            <TeamLogoName className="team-name__home" $color={homeDisplayColor}>
+              {homeDisplayColor && <div className="color-bar" />}
+              <div className="team-logo">
+                {getTeamLogo(processedHome.teamUid) && (
+                  <RetryableImage
+                    src={getTeamLogo(processedHome.teamUid)!}
+                    alt={processedHome.teamName}
+                  />
+                )}
+              </div>
+              <div className="team-name">{processedHome.teamName}</div>
+            </TeamLogoName>
+          </TeamContainer>
 
-      {/* Away Team */}
-      <TeamContainer $isAway={true}>
-        <LineupGrid
-          lineup={processedAway}
-          isAway={true}
-          playerSize={playerSize}
-          lineHeight={lineHeight}
-          showPhoto={showPhoto}
-          handlePlayerClick={handlePlayerClick}
-        />
-        <TeamLogoName className="team-name__away" $color={awayDisplayColor}>
-          {awayDisplayColor && <div className="color-bar" />}
-          <div className="team-logo">
-            {getTeamLogo(processedAway.teamUid) && (
-              <RetryableImage
-                src={getTeamLogo(processedAway.teamUid)!}
-                alt={processedAway.teamName}
-              />
-            )}
-          </div>
-          <div className="team-name">{processedAway.teamName}</div>
-        </TeamLogoName>
-      </TeamContainer>
-
+          {/* Away Team */}
+          <TeamContainer $isAway={true}>
+            <LineupGrid
+              lineup={processedAway}
+              isAway={true}
+              playerSize={playerSize}
+              lineHeight={lineHeight}
+              showPhoto={showPhoto}
+              handlePlayerClick={handlePlayerClick}
+            />
+            <TeamLogoName className="team-name__away" $color={awayDisplayColor}>
+              {awayDisplayColor && <div className="color-bar" />}
+              <div className="team-logo">
+                {getTeamLogo(processedAway.teamUid) && (
+                  <RetryableImage
+                    src={getTeamLogo(processedAway.teamUid)!}
+                    alt={processedAway.teamName}
+                  />
+                )}
+              </div>
+              <div className="team-name">{processedAway.teamName}</div>
+            </TeamLogoName>
+          </TeamContainer>
+        </>
+      ) : (
+        <Container $isActive={isActive}>
+          <EmptyMessage>아직 라인업 정보가 없습니다</EmptyMessage>
+        </Container>
+      )}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -219,5 +226,28 @@ const LineupTab = ({ isActive }: LineupTabProps) => {
     </LineupTabContainer>
   );
 };
+
+const Container = styled.div<{ $isActive: boolean }>`
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: clamp(8px, 4vw, 32px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: ${(props) => (props.$isActive ? 1 : 0)};
+  transition: opacity 0.3s ease;
+  color: #fff;
+`;
+
+const EmptyMessage = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+`;
 
 export default LineupTab;

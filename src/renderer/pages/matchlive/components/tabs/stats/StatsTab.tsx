@@ -80,31 +80,42 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
     (state: RootState) => state.colorOption.useAlternativeColorStrategy
   );
 
-  if (!statistics) {
+  if (!statistics || !statistics.home || !statistics.away) {
     return (
       <Container $isActive={isActive}>
-        <EmptyMessage>통계 정보가 없습니다</EmptyMessage>
+        <EmptyMessage>아직 통계 데이터가 없습니다</EmptyMessage>
       </Container>
     );
   }
 
-  const homeStats = statistics.home.teamStatistics;
-  const awayStats = statistics.away.teamStatistics;
+  // statistics.home과 statistics.away는 이미 null이 아님을 확인했지만,
+  // teamStatistics가 undefined일 수 있으므로 안전하게 접근
+  const homeStats = statistics.home?.teamStatistics;
+  const awayStats = statistics.away?.teamStatistics;
+
+  if (!homeStats || !awayStats) {
+    return (
+      <Container $isActive={isActive}>
+        <EmptyMessage>아직 통계 데이터가 없습니다</EmptyMessage>
+      </Container>
+    );
+  }
 
   // Get colors for charts and bars (always use alternative strategy for bars)
-  const homeColor = selectHomeColor(statistics.home.team.playerColor);
+  // statistics.home과 statistics.away는 이미 null 체크 완료
+  const homeColor = selectHomeColor(statistics.home.team?.playerColor);
   const awayColor = selectAwayColor(
-    statistics.away.team.playerColor,
+    statistics.away.team?.playerColor,
     homeColor
   );
 
   // Get display colors for color bars (respects user option)
   const homeDisplayColor = selectDisplayColor(
-    statistics.home.team.playerColor,
+    statistics.home.team?.playerColor,
     { useAlternativeStrategy: useAlternativeColorStrategy }
   );
   const awayDisplayColor = selectDisplayColor(
-    statistics.away.team.playerColor,
+    statistics.away.team?.playerColor,
     {
       isAway: true,
       homeColor: homeDisplayColor || undefined,
@@ -143,12 +154,16 @@ const StatsTab = ({ isActive }: StatsTabProps) => {
               <TeamColorBar $color={homeDisplayColor} $side="left" />
             )}
             <TeamName>
-              {statistics.home.team.koreanName || statistics.home.team.name}
+              {statistics.home?.team?.koreanName ||
+                statistics.home?.team?.name ||
+                '홈팀'}
             </TeamName>
           </TeamNameWrapper>
           <TeamNameWrapper>
             <TeamName>
-              {statistics.away.team.koreanName || statistics.away.team.name}
+              {statistics.away?.team?.koreanName ||
+                statistics.away?.team?.name ||
+                '어웨이팀'}
             </TeamName>
             {awayDisplayColor && (
               <TeamColorBar $color={awayDisplayColor} $side="right" />

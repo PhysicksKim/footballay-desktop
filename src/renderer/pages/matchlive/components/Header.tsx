@@ -54,15 +54,15 @@ const Header = ({
           {score ? (
             <>
               <Score>
-                {score.home} : {score.away}
+                {score.home ?? 0} : {score.away ?? 0}
               </Score>
               <Status>
                 {status?.longStatus}
-                {status?.elapsed !== undefined && ` · ${status.elapsed}'`}
+                {status?.elapsed && ` · ${status.elapsed}'`}
               </Status>
             </>
           ) : (
-            <Status>{status?.longStatus || 'VS'}</Status>
+            <Status>{status?.longStatus ?? 'VS'}</Status>
           )}
         </ScoreSection>
 

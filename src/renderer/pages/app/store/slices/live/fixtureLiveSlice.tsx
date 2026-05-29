@@ -194,7 +194,69 @@ const fixtureLiveSlice = createSlice({
       .addCase(
         fetchFixtureStatistics.fulfilled,
         (state, action: PayloadAction<FixtureStatistics>) => {
-          state.statistics = action.payload;
+          // home이나 away가 null이면 빈 객체로 변환하여 null exception 방지
+          const normalizedStatistics: FixtureStatistics = {
+            ...action.payload,
+            home: action.payload.home ?? {
+              team: {
+                id: 0,
+                name: '',
+                koreanName: null,
+                logo: '',
+              },
+              teamStatistics: {
+                shotsOnGoal: 0,
+                shotsOffGoal: 0,
+                totalShots: 0,
+                blockedShots: 0,
+                shotsInsideBox: 0,
+                shotsOutsideBox: 0,
+                fouls: 0,
+                cornerKicks: 0,
+                offsides: 0,
+                ballPossession: 0,
+                yellowCards: 0,
+                redCards: 0,
+                goalkeeperSaves: 0,
+                totalPasses: 0,
+                passesAccurate: 0,
+                passesAccuracyPercentage: 0,
+                goalsPrevented: 0,
+                xg: [],
+              },
+              playerStatistics: [],
+            },
+            away: action.payload.away ?? {
+              team: {
+                id: 0,
+                name: '',
+                koreanName: null,
+                logo: '',
+              },
+              teamStatistics: {
+                shotsOnGoal: 0,
+                shotsOffGoal: 0,
+                totalShots: 0,
+                blockedShots: 0,
+                shotsInsideBox: 0,
+                shotsOutsideBox: 0,
+                fouls: 0,
+                cornerKicks: 0,
+                offsides: 0,
+                ballPossession: 0,
+                yellowCards: 0,
+                redCards: 0,
+                goalkeeperSaves: 0,
+                totalPasses: 0,
+                passesAccurate: 0,
+                passesAccuracyPercentage: 0,
+                goalsPrevented: 0,
+                xg: [],
+              },
+              playerStatistics: [],
+            },
+          };
+          state.statistics = normalizedStatistics;
           updateLastFetchedAt(state);
         }
       );

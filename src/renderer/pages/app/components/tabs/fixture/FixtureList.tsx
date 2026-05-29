@@ -33,59 +33,84 @@ const FixtureList = ({
 }: FixtureListProps) => {
   // 내부적으로 표시할 날짜 상태 관리
   const [internalDate, setInternalDate] = React.useState(selectedDate);
-  const listBoxRef = React.useRef<HTMLDivElement>(null);
-  const previousScrollTopRef = React.useRef<number>(0);
-  const previousFixturesLengthRef = React.useRef<number>(0);
 
-  // selectedDate prop이 변경되면 내부 상태 동기화
+  const listBoxRef = React.useRef<HTMLDivElement>(null);
+
+  // 스크롤 상태 관리용 ref들
+  const savedScrollTopRef = React.useRef<number>(0);
+  const isRestoringScrollRef = React.useRef<boolean>(false);
+  const prevDateRef = React.useRef<string>(selectedDate);
+  const prevLoadingRef = React.useRef<boolean>(loading);
+
+  /**
+   * selectedDate prop 변경 시:
+   *  - 내부 날짜 상태 동기화
+   *  - 실제로 날짜가 바뀐 경우에만 스크롤 상태 초기화
+   */
   React.useEffect(() => {
     setInternalDate(selectedDate);
-    // 날짜가 변경되면 스크롤 위치 초기화
-    previousScrollTopRef.current = 0;
-    previousFixturesLengthRef.current = 0;
+
+    if (prevDateRef.current !== selectedDate) {
+      prevDateRef.current = selectedDate;
+      savedScrollTopRef.current = 0;
+
+      if (listBoxRef.current) {
+        listBoxRef.current.scrollTop = 0;
+      }
+    }
   }, [selectedDate]);
 
-  // 스크롤 위치 저장 (사용자가 스크롤할 때)
+  /**
+   * 사용자가 스크롤할 때 현재 위치 저장
+   * - loading 중이거나, 우리가 복원 중일 때는 무시
+   */
   const handleScroll = React.useCallback(() => {
-    if (listBoxRef.current) {
-      previousScrollTopRef.current = listBoxRef.current.scrollTop;
-    }
-  }, []);
+    if (!listBoxRef.current) return;
+    if (loading) return;
+    if (isRestoringScrollRef.current) return;
 
-  // fixtures 업데이트 시 스크롤 위치 복원 (polling으로 인한 업데이트인 경우)
+    savedScrollTopRef.current = listBoxRef.current.scrollTop;
+  }, [loading]);
+
+  /**
+   * loading 상태 변화를 감지하여,
+   * true -> false 전환 시 스크롤 복원
+   */
   React.useEffect(() => {
-    if (!loading && listBoxRef.current && fixtures.length > 0) {
-      // 날짜나 리그 변경이 아닌 경우 (fixtures 개수가 비슷하고 loading이 false)
-      // 즉, polling으로 인한 업데이트로 판단
-      const isPollingUpdate =
-        previousFixturesLengthRef.current > 0 &&
-        Math.abs(fixtures.length - previousFixturesLengthRef.current) <= 2;
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
 
-      if (isPollingUpdate && previousScrollTopRef.current > 0) {
-        // requestAnimationFrame으로 DOM 업데이트 후 스크롤 복원
+    // 로딩이 끝난 시점에만 복원 시도
+    if (
+      wasLoading &&
+      !loading &&
+      listBoxRef.current &&
+      savedScrollTopRef.current > 0
+    ) {
+      const target = savedScrollTopRef.current;
+      isRestoringScrollRef.current = true;
+
+      // DOM 업데이트 후 스크롤 복원
+      requestAnimationFrame(() => {
+        if (listBoxRef.current) {
+          listBoxRef.current.scrollTop = target;
+        }
+
+        // 복원으로 인해 발생하는 scroll 이벤트가 한 번 더 돌 수 있으므로,
+        // 한 프레임 더 넘긴 다음에 restoring 플래그 해제
         requestAnimationFrame(() => {
-          if (listBoxRef.current) {
-            listBoxRef.current.scrollTop = previousScrollTopRef.current;
-          }
+          isRestoringScrollRef.current = false;
         });
-      }
-
-      previousFixturesLengthRef.current = fixtures.length;
-    } else if (loading || fixtures.length === 0) {
-      // 로딩 중이거나 경기가 없으면 스크롤 위치 초기화
-      previousScrollTopRef.current = 0;
-      previousFixturesLengthRef.current = 0;
+      });
     }
-  }, [fixtures, loading]);
+  }, [loading]);
 
   const handlePrevious = () => {
-    // 이전/다음 버튼은 실제 데이터 기준인 selectedDate를 사용 (깜빡임 방지)
     const prevDate = format(addDays(parseISO(selectedDate), -1), 'yyyy-MM-dd');
     onRequestFetch(prevDate, 'previous');
   };
 
   const handleNext = () => {
-    // 이전/다음 버튼은 실제 데이터 기준인 selectedDate를 사용 (깜빡임 방지)
     const nextDate = format(addDays(parseISO(selectedDate), 1), 'yyyy-MM-dd');
     onRequestFetch(nextDate, 'nearest');
   };
@@ -93,13 +118,12 @@ const FixtureList = ({
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const newDate = format(date, 'yyyy-MM-dd');
-      // 사용자가 직접 선택한 경우 즉시 UI 업데이트
       setInternalDate(newDate);
       onRequestFetch(newDate, 'exact');
     }
   };
 
-  const formattedDate = parseISO(internalDate); // 내부 상태 사용
+  const formattedDate = parseISO(internalDate);
   const yearMonth = format(formattedDate, 'yyyy.MM');
   const dayOfWeek = format(formattedDate, 'dd EEE', { locale: ko }) + '요일';
   const dayName = format(formattedDate, 'EEE', { locale: ko });
@@ -119,6 +143,22 @@ const FixtureList = ({
         <CalendarIcon icon={faCalendarDays} />
       </DateDisplay>
     )
+  );
+
+  // 정렬 로직 메모이제이션
+  const sortedFixtures = React.useMemo(
+    () =>
+      [...fixtures].sort((a, b) => {
+        // 1. kickoff 빠른 순 (시간 순서)
+        const kickoffA = new Date(a.kickoff).getTime();
+        const kickoffB = new Date(b.kickoff).getTime();
+        if (kickoffA !== kickoffB) {
+          return kickoffA - kickoffB;
+        }
+        // 2. uid 오름차순
+        return a.uid.localeCompare(b.uid);
+      }),
+    [fixtures]
   );
 
   return (
@@ -158,20 +198,9 @@ const FixtureList = ({
         ) : fixtures.length === 0 ? (
           <Message>경기가 없습니다.</Message>
         ) : (
-          [...fixtures]
-            .sort((a, b) => {
-              // 1. kickoff 빠른 순 (시간 순서)
-              const kickoffA = new Date(a.kickoff).getTime();
-              const kickoffB = new Date(b.kickoff).getTime();
-              if (kickoffA !== kickoffB) {
-                return kickoffA - kickoffB;
-              }
-              // 2. uid 오름차순
-              return a.uid.localeCompare(b.uid);
-            })
-            .map((fixture) => (
-              <FixtureItem key={fixture.uid} fixture={fixture} />
-            ))
+          sortedFixtures.map((fixture) => (
+            <FixtureItem key={fixture.uid} fixture={fixture} />
+          ))
         )}
       </ListBox>
     </Container>

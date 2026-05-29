@@ -78,9 +78,10 @@ const FixtureSelectTab = () => {
       dataControllerRef.current = createV1DataController(dispatch);
       dataControllerRef.current.start();
     }
-    return () => {
-      dataControllerRef.current?.stop();
-    };
+    // V1DataController는 singleton이며, 경기 선택 상태와 무관하게 계속 실행되어야 합니다.
+    // 따라서 cleanup에서 stop()을 호출하지 않습니다.
+    // 탭 전환으로 인해 컴포넌트가 언마운트되어도 polling은 계속되어야 합니다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   /**
